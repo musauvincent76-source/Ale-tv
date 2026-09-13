@@ -1,0 +1,87 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV STUDIO LIVE</title><script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script><style>body{margin:0;background:#0a0f1e;color:#fff;font-family:sans-serif}header{background:#001a4d;padding:10px 14px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600}.btn{padding:8px 14px;border:0;border-radius:8px;font-weight:800;cursor:pointer;margin-left:6px}.live{background:#ff0000;color:#fff}.muted{background:#444!important}.card{background:#111a33;padding:12px;border-radius:10px;margin:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}video{width:100%;background:#000;border-radius:10px;height:180px;object-fit:cover}.guest{padding:8px;background:#0a0f1e;border-radius:8px;display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}</style></head><body>
+<header><div>📺 <b>ALE TV STUDIO</b> <small id="roomTxt" style="color:#ffcc99"></small></div><div><button class="btn live" id="goLive">🔴 Go LIVE to TV</button><button class="btn" id="endLive" style="background:#444;color:#fff">End</button><a href="admin.html" style="color:#888;margin-left:8px">Admin</a><a href="index.html" style="color:#ff6600;margin-left:8px">TV</a></div></header>
+<div class="grid" style="padding:12px"><div class="card"><h4 style="margin:0 0 8px">Host (Wewe)</h4><video id="hostVideo" autoplay muted playsinline></video><div style="margin-top:8px"><button class="btn" id="muteHost">🎤 Mute Me</button><button class="btn" id="camHost">📷 Camera Off</button></div><div style="margin-top:8px"><input id="guestLink" style="width:100%;padding:6px;border-radius:6px;border:0" readonly><small style="color:#888">Share link kwa guests</small></div></div><div class="card"><h4 style="margin:0 0 8px">Guests Online (<span id="gcount">0</span>)</h4><div id="guestList"></div></div></div>
+<div class="card"><h4>Live inaenda direct kwa TV (index.html)</h4><small style="color:#888">Ukifinya Go LIVE, TV itaacha videos na kuonyesha Studio Live. Ukimaliza, videos zitarudi auto.</small></div>
+<script>
+let room=localStorage.getItem('ale_room_id')||('ale'+Math.floor(Math.random()*9000+1000));localStorage.setItem('ale_room_id',room);
+let hostId='ale-host-'+room;let peer,hostStream,guests={},isLive=false;
+document.getElementById('roomTxt').innerText='Room: '+room;
+document.getElementById('guestLink').value=location.origin+location.pathname+'?role=guest&room='+room;
+async function initHost(){
+  hostStream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+  document.getElementById('hostVideo').srcObject=hostStream;
+  peer=new Peer(hostId);peer.on('open',()=>console.log('Host ready',hostId));
+  peer.on('call',call=>{
+    call.answer(hostStream);
+    call.on('stream',s=>{
+      let gid=call.peer;guests[gid]={stream:s,call:call,muted:false,cam:true,name:call.metadata?.name||'Guest'};
+      renderGuests();
+    });
+  });
+  peer.on('connection',conn=>{
+    conn.on('data',d=>{
+      if(d.type==='guest_name'){if(guests[conn.peer])guests[conn.peer].name=d.name;renderGuests();}
+    });
+  });
+}
+function renderGuests(){
+  let list=document.getElementById('guestList');list.innerHTML='';let count=Object.keys(guests).length;document.getElementById('gcount').innerText=count;
+  Object.entries(guests).forEach(([id,g])=>{
+    let div=document.createElement('div');div.className='guest';
+    div.innerHTML=`<div><b>${g.name}</b><br><small>${id.slice(0,12)}</small><br><video id="v_${id}" autoplay playsinline style="height:80px;margin-top:4px"></video></div><div><button class="btn" onclick="toggleMute('${id}')">${g.muted?'🔊 Unmute':'🔇 Mute Guest'}</button><br><button class="btn" onclick="toggleCam('${id}')" style="margin-top:4px">${g.cam?'📷 Off Cam':'📷 On Cam'}</button><br><button class="btn" onclick="kick('${id}')" style="background:#ff0000;color:#fff;margin-top:4px">Kick</button></div>`;
+    list.appendChild(div);
+    setTimeout(()=>{let v=document.getElementById('v_'+id);if(v&&g.stream)v.srcObject=g.stream;},200);
+  });
+}
+window.toggleMute=(id)=>{let g=guests[id];if(!g)return;g.muted=!g.muted;g.call.send?null:''; // send via data
+  let conn=peer.connections[id]?.[0]; if(conn) conn.send?null:''; // not needed
+  // control via data channel
+  let dataConn=Object.values(peer.connections).flat().find(c=>c.peer===id&&c.type==='data'); // simplified
+  // Actually use peer.connect
+  let dc=peer.connect(id); dc.on('open',()=>dc.send({type:g.muted?'mute':'unmute'}));
+  renderGuests();
+};
+window.toggleCam=(id)=>{let g=guests[id];g.cam=!g.cam;let dc=peer.connect(id);dc.on('open',()=>dc.send({type:g.cam?'cam_on':'cam_off'}));renderGuests();};
+window.kick=(id)=>{if(guests[id]){guests[id].call.close();delete guests[id];renderGuests();}};
+
+document.getElementById('muteHost').onclick=function(){
+  let a=hostStream.getAudioTracks()[0];if(a){a.enabled=!a.enabled;this.innerText=a.enabled?'🎤 Mute Me':'🔊 Unmute Me';this.classList.toggle('muted',!a.enabled);}
+};
+document.getElementById('camHost').onclick=function(){
+  let v=hostStream.getVideoTracks()[0];if(v){v.enabled=!v.enabled;this.innerText=v.enabled?'📷 Camera Off':'📷 Camera On';this.classList.toggle('muted',!v.enabled);}
+};
+document.getElementById('goLive').onclick=()=>{
+  localStorage.setItem('ale_live_active','1');localStorage.setItem('ale_room_id',room);isLive=true;alert('🔴 LIVE! Sasa TV (index.html) inaonyesha Studio Live yako na Guests!');
+};
+document.getElementById('endLive').onclick=()=>{
+  localStorage.setItem('ale_live_active','0');isLive=false;alert('Live imeisha - TV itarudi videos auto!');
+};
+
+// GUEST MODE
+(async()=>{
+  let params=new URLSearchParams(location.search);
+  if(params.get('role')==='guest'){
+    let r=params.get('room')||room;let name=prompt('Jina lako kama Guest:')||'Guest';
+    let guestPeer=new Peer('ale-guest-'+Math.floor(Math.random()*99999));
+    let stream=await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    document.getElementById('hostVideo').srcObject=stream;
+    guestPeer.on('open',()=>{
+      let call=guestPeer.call('ale-host-'+r,stream,{metadata:{name:name}});
+      call.on('stream',s=>{
+        let v=document.createElement('video');v.srcObject=s;v.autoplay=true;v.style='width:100%;height:120px;background:#000;border-radius:8px;margin-top:8px';document.body.appendChild(v);
+      });
+      let conn=guestPeer.connect('ale-host-'+r);conn.on('open',()=>conn.send({type:'guest_name',name:name}));
+      conn.on('data',d=>{
+        if(d.type==='mute')stream.getAudioTracks().forEach(t=>t.enabled=false);
+        if(d.type==='unmute')stream.getAudioTracks().forEach(t=>t.enabled=true);
+        if(d.type==='cam_off')stream.getVideoTracks().forEach(t=>t.enabled=false);
+        if(d.type==='cam_on')stream.getVideoTracks().forEach(t=>t.enabled=true);
+      });
+    });
+    document.querySelector('header').innerHTML='<div>📺 GUEST - '+name+' | Room: '+r+'</div><a href="index.html" style="color:#ff6600">TV</a>';
+    document.getElementById('goLive').style.display='none';document.getElementById('endLive').style.display='none';
+  }else{
+    initHost();
+  }
+})();
+</script></body></html>

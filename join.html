@@ -1,0 +1,32 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Join ALE TV KE LIVE</title>
+<script src="https://unpkg.com/peerjs@1.5.3/dist/peerjs.min.js"></script>
+<style>body{background:#070f26;color:#fff;font-family:sans-serif;padding:18px;text-align:center}.card{background:#0e1b3d;border:1px solid #1c2f5e;border-radius:16px;padding:18px;max-width:400px;margin:20px auto} input{width:100%;padding:12px;border-radius:25px;border:1px solid #203464;background:#0a1430;color:#fff;margin-bottom:10px} button{background:#ff6a00;border:0;padding:12px;border-radius:25px;font-weight:900;width:100%;color:#fff;cursor:pointer;margin-top:8px}.vbox{background:#000;border-radius:12px;overflow:hidden;aspect-ratio:16/9;margin-top:12px;position:relative} video{width:100%;height:100%;object-fit:cover}.controls{display:flex;gap:8px;justify-content:center;margin-top:10px}.controls button{width:auto;padding:8px 12px;background:#12224a;border:1px solid #2a3d6a}</style>
+    </head><body><h2 style=color:#ff6a00>ALE TV KE • LIVE</h2><p style=color:#8aa>Umealikwa kwenye Live Studio</p>
+        <div class="card"><input id="name" placeholder="Jina lako"><button onclick="requestJoin()">🙋 Omba Kuingia Live</button><div id="msg" style="margin-top:10px;color:#8aa;font-size:13px"></div>
+            <div class="controls"><button onclick="toggleCam()">🔄 Front/Back</button><button onclick="toggleMic()">🎤 Mute</button></div>
+            <div class="vbox"><video id="localV" autoplay muted playsinline></video></div>
+            <div class="vbox"><video id="remoteV" autoplay playsinline></video></div>
+            </div>
+            <script>
+            let roomId=new URLSearchParams(location.search).get('room'),peer,localStream,conn,facing='user';
+            async function initCam(f){facing=f;if(localStream)localStream.getTracks().forEach(t=>t.stop());localStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:f},audio:true});document.getElementById('localV').srcObject=localStream;}
+            function toggleCam(){initCam(facing==='user'?'environment':'user');}
+            function toggleMic(){let t=localStream.getAudioTracks()[0];t.enabled=!t.enabled;}
+            async function requestJoin(){
+             let n=document.getElementById('name').value||'Guest';
+              if(!localStream) await initCam('user');
+               document.getElementById('msg').innerText='⏳ Inatuma maombi kwa Host...';
+                peer=new Peer('ALEGUEST-'+Math.random().toString(36).substr(2,6));
+                 peer.on('open', ()=>{
+                    conn=peer.connect('ALEHOST-'+roomId);
+                       conn.on('open', ()=>{conn.send({type:'join_request',name:n});});
+                          conn.on('data', d=>{
+                               if(d.type==='approved'){document.getElementById('msg').innerText='✅ Umeapprove!'; let call=peer.call('ALEHOST-'+roomId, localStream); call.on('stream', s=>{document.getElementById('remoteV').srcObject=s;});}
+                                    if(d.type==='rejected'){document.getElementById('msg').innerText='❌ Host amekataa.';}
+                                       });
+                                        });
+                                         peer.on('call', call=>{call.answer(localStream);call.on('stream', s=>{document.getElementById('remoteV').srcObject=s;document.getElementById('msg').innerText='🔴 Uko Live na Host!';});});
+                                         }
+                                         initCam('user');
+                                         </script></body></html>
+                                         
