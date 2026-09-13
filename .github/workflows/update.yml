@@ -1,1 +1,21 @@
-
+name: Auto Update Azam Links
+on:
+  schedule:
+    - cron: '0 */3 * * *'
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - run: pip install requests
+      - run: python azam_fresh.py
+      - run: |
+          git config --global user.name "AleTV Bot"
+          git config --global user.email "bot@aletv.com"
+          git add .
+          git diff --quiet && git diff --staged --quiet || git commit -m "Auto update"
+          git push
