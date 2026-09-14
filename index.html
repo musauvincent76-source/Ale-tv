@@ -1,20 +1,26 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AZAM ALE TV LIVE</title>
-<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}</style>
+<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between;align-items:center}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px;font-size:18px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}.live{background:red;padding:5px 12px;border-radius:20px;font-size:12px}</style>
 </head><body>
-<div id="top"><b>AZAM ALE TV</b><span style="background:red;padding:5px 12px;border-radius:20px;font-size:12px">● LIVE</span></div>
+<div id="top"><b>AZAM ALE TV</b><span class="live">● LIVE</span></div>
 <div id="player">Hakuna video</div>
 <h3 id="now"></h3>
 <div id="list" style="padding:10px"></div>
 <script>
-let vids=[{id:'dQw4w9WgXcQ',title:'Zipporah - Sample',cat:'Burudani'}];
+function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 function render(){
- if(vids.length==0)return;
- play(vids[0].id,vids[0].title);
- let h='';vids.forEach(v=>{h+=`<div class=item onclick="play('${v.id}','${v.title}')"><b>${v.title}</b><br><small>${v.cat}</small></div>`});
+ let vids=getV();
+ if(vids.length==0){
+   document.getElementById('player').innerHTML='<div style=text-align:center;padding:20px>Hakuna video bado<br><small>Ingia /admin.html kuweka</small></div>';
+   document.getElementById('list').innerHTML='';
+   return;
+ }
+ if(!window.done){play(vids[0].id,vids[0].title)}
+ let h=''; vids.forEach(v=>{h+=`<div class="item" onclick="play('${v.id}','${v.title.replace(/'/g,'')}')"><b>${v.title}</b><br><small>${v.cat}</small></div>`});
  document.getElementById('list').innerHTML=h;
 }
-window.play=(id,t)=>{document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder=0 allowfullscreen></iframe>`;document.getElementById('now').innerText=t}
+window.play=(id,t)=>{document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder=0 allowfullscreen></iframe>`;document.getElementById('now').innerText=t;window.done=true}
 render();
+setInterval(render,1000);
 </script></body></html>
