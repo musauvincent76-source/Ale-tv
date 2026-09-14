@@ -1,16 +1,1 @@
-<!DOCTYPE html>
-<html lang="sw">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:white;font-family:Arial}.header{background:#001a4d;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600}.logo{font-weight:900;font-size:20px}.logo span{color:#ff6600}.live{background:red;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:bold}.container{padding:16px}.video-card{background:#1a1a1a;border-radius:12px;overflow:hidden;margin-bottom:16px}.video-card iframe{width:100%;height:220px;border:0}.video-info{padding:12px}.video-title{font-weight:bold}.video-date{font-size:12px;color:#888}.empty{text-align:center;padding:80px 20px;color:#666}.btn{display:block;width:100%;padding:14px;background:linear-gradient(90deg,#ff6600,#ff3300);border:0;border-radius:30px;color:white;font-weight:bold;text-align:center;text-decoration:none;margin-top:20px}</style>
-</head>
-<body>
-<div class="header"><div class="logo">AZAM <span>ALE TV</span></div><div class="live">● LIVE</div></div>
-<div class="container" id="videoContainer"></div>
-<script>
-function getId(u){let m=u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);return m?m[1]:null;}
-function loadVideos(){let v=[];try{v=JSON.parse(localStorage.getItem('aleTvVideos')||'[]');}catch(e){}const c=document.getElementById('videoContainer');if(v.length===0){c.innerHTML=`<div class="empty"><div>📺 Hakuna matangazo</div><div style="font-size:13px;margin-top:6px">Subiri Admin awek e video</div><a class="btn" href="#" onclick="loadVideos();return false;">🔄 Refresh TV</a></div>`;return;}c.innerHTML='';v.slice().reverse().forEach(x=>{let d=document.createElement('div');d.className='video-card';d.innerHTML=`<iframe src="https://www.youtube.com/embed/${x.id}?rel=0" allowfullscreen></iframe><div class="video-info"><div class="video-title">${x.title}</div><div class="video-date">${x.date}</div></div>`;c.appendChild(d);});}
-loadVideos();
-</script>
-</body>
-</html>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;overflow:hidden}#tv{position:relative;width:100vw;height:100vh}#tv iframe{position:absolute;top:0;left:0;width:100%;height:100%;border:0;pointer-events:none}#block{position:absolute;top:0;left:0;width:100%;height:100%;z-index:999;background:transparent}#bar{position:absolute;top:0;left:0;width:100%;height:60px;background:linear-gradient(to bottom,rgba(0,0,0,.9),transparent);z-index:1000;color:#fff;display:flex;align-items:center;padding:0 15px}</style></head><body><div id="tv"><div id="bar"><b style="color:#ff6a00">ALE TV</b>&nbsp;LIVE</div><iframe id="p" allow="autoplay"></iframe><div id="block"></div></div><script>let id=localStorage.getItem('ale_current_video')||'MvtfgPnvq-U';try{let v=JSON.parse(localStorage.getItem('ale_videos')||'[]');if(v[0])id=v[0].id||v[0].youtubeId||id}catch(e){}document.getElementById('p').src='https://www.youtube.com/embed/'+id+'?autoplay=1&controls=0&disablekb=1&fs=0&rel=0';document.addEventListener('contextmenu',e=>e.preventDefault());document.addEventListener('keydown',e=>e.preventDefault());</script></body></html>
