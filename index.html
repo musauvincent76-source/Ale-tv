@@ -1,68 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sw">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AZAM ALE TV</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM ALE TV KE LIVE</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden;height:100vh;width:100vw}
-#top{height:45px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:2px solid #ff6600;position:fixed;top:0;left:0;right:0;z-index:10}
-#top b{font-size:18px;letter-spacing:1px}
-#top b span{color:#ff6600}
-#clock{background:#222;padding:4px 12px;border-radius:15px;font-size:13px;color:#fff;border:1px solid #333}
-#liveBadge{background:#cc0000;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:bold;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
-#videoWrap{position:fixed;top:45px;left:0;right:0;bottom:80px;background:#000;display:flex;align-items:center;justify-content:center}
-#player{width:100%;height:100%}
-#ticker{position:fixed;bottom:40px;left:0;right:0;height:30px;background:#cc0000;display:flex;align-items:center;overflow:hidden;z-index:10}
-#ticker span{white-space:nowrap;animation:scroll 25s linear infinite;font-size:13px;font-weight:bold;padding-left:100%}
-@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#bottomNav{position:fixed;bottom:0;left:0;right:0;height:40px;background:#111;display:flex;align-items:center;justify-content:space-around;border-top:1px solid #333;z-index:10;color:#888}
-#admin{position:fixed;top:0;right:-100%;width:360px;max-width:90vw;height:100%;background:#111;z-index:100;transition:.3s;padding:15px;overflow:auto;border-left:3px solid #ff6600}
-#admin.open{right:0}
-input{width:100%;padding:12px;margin:8px 0;border-radius:6px;background:#222;color:#fff;border:1px solid #444;font-size:14px}
-.btn{width:100%;padding:12px;margin:6px 0;border-radius:6px;border:0;font-weight:bold;cursor:pointer}
-.gold{background:#ff6600;color:#fff}
-.dark{background:#222;color:#fff;border:1px solid #444}
-.item{display:flex;align-items:center;background:#1a1a1a;padding:6px;border-radius:5px;margin:5px 0;border:1px solid #333}
-.item img{width:55px;height:35px;border-radius:3px;margin-right:6px}
-.item.info{flex:1;font-size:11px;overflow:hidden}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Outfit',sans-serif}
+body{background:radial-gradient(ellipse at top,#1a2642 0%,#070a14 60%);color:#fff;min-height:100vh}
+.top{position:sticky;top:0;z-index:20;background:rgba(10,16,36,0.9);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,106,0,0.3);display:flex;justify-content:space-between;padding:12px 16px}
+.logo b{font-size:18px}.logo span{color:#ff6a00;font-size:10px;display:block;letter-spacing:2px}
+.live-badge{background:linear-gradient(135deg,#ff6a00,#ff8a00);padding:8px 14px;border-radius:20px;font-size:11px;font-weight:800}
+.wrap{display:grid;grid-template-columns:280px 1fr;min-height:calc(100vh - 60px)}
+.side{background:rgba(10,16,36,0.95);border-right:1px solid rgba(255,106,0,0.2);padding:20px 14px;display:flex;flex-direction:column;gap:10px}
+.nav{padding:12px 14px;border-radius:12px;display:flex;gap:10px;cursor:pointer;color:#8da2c0;font-size:13px;font-weight:600}
+.nav.active{background:linear-gradient(135deg,#ff6a00,#ff8a00);color:#fff;box-shadow:0 8px 20px rgba(255,106,0,0.3)}
+.main{padding:18px;display:flex;flex-direction:column;gap:16px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.card{background:linear-gradient(145deg,#121a2e,#1a2642);border:1px solid rgba(255,255,255,0.08);border-radius:18px;padding:14px;text-align:center}
+.card b{font-size:24px;display:block}.card span{font-size:10px;color:#8da2c0}
+.playerBox{background:#0f1a33;border-radius:22px;overflow:hidden;border:1px solid rgba(255,106,0,0.2)}
+.videoWrap{aspect-ratio:16/9;background:#000} #player{width:100%;height:100%}
+.form{background:linear-gradient(145deg,#121a2e,#1a2642);border-radius:20px;padding:18px;border:1px solid rgba(255,106,0,0.15)}
+input,select{width:100%;background:rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);color:#fff;padding:14px;border-radius:12px;margin-bottom:10px;font-size:13px;outline:none}
+.btn{width:100%;background:linear-gradient(135deg,#ff6a00,#ff8a00);border:0;color:#fff;padding:14px;border-radius:12px;font-weight:800;cursor:pointer}
+.p-item{background:linear-gradient(145deg,#121a2e,#1a2642);border-left:3px solid #ff6a00;border-radius:14px;padding:10px;display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.p-item.live{border-left-color:#00ff88;box-shadow:0 0 20px rgba(0,255,136,0.15)}
 </style>
 </head>
 <body>
-<div id="top"><b>AZAM <span>ALE TV</span></b><div id="clock">00:00:00</div><div id="liveBadge">● LIVE NOW</div></div>
-<div id="videoWrap"><div id="player"></div></div>
-<div id="ticker"><span>HURUMA - STEPHEN KASOLO Sms skiza 9372621 to 811 (OFFICIAL VIDEO) | AZAM ALE TV - Everyone Watches Together | Developed by Alex Musau - Machakos |</span></div>
-<div id="bottomNav"><span>←</span><span>→</span><span>⌂</span><span>⚽</span><span>🗑️</span><span>☰</span></div>
-
-<div id="admin">
-<h3 style="color:#ff6600;text-align:center">ADMIN - BADILISHA VIDEO</h3>
-<p style="font-size:11px;color:#aaa;margin:8px 0;text-align:center">Weka YouTube link hapa, itabadilika kwa TV zote</p>
-<input id="linkInput" placeholder="https://youtu.be/xxxxx">
-<button class="btn gold" onclick="addVideo()">➕ ADD VIDEO - IBADILI TV</button>
-<div id="status" style="font-size:11px;color:#0f0;text-align:center;margin:6px 0"></div>
-<div id="list"></div>
-<button class="btn dark" onclick="document.getElementById('admin').classList.remove('open')">Funga</button>
-<p style="font-size:9px;color:#555;text-align:center;margin-top:10px">Developed by Alex Musau - Machakos<br>AZAM ALE TV - Samsung A07</p>
+<div class="top"><div class="logo"><b>AZAM</b><span>ALE TV KE LIVE</span></div><div class="live-badge" id="clock">ONA TV</div></div>
+<div class="wrap">
+<div class="side">
+<div class="nav active">📊 Dashboard</div>
+<div class="nav">🎬 Playlist Manager</div>
+<div class="nav">🔴 Studio Live</div>
+<div class="nav" style="color:#ff8a00">💰 TILL 3624692</div>
+<div style="margin-top:auto;background:rgba(0,0,0,0.4);border-radius:14px;padding:12px"><div style="font-size:10px;color:#8da2c0">SYSTEM STATUS</div><div style="font-size:11px">● ONLINE - Azam Style</div><div style="font-size:9px;color:#5a6e8a" id="sysInfo">Fresh install</div></div>
 </div>
-
+<div class="main">
+<div class="stats"><div class="card"><b id="totalV">0</b><span>JUMLA VIDEO</span></div><div class="card"><b>1</b><span>LIVE NOW</span></div><div class="card"><b>TINY</b><span>QUALITY</span></div></div>
+<div class="playerBox"><div class="videoWrap"><div id="player"></div></div><div style="padding:14px;display:flex;justify-content:space-between"><div><b id="nowTitle">Loading...</b><br><small id="nowCat" style="color:#8da2c0">Habari</small></div><div style="background:#00ff88;color:#000;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:800">● LIVE</div></div><div style="background:#cc0000;padding:6px 0;font-size:11px;overflow:hidden;white-space:nowrap"><div id="tickerTxt" style="animation:scroll 30s linear infinite;display:inline-block;padding-left:100%">AZAM ALE TV KE LIVE | TILL 3624692 | Alex Musau - Machakos |</div></div></div>
+<div class="form"><h3 style="color:#ff6a00;font-size:13px;margin-bottom:12px">➕ WEKA VIDEO MPYA - YouTube</h3><input id="vTitle" placeholder="Jina la video"><input id="vLink" placeholder="Weka YouTube link https://youtu.be/..."><select id="vCat"><option>Habari</option><option>Burudani</option><option>Matangazo</option><option>Michezo</option><option>Dini</option></select><button class="btn" onclick="addVideo()">+ WEKA KWENYE PLAYLIST</button></div>
+<div style="display:flex;justify-content:space-between"><b>🎬 Playlist Yangu</b><button onclick="clearAll()" style="background:rgba(255,0,64,0.15);color:#ff5a7a;padding:6px 12px;border-radius:20px;border:1px solid rgba(255,0,64,0.3);font-size:10px">Futa Zote</button></div><div id="plist"></div>
+</div>
+</div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let playlist=JSON.parse(localStorage.getItem('ale_tv_playlist')||'["2dIjeG0d2Xw"]');
-let currentIdx=parseInt(localStorage.getItem('ale_tv_idx')||'0');
-let player;
-let isAdmin=new URLSearchParams(location.search).has('admin');
-setInterval(()=>{let d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString();},1000);
-function extractId(url){url=url.trim();if(url.length==11&&!url.includes('/')&&!url.includes(' '))return url;let m=url.match(/(?:youtu\.be\/|youtube\.com\/.*v=|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
-function save(){localStorage.setItem('ale_tv_playlist',JSON.stringify(playlist));localStorage.setItem('ale_tv_idx',currentIdx.toString());localStorage.setItem('ale_tv_sync',Date.now().toString());document.getElementById('status').textContent="✅ Imehifadhiwa! Fungua TV uone";setTimeout(()=>document.getElementById('status').textContent="",3000);}
-window.addVideo=()=>{let id=extractId(document.getElementById('linkInput').value);if(!id){alert('Link si sahihi!');return;}playlist.push(id);currentIdx=playlist.length-1;save();document.getElementById('linkInput').value='';render();if(player)player.loadVideoById(playlist[currentIdx]);}
-window.playThis=(i)=>{currentIdx=i;save();if(player)player.loadVideoById(playlist[currentIdx]);render();}
-window.deleteThis=(i)=>{if(!confirm('Futa?'))return;playlist.splice(i,1);if(playlist.length==0)playlist=["2dIjeG0d2Xw"];if(currentIdx>=playlist.length)currentIdx=0;save();render();if(player)player.loadVideoById(playlist[currentIdx]);}
-function render(){let c=document.getElementById('list');c.innerHTML='';playlist.forEach((id,i)=>{let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"><div class="info"><b style="${i==currentIdx?'color:#ff6600':''}">${i==currentIdx?'▶️ ':''}${id}</b><br>Video ${i+1}</div><button onclick="playThis(${i})" style="padding:5px 8px;margin:2px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;font-size:11px">Play</button><button onclick="deleteThis(${i})" style="padding:5px 8px;margin:2px;background:#900;color:#fff;border:0;border-radius:3px;font-size:11px">X</button>`;c.appendChild(div);});}
-render();
-window.onYouTubeIframeAPIReady=()=>{player=new YT.Player('player',{videoId:playlist[currentIdx],width:'100%',height:'100%',playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1},events:{onStateChange:(e)=>{if(e.data==0){currentIdx=(currentIdx+1)%playlist.length;localStorage.setItem('ale_tv_idx',currentIdx.toString());player.loadVideoById(playlist[currentIdx]);render();}}}});};
-if(isAdmin){setTimeout(()=>document.getElementById('admin').classList.add('open'),500);}
+let playlist=JSON.parse(localStorage.getItem('azam_futuristic_v2')||'[]');let current=parseInt(localStorage.getItem('azam_current_v2')||'0');let player;let bc=new BroadcastChannel('azam_tv');
+function save(){localStorage.setItem('azam_futuristic_v2',JSON.stringify(playlist));localStorage.setItem('azam_current_v2',current.toString());bc.postMessage({type:'update',playlist,current});updateUI();}
+function getId(url){url=url.trim();if(url.length==11&&!url.includes('/')&&!url.includes(' '))return url;let m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|embed\/|shorts\/))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
+window.addVideo=()=>{let title=document.getElementById('vTitle').value||'Burudani';let id=getId(document.getElementById('vLink').value);let cat=document.getElementById('vCat').value;if(!id){alert('Link si sahihi!');return;}playlist.push({id,title,cat,time:new Date().toLocaleTimeString()});document.getElementById('vTitle').value='';document.getElementById('vLink').value='';current=playlist.length-1;save();if(player)player.loadVideoById(id);}
+window.playIdx=(i)=>{current=i;save();if(player)player.loadVideoById(playlist[i].id);}window.delIdx=(i)=>{if(!confirm('Futa?'))return;playlist.splice(i,1);if(current>=playlist.length)current=0;save();if(playlist.length>0&&player)player.loadVideoById(playlist[current].id);}window.clearAll=()=>{if(!confirm('Futa zote?'))return;playlist=[];current=0;save();}
+function updateUI(){document.getElementById('totalV').textContent=playlist.length;document.getElementById('sysInfo').textContent=playlist.length+' videos - Synced ✅';let box=document.getElementById('plist');box.innerHTML='';playlist.forEach((v,i)=>{let d=document.createElement('div');d.className='p-item'+(i===current?' live':'');d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" style="width:64px;height:40px;border-radius:8px"><div style="flex:1"><b style="font-size:12px">${i===current?'● LIVE ':''}${v.title}</b><br><small style="font-size:10px;color:#8da2c0">${v.cat} • ${v.time}</small></div><div><button onclick="playIdx(${i})" style="background:#00ff88;color:#000;padding:6px 12px;border-radius:20px;border:0;font-weight:800;font-size:10px">LIVE</button> <button onclick="delIdx(${i})" style="background:rgba(255,0,64,0.2);color:#ff4466;padding:6px 10px;border-radius:20px;border:1px solid rgba(255,0,64,0.3)">X</button></div>`;box.appendChild(d);});if(playlist[current]){document.getElementById('nowTitle').textContent=playlist[current].title;document.getElementById('nowCat').textContent=playlist[current].cat;}}
+bc.onmessage=(e)=>{if(e.data.type==='update'){playlist=e.data.playlist;current=e.data.current;updateUI();if(player&&playlist[current])player.loadVideoById(playlist[current].id);}}
+window.onYouTubeIframeAPIReady=()=>{if(playlist.length===0){playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani',time:'NOW'}];save();}player=new YT.Player('player',{videoId:playlist[current]?.id||'2dIjeG0d2Xw',width:'100%',height:'100%',playerVars:{autoplay:1,controls:1,rel:0},events:{onStateChange:(e)=>{if(e.data===0){current=(current+1)%playlist.length;save();player.loadVideoById(playlist[current].id);}}}});updateUI();}
 </script>
+<style>@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}</style>
 </body>
 </html>
