@@ -2,21 +2,51 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif}#top{padding:10px;background:#000;display:flex;justify-content:space-between}iframe{width:100%;height:55vh;border:0}#unmute{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff6a00;color:#fff;padding:15px 20px;border-radius:30px;font-weight:bold;z-index:10;border:0;animation:pulse 1s infinite}@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.1)}}.wrap{position:relative}</style>
+<style>
+body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hidden}
+#top{padding:10px 15px;background:#000;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #ff6a00}
+.logo{font-weight:900;font-size:20px;letter-spacing:1px}
+.logo span:first-child{color:#fff}
+.logo span:last-child{color:#ff6a00;text-shadow:0 0 8px #ff6a00}
+#clock{font-size:13px;background:#1a1a1a;padding:4px 10px;border-radius:15px;border:1px solid #333}
+.wrap{position:relative}
+#player{width:100%;height:52vh;background:#000}
+#unmute{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff6a00;color:#fff;padding:14px 22px;border-radius:30px;font-weight:bold;z-index:10;border:0;animation:pulse 1s infinite;cursor:pointer}
+@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
+.ticker{width:100%;background:#c00;white-space:nowrap;overflow:hidden;padding:8px 0;border-top:2px solid #ff6a00;border-bottom:2px solid #ff6a00}
+.ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite;font-weight:bold;font-size:14px}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+</style>
 </head>
 <body>
-<div id="top"><b>AZAM ALE TV</b><span style="background:red;padding:2px 8px;border-radius:10px;font-size:12px">● LIVE NOW</span></div>
+<div id="top">
+<div class="logo"><span>AZAM</span> <span>ALE TV</span></div>
+<div id="clock">00:00:00</div>
+<div style="background:red;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:bold">● LIVE NOW</div>
+</div>
+
 <div class="wrap">
 <button id="unmute" onclick="unmute()">🔊 GUSA HAPA KUWASHA SAUTI</button>
 <div id="player"></div>
 </div>
+
+<div class="ticker"><span id="tick">🔴 AZAM ALE TV LIVE - Habari Mubashara | Burudani | Matangazo ya Moja kwa Moja | Asante kwa kutazama AZAM ALE TV - Mungu akubariki sana! | </span></div>
+
 <script>
 var tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";document.head.appendChild(tag);
 var player;
-function onYouTubeIframeAPIReady(){player=new YT.Player('player',{videoId:'W6IsAStN2NY',playerVars:{autoplay:1,mute:1,playsinline:1},events:{onStateChange:onState}})}
+function onYouTubeIframeAPIReady(){player=new YT.Player('player',{videoId:'W6IsAStN2NY',playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},events:{onStateChange:onState}})}
 function onState(e){if(e.data==1){document.getElementById('unmute').style.display='block'}}
 function unmute(){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('unmute').style.display='none'}
+
+// Saa
+setInterval(function(){
+var d=new Date();
+document.getElementById('clock').innerText=d.toLocaleTimeString('en-GB');
+},1000);
+
+// Gusa popote uwasha sauti
 document.body.addEventListener('click',function(){if(player&&player.isMuted&&player.isMuted()){unmute()}},{once:true});
 </script>
 </body>
-</html>
+  </html>
