@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AZAM ALE TV LIVE</title>
-<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between;align-items:center}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px;font-size:18px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}.live{background:red;padding:5px 12px;border-radius:20px;font-size:12px}</style>
-</head><body>
-<div id="top"><b>AZAM ALE TV</b><span class="live">● LIVE</span></div>
-<div id="player">Hakuna video</div>
-<h3 id="now"></h3>
-<div id="list" style="padding:10px"></div>
+<title>ALE TV LIVE</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+.top{background:#111;padding:12px;display:flex;justify-content:space-between}
+.live{background:red;padding:4px 12px;border-radius:20px;font-size:12px}
+#player{width:100%;height:56vw;max-height:360px;background:#111}
+#player iframe{width:100%;height:100%;border:0}
+.now{padding:12px;background:#0a0a1a;font-weight:bold}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:10px}
+.card{background:#1a1a2e;border-radius:12px;overflow:hidden}
+.th{height:90px;background:#222;display:flex;align-items:center;justify-content:center;font-size:30px}
+.in{padding:8px;font-size:13px}
+</style></head><body>
+<div class="top"><b>AZAM ALE TV v3</b><span class="live">● LIVE v3</span></div>
+<div id="player"></div>
+<div id="now" class="now">Inapakia...</div>
+<div id="list" class="grid"></div>
+
 <script>
-function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function render(){
- let vids=getV();
- if(vids.length==0){
-   document.getElementById('player').innerHTML='<div style=text-align:center;padding:20px>Hakuna video bado<br><small>Ingia /admin.html kuweka</small></div>';
-   document.getElementById('list').innerHTML='';
-   return;
- }
- if(!window.done){play(vids[0].id,vids[0].title)}
- let h=''; vids.forEach(v=>{h+=`<div class="item" onclick="play('${v.id}','${v.title.replace(/'/g,'')}')"><b>${v.title}</b><br><small>${v.cat}</small></div>`});
- document.getElementById('list').innerHTML=h;
+function getV(){ try{return JSON.parse(localStorage.getItem('ale_videos')||'[]')}catch(e){return []} }
+let defaults=[
+ {id:'L49A0bQkf_I',title:'Zipporah - Worship',cat:'Muziki'},
+ {id:'jNQXAC9IVRw',title:'Me at the zoo',cat:'Burudani'}
+];
+let all = (getV().length>0)? getV() : defaults;
+
+function play(id,t){
+ document.getElementById('player').innerHTML='<iframe src="https://www.youtube.com/embed/'+id+'?autoplay=1" allowfullscreen></iframe>';
+ document.getElementById('now').innerText='▶ '+t;
 }
-window.play=(id,t)=>{document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder=0 allowfullscreen></iframe>`;document.getElementById('now').innerText=t;window.done=true}
-render();
-setInterval(render,1000);
+function draw(){
+ let h='';
+ for(let i=all.length-1;i>=0;i--){
+  let v=all[i];
+  h+='<div class="card" onclick="play(\''+v.id+'\',\''+v.title.replace(/'/g,'')+'\')"><div class="th">▶️</div><div class="in"><b>'+v.title+'</b><br><small>'+v.cat+'</small></div></div>';
+ }
+ document.getElementById('list').innerHTML=h;
+ if(all.length>0) play(all[all.length-1].id, all[all.length-1].title);
+}
+draw();
+setInterval(()=>{ let s=getV(); if(s.length>0 && s.length!=all.length){ all=s; draw(); } },1500);
 </script></body></html>
