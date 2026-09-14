@@ -1,118 +1,32 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<!-- BADILISHA DIV YA playerWrap PEKEE na hii -->
+
+<div id="playerWrap" style="width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;position:relative">
+  <div id="player"></div>
+  <!-- CITIZEN TV STYLE LOWER THIRD -->
+  <div style="position:absolute;bottom:40px;left:0;right:0;display:flex;align-items:flex-end;pointer-events:none">
+    <div style="background:#cc0000;color:#fff;padding:6px 14px;font-weight:900;font-size:11px;letter-spacing:1px">AZAM ALE TV</div>
+    <div style="background:rgba(0,0,0,0.85);color:#fff;padding:6px 12px;flex:1;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" id="nowT">Loading...</div>
+    <div style="background:#ff6a00;color:#000;padding:6px 10px;font-weight:900;font-size:10px">LIVE</div>
+  </div>
+  <!-- SCROLLING TICKER KAMA CITIZEN TV -->
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:28px;display:flex;align-items:center;overflow:hidden">
+    <div style="background:#fff;color:#cc0000;padding:2px 8px;font-weight:900;font-size:10px;margin-left:4px;border-radius:2px;white-space:nowrap">BREAKING</div>
+    <div style="flex:1;overflow:hidden;white-space:nowrap;margin-left:8px">
+      <div id="scrollName" style="display:inline-block;color:#fff;font-weight:700;font-size:12px;animation:scroll 15s linear infinite;white-space:nowrap">
+        AZAM ALE TV KE LIVE - TILL 3624692 - 
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#070a14;color:#fff}
-.top{background:#0a1024;padding:12px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #ff6a00}
-.btnLive{cursor:pointer;background:linear-gradient(135deg,#ff6a00,#ff8a00);padding:10px 18px;border-radius:25px;font-weight:900;font-size:12px;box-shadow:0 0 15px #ff6a00}
-.wrap{display:flex}
-.side{width:250px;background:#0a1024;padding:12px;display:flex;flex-direction:column;gap:8px;min-height:100vh}
-.nav{padding:12px;background:#121a2e;border-radius:8px;cursor:pointer;font-size:13px;font-weight:bold}
-.nav.active{background:#ff6a00;color:#fff}
-.main{flex:1;padding:14px}
-#playerWrap{width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;position:relative}
-#player{width:100%;height:100%}
-.form{background:#121a2e;padding:14px;border-radius:12px;margin-top:12px}
-input,select{width:100%;padding:12px;margin:5px 0;border-radius:8px;background:#000;color:#fff;border:1px solid #333}
-.addBtn{width:100%;padding:14px;background:#ff6a00;color:#fff;border:0;border-radius:10px;font-weight:900;margin-top:8px;cursor:pointer}
-.item{display:flex;gap:8px;align-items:center;background:#121a2e;padding:8px;border-radius:8px;margin:6px 0;border-left:3px solid #ff6a00}
-.item.live{border-left-color:#00ff88}
+@keyframes scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 </style>
-</head>
-<body>
-<div class="top"><div><b>AZAM ALE TV</b><br><small style="color:#ff6a00">KE LIVE</small></div><div class="btnLive" id="onaBtn">▶ ONA TV</div></div>
-<div class="wrap">
-<div class="side">
-<div class="nav active" id="n1">📊 Dashboard</div>
-<div class="nav" id="n2">🎬 Playlist Manager</div>
-<div class="nav" id="n3">🔴 Studio Live (TV Tu)</div>
-<div class="nav" id="n4" style="color:#ff8a00">💰 TILL 3624692</div>
-</div>
-<div class="main">
-<div id="playerWrap"><div id="player"></div></div>
-<div style="padding:10px;display:flex;justify-content:space-between"><b id="nowT">Loading...</b><span style="background:#00ff88;color:#000;padding:4px 10px;border-radius:20px;font-size:10px">LIVE</span></div>
-<div class="form" id="formBox">
-<h3 style="color:#ff6a00;font-size:13px">➕ WEKA VIDEO MPYA</h3>
-<input id="vTitle" placeholder="Jina la video">
-<input id="vLink" placeholder="YouTube link https://youtu.be/xxxx">
-<select id="vCat"><option>Habari</option><option>Burudani</option><option>Matangazo</option><option>Michezo</option></select>
-<button class="addBtn" id="addBtn">+ WEKA KWENYE PLAYLIST</button>
-</div>
-<div style="margin-top:14px;display:flex;justify-content:space-between"><b>Playlist Yangu (<span id="cnt">0</span>)</b><button id="clearBtn" style="background:#ff000033;color:#ff5a7a;border:1px solid #ff000055;padding:5px 10px;border-radius:20px">Futa Zote</button></div>
-<div id="list"></div>
-</div>
-</div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let playlist=JSON.parse(localStorage.getItem('azam')||'[]');
-let cur=parseInt(localStorage.getItem('azam_cur')||'0');
-let player;
-let isTvMode=false;
-
-function save(){localStorage.setItem('azam',JSON.stringify(playlist));localStorage.setItem('azam_cur',cur);render();}
-function getId(u){
- u=(u||'').trim();
- if(!u) return null;
- if(u.length==11 &&!u.includes('/') &&!u.includes('.')) return u;
- let m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|embed\/|shorts\/|watch\?v=))([A-Za-z0-9_-]{11})/);
- return m?m[1]:null;
+// Hii ndio itafanya jina ya mwimbaji iscroll
+function updateScroll(name){
+  document.getElementById('scrollName').textContent = `🔴 LIVE NOW: ${name.toUpperCase()} | TILL 3624692 | AZAM ALE TV KE LIVE | Habari, Burudani, Matangazo LIVE | Developed by Alex Musau | `;
 }
-
-function render(){
- document.getElementById('cnt').textContent=playlist.length;
- let box=document.getElementById('list'); box.innerHTML='';
- playlist.forEach((v,i)=>{
-  let d=document.createElement('div');
-  d.className='item'+(i==cur?' live':'');
-  d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" style="width:60px;height:34px;border-radius:5px"><div style="flex:1"><b style="font-size:12px">${v.title}</b><br><small style="color:#888">${v.cat}</small></div><button onclick="play(${i})" style="background:#00ff88;color:#000;border:0;padding:6px 10px;border-radius:20px;font-weight:800">LIVE</button><button onclick="del(${i})" style="background:#ff000033;color:#ff5a7a;border:0;padding:6px 8px;border-radius:20px;margin-left:4px">X</button>`;
-  box.appendChild(d);
- });
- if(playlist[cur]) document.getElementById('nowT').textContent=playlist[cur].title;
-}
-
-window.play=(i)=>{cur=i;save(); if(player && playlist[i]) player.loadVideoById(playlist[i].id); window.scrollTo(0,0);}
-window.del=(i)=>{if(!confirm('Futa?'))return; playlist.splice(i,1); if(cur>=playlist.length) cur=0; save(); if(playlist[cur]&&player) player.loadVideoById(playlist[cur].id);}
-
-document.getElementById('addBtn').onclick=()=>{
- let t=document.getElementById('vTitle').value||'Burudani';
- let l=document.getElementById('vLink').value;
- let c=document.getElementById('vCat').value;
- let id=getId(l);
- if(!id){alert('Weka link sahihi ya YouTube! Mf: https://youtu.be/abc123abc12');return;}
- playlist.push({id,title:t,cat:c});
- document.getElementById('vTitle').value=''; document.getElementById('vLink').value='';
- cur=playlist.length-1; save();
- if(player) player.loadVideoById(id);
- alert('Imeongezwa! TV inacheza sasa ✅');
-};
-document.getElementById('clearBtn').onclick=()=>{if(confirm('Futa zote?')){playlist=[];cur=0;save();}};
-document.getElementById('onaBtn').onclick=()=>{
- isTvMode=!isTvMode;
- if(isTvMode){
-  document.getElementById('formBox').style.display='none';
-  document.querySelector('.side').style.display='none';
-  document.getElementById('onaBtn').textContent='⬅ RUDI ADMIN';
-  document.getElementById('playerWrap').style.aspectRatio='16/9';
-  window.scrollTo(0,0);
- }else{
-  document.getElementById('formBox').style.display='block';
-  document.querySelector('.side').style.display='flex';
-  document.getElementById('onaBtn').textContent='▶ ONA TV';
- }
-};
-document.getElementById('n1').onclick=()=>{document.getElementById('formBox').style.display='block';document.querySelector('.side').style.display='flex';isTvMode=false;document.getElementById('onaBtn').textContent='▶ ONA TV';}
-document.getElementById('n2').onclick=()=>{document.getElementById('formBox').style.display='block';document.getElementById('playerWrap').scrollIntoView();}
-document.getElementById('n3').onclick=()=>{document.getElementById('onaBtn').click();}
-document.getElementById('n4').onclick=()=>{navigator.clipboard.writeText('3624692');alert('TILL 3624692 copied!');}
-
-function onYouTubeIframeAPIReady(){
- if(playlist.length==0){
-  playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];
-  save();
- }
- player=new YT.Player('player',{
-  videoId:playlist[cur]?.id||
+// Weka hii ndani ya function yako ya save() / render()
+</script>
