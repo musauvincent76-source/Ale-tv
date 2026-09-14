@@ -1,99 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AZAM ALE TV</title>
 <style>
-body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hidden}
-#top{padding:10px 15px;background:#000;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #ff6a00}
-.logo{font-weight:900;font-size:20px;letter-spacing:1px}
-.logo span:first-child{color:#fff}
-.logo span:last-child{color:#ff6a00;text-shadow:0 0 8px #ff6a00}
-#clockTop{font-size:13px;background:#1a1a1a;padding:4px 10px;border-radius:15px;border:1px solid #333}
-.wrap{position:relative}
-#player{width:100%;height:52vh;background:#000}
-#unmute{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff6a00;color:#fff;padding:14px 22px;border-radius:30px;font-weight:bold;z-index:10;border:0;animation:pulse 1s infinite;cursor:pointer}
-@keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
-#videoClock{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.75);padding:3px 10px;border-radius:5px;font-size:13px;font-weight:bold;z-index:5;border:1px solid rgba(255,255,255,0.2)}
-#blockSeek{position:absolute;bottom:0;left:0;width:100%;height:50px;z-index:4;background:transparent}
-.ticker{width:100%;background:#c00;white-space:nowrap;overflow:hidden;padding:8px 0;border-top:2px solid #ff6a00;border-bottom:2px solid #ff6a00}
-.ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite;font-weight:bold;font-size:14px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Arial,sans-serif;overflow:hidden;height:100vh;width:100vw}
+#top{height:45px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:2px solid #ff6600;position:fixed;top:0;left:0;right:0;z-index:10}
+#top b{font-size:18px;letter-spacing:1px}
+#top b span{color:#ff6600}
+#clock{background:#222;padding:4px 12px;border-radius:15px;font-size:13px;color:#fff;border:1px solid #333}
+#liveBadge{background:#cc0000;padding:4px 10px;border-radius:15px;font-size:11px;font-weight:bold;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+#videoWrap{position:fixed;top:45px;left:0;right:0;bottom:80px;background:#000;display:flex;align-items:center;justify-content:center}
+#player{width:100%;height:100%}
+#ticker{position:fixed;bottom:40px;left:0;right:0;height:30px;background:#cc0000;display:flex;align-items:center;overflow:hidden;z-index:10}
+#ticker span{white-space:nowrap;animation:scroll 25s linear infinite;font-size:13px;font-weight:bold;padding-left:100%}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#bottomNav{position:fixed;bottom:0;left:0;right:0;height:40px;background:#111;display:flex;align-items:center;justify-content:space-around;border-top:1px solid #333;z-index:10;color:#888}
+#admin{position:fixed;top:0;right:-100%;width:360px;max-width:90vw;height:100%;background:#111;z-index:100;transition:.3s;padding:15px;overflow:auto;border-left:3px solid #ff6600}
+#admin.open{right:0}
+input{width:100%;padding:12px;margin:8px 0;border-radius:6px;background:#222;color:#fff;border:1px solid #444;font-size:14px}
+.btn{width:100%;padding:12px;margin:6px 0;border-radius:6px;border:0;font-weight:bold;cursor:pointer}
+.gold{background:#ff6600;color:#fff}
+.dark{background:#222;color:#fff;border:1px solid #444}
+.item{display:flex;align-items:center;background:#1a1a1a;padding:6px;border-radius:5px;margin:5px 0;border:1px solid #333}
+.item img{width:55px;height:35px;border-radius:3px;margin-right:6px}
+.item.info{flex:1;font-size:11px;overflow:hidden}
 </style>
 </head>
 <body>
-<div id="top">
-<div class="logo"><span>AZAM</span> <span>ALE TV</span></div>
-<div id="clockTop">00:00:00</div>
-<div style="background:red;padding:3px 10px;border-radius:10px;font-size:11px;font-weight:bold">● LIVE NOW</div>
+<div id="top"><b>AZAM <span>ALE TV</span></b><div id="clock">00:00:00</div><div id="liveBadge">● LIVE NOW</div></div>
+<div id="videoWrap"><div id="player"></div></div>
+<div id="ticker"><span>HURUMA - STEPHEN KASOLO Sms skiza 9372621 to 811 (OFFICIAL VIDEO) | AZAM ALE TV - Everyone Watches Together | Developed by Alex Musau - Machakos |</span></div>
+<div id="bottomNav"><span>←</span><span>→</span><span>⌂</span><span>⚽</span><span>🗑️</span><span>☰</span></div>
+
+<div id="admin">
+<h3 style="color:#ff6600;text-align:center">ADMIN - BADILISHA VIDEO</h3>
+<p style="font-size:11px;color:#aaa;margin:8px 0;text-align:center">Weka YouTube link hapa, itabadilika kwa TV zote</p>
+<input id="linkInput" placeholder="https://youtu.be/xxxxx">
+<button class="btn gold" onclick="addVideo()">➕ ADD VIDEO - IBADILI TV</button>
+<div id="status" style="font-size:11px;color:#0f0;text-align:center;margin:6px 0"></div>
+<div id="list"></div>
+<button class="btn dark" onclick="document.getElementById('admin').classList.remove('open')">Funga</button>
+<p style="font-size:9px;color:#555;text-align:center;margin-top:10px">Developed by Alex Musau - Machakos<br>AZAM ALE TV - Samsung A07</p>
 </div>
 
-<div class="wrap">
-<button id="unmute" onclick="unmute()">🔊 GUSA HAPA KUWASHA SAUTI</button>
-<div id="player"></div>
-<div id="videoClock">00:00:00</div>
-<div id="blockSeek"></div>
-</div>
-
-<div class="ticker"><span id="tick">🔴 AZAM ALE TV - SYNCED LIVE TV </span></div>
-
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-// ===== 4,5,6 PEKEE - HAKUNA KITU KINGINE KIMEGUSWA =====
-var PLAYLIST = ['W6IsAStN2NY','W6IsAStN2NY','W6IsAStN2NY']; // badilisha hapa video zako Admin - video 1,2,3
-var CHANNEL_START = new Date('2026-01-01T00:00:00Z').getTime(); // TV ilianza lini - ndio sync ya watu wote
-var AVG_DURATION = 210; // sec kwa video 1 - itajirekebisha yenyewe baada ya kupata duration halisi
-
-var tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";document.head.appendChild(tag);
-var player, currentIndex=0, lastTime=0;
-
-function getSyncInfo(){
-var elapsed = Math.floor((Date.now() - CHANNEL_START)/1000);
-var totalCycle = PLAYLIST.length * AVG_DURATION;
-var posInCycle = elapsed % totalCycle;
-currentIndex = Math.floor(posInCycle / AVG_DURATION);
-var seekTo = posInCycle % AVG_DURATION;
-return {index: currentIndex, seek: seekTo};
-}
-
-function onYouTubeIframeAPIReady(){
-var sync = getSyncInfo();
-player=new YT.Player('player',{videoId:PLAYLIST[sync.index],playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,controls:0,disablekb:1,fs:0,modestbranding:1,iv_load_policy:3},events:{onReady:function(){onReady(sync.seek)},onStateChange:onState}})}
-function onReady(seekSec){
-setTimeout(function(){
-try{
-var realDur = player.getDuration();
-if(realDur>0) AVG_DURATION = realDur;
-var sync = getSyncInfo();
-player.seekTo(sync.seek, true);
-}catch(e){player.seekTo(seekSec, true);}
-updateTitle();
-},800);
-setInterval(blockSeek, 500);
-}
-function onState(e){
-if(e.data==1){
-document.getElementById('unmute').style.display='block';
-updateTitle();
-lastTime = player.getCurrentTime();
-}
-if(e.data==0){ // 6. IKIISHA INAENDA NEXT
-currentIndex = (currentIndex+1) % PLAYLIST.length;
-player.loadVideoById(PLAYLIST[currentIndex]);
-}
-}
-function unmute(){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('unmute').style.display='none'}
-function updateTitle(){try{var t=player.getVideoData().title;if(t){document.getElementById('tick').innerText="🎵 NOW PLAYING: "+t+" | AZAM ALE TV - WATU WOTE MNAONA KITU KIMOJA | "}}catch(e){}}
-function blockSeek(){
-if(player && player.getCurrentTime){
-var curr=player.getCurrentTime();
-if(Math.abs(curr-lastTime)>3){player.seekTo(lastTime,true);}else{lastTime=curr;}
-}
-}
-setInterval(function(){
-var t=new Date().toLocaleTimeString('en-GB');
-document.getElementById('clockTop').innerText=t;
-document.getElementById('videoClock').innerText=t;
-},1000);
-document.body.addEventListener('click',function(){if(player&&player.isMuted&&player.isMuted()){unmute()}},{once:true});
+let playlist=JSON.parse(localStorage.getItem('ale_tv_playlist')||'["2dIjeG0d2Xw"]');
+let currentIdx=parseInt(localStorage.getItem('ale_tv_idx')||'0');
+let player;
+let isAdmin=new URLSearchParams(location.search).has('admin');
+setInterval(()=>{let d=new Date();document.getElementById('clock').textContent=d.toLocaleTimeString();},1000);
+function extractId(url){url=url.trim();if(url.length==11&&!url.includes('/')&&!url.includes(' '))return url;let m=url.match(/(?:youtu\.be\/|youtube\.com\/.*v=|\/embed\/|\/shorts\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
+function save(){localStorage.setItem('ale_tv_playlist',JSON.stringify(playlist));localStorage.setItem('ale_tv_idx',currentIdx.toString());localStorage.setItem('ale_tv_sync',Date.now().toString());document.getElementById('status').textContent="✅ Imehifadhiwa! Fungua TV uone";setTimeout(()=>document.getElementById('status').textContent="",3000);}
+window.addVideo=()=>{let id=extractId(document.getElementById('linkInput').value);if(!id){alert('Link si sahihi!');return;}playlist.push(id);currentIdx=playlist.length-1;save();document.getElementById('linkInput').value='';render();if(player)player.loadVideoById(playlist[currentIdx]);}
+window.playThis=(i)=>{currentIdx=i;save();if(player)player.loadVideoById(playlist[currentIdx]);render();}
+window.deleteThis=(i)=>{if(!confirm('Futa?'))return;playlist.splice(i,1);if(playlist.length==0)playlist=["2dIjeG0d2Xw"];if(currentIdx>=playlist.length)currentIdx=0;save();render();if(player)player.loadVideoById(playlist[currentIdx]);}
+function render(){let c=document.getElementById('list');c.innerHTML='';playlist.forEach((id,i)=>{let div=document.createElement('div');div.className='item';div.innerHTML=`<img src="https://img.youtube.com/vi/${id}/mqdefault.jpg"><div class="info"><b style="${i==currentIdx?'color:#ff6600':''}">${i==currentIdx?'▶️ ':''}${id}</b><br>Video ${i+1}</div><button onclick="playThis(${i})" style="padding:5px 8px;margin:2px;background:#333;color:#fff;border:1px solid #555;border-radius:3px;font-size:11px">Play</button><button onclick="deleteThis(${i})" style="padding:5px 8px;margin:2px;background:#900;color:#fff;border:0;border-radius:3px;font-size:11px">X</button>`;c.appendChild(div);});}
+render();
+window.onYouTubeIframeAPIReady=()=>{player=new YT.Player('player',{videoId:playlist[currentIdx],width:'100%',height:'100%',playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1},events:{onStateChange:(e)=>{if(e.data==0){currentIdx=(currentIdx+1)%playlist.length;localStorage.setItem('ale_tv_idx',currentIdx.toString());player.loadVideoById(playlist[currentIdx]);render();}}}});};
+if(isAdmin){setTimeout(()=>document.getElementById('admin').classList.add('open'),500);}
 </script>
 </body>
 </html>
