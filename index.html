@@ -9,11 +9,14 @@
 body{background:#060a18;color:#fff}
 #tvWrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
 #player{width:100%;height:100%;border:0}
-.top{position:absolute;top:0;left:0;right:0;height:38px;background:linear-gradient(#000,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 12px;z-index:4}
-.clock{font-weight:900;font-size:12px;color:#00ff88}
-.liveZoom{position:absolute;top:48px;right:12px;z-index:5;background:#ff0000;color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:11px;animation:zoom 1.2s infinite}
-@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
-.mute{position:absolute;left:14px;top:48px;z-index:5;width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.75);border:2px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer}
+.top{position:absolute;top:0;left:0;right:0;height:40px;background:linear-gradient(#000,transparent);display:flex;justify-content:space-between;align-items:center;padding:0 12px;z-index:5}
+.clock{font-weight:900;font-size:13px;color:#00ff88;background:rgba(0,0,0,.6);padding:4px 8px;border-radius:6px}
+.liveZoom{position:absolute;top:50px;right:12px;z-index:5;background:#ff0000;color:#fff;padding:7px 16px;border-radius:22px;font-weight:900;font-size:11px;letter-spacing:1px;animation:zoom 1s infinite;box-shadow:0 0 15px red}
+@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.muteBox{position:absolute;left:12px;top:50px;z-index:5;display:flex;align-items:center;gap:8px}
+.muteBtn{width:46px;height:46px;border-radius:50%;background:#ff6a00;border:2px solid #fff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;animation:pulse 2s infinite}
+.muteLabel{background:rgba(0,0,0,.8);padding:4px 8px;border-radius:10px;font-size:10px;font-weight:800}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,106,0,.7)}70%{box-shadow:0 0 0 10px rgba(255,106,0,0)}100%{box-shadow:0 0 0 0 rgba(255,106,0,0)}}
 .lower{position:absolute;bottom:32px;left:0;right:0;display:flex;z-index:4}
 .red{background:#cc0000;padding:7px 12px;font-weight:900;font-size:11px}
 .black{background:rgba(0,0,0,.9);padding:7px 12px;flex:1;font-weight:800;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -21,124 +24,132 @@ body{background:#060a18;color:#fff}
 .ticker{position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:32px;display:flex;align-items:center;z-index:4}
 .break{background:#fff;color:#cc0000;padding:2px 8px;font-weight:900;font-size:9px;margin-left:6px;border-radius:3px}
 .scroll{flex:1;overflow:hidden;white-space:nowrap;margin-left:10px}
-.scroll span{display:inline-block;color:#fff;font-weight:800;font-size:12px;animation:scr 18s linear infinite}
+.scroll span{display:inline-block;color:#fff;font-weight:800;font-size:12px;animation:scr 20s linear infinite}
 @keyframes scr{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.dashboard{display:none;padding:12px;max-width:800px;margin:auto}
-body.isAdmin.dashboard{display:block}
-body.isAdmin #tvWrap{height:auto;max-height:52vh}
-.card{background:#121a2e;padding:14px;border-radius:14px;margin-top:12px;border:1px solid #1e2a4a}
+/* ADMIN - inaonekana tu ukiweka?admin=1 */
+.admin{display:none;padding:12px;max-width:800px;margin:auto}
+body.isAdmin.admin{display:block}
+.card{background:#121a2e;padding:14px;border-radius:14px;margin-top:10px;border:1px solid #1e2a4a}
 input,select{width:100%;padding:13px;margin:6px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333}
 .btn{width:100%;padding:14px;border-radius:10px;border:0;font-weight:900;cursor:pointer;margin-top:6px}
 .add{background:#ff6a00;color:#fff}
-.stop{background:#222;color:#fff;border:1px solid #444}
 .item{display:flex;gap:10px;background:#0d1429;padding:10px;border-radius:10px;margin:8px 0;border-left:4px solid #ff6a00;align-items:center}
 .item img{width:64px;height:36px;border-radius:6px}
-.act{display:flex;gap:6px}
-.act button{padding:7px 11px;border-radius:20px;border:0;font-weight:800;font-size:11px;cursor:pointer}
+.act{display:flex;gap:5px}
+.act button{padding:8px 12px;border-radius:20px;border:0;font-weight:800;font-size:11px;cursor:pointer}
+.play{background:#00ff88;color:#000}
+.stop{background:#333;color:#fff}
+.del{background:#ff003322;color:#ff5a7a}
 </style>
 </head>
 <body id="body">
 
 <div id="tvWrap">
-<div class="top"><div><b>AZAM ALE TV</b> <span style="color:#ff6a00">KE</span> <small style="color:#888">TILL 3624692</small></div><div class="clock" id="clock">--:--:--</div></div>
+<div class="top"><div><b>AZAM ALE TV</b> <span style="color:#ff6a00">KE</span> <small style="color:#aaa">TILL 3624692</small></div><div class="clock" id="clock">00:00:00</div></div>
 <div class="liveZoom"><i class="fa-solid fa-circle" style="font-size:7px"></i> LIVE</div>
-<div class="mute" id="muteBtn"><i class="fa-solid fa-volume-xmark"></i></div>
+<div class="muteBox"><div class="muteBtn" id="muteBtn"><i class="fa-solid fa-volume-xmark" id="muteIcon"></i></div><div class="muteLabel" id="muteLabel">BONYEZA KUWASHA SAUTI 🔊</div></div>
 <div id="player"></div>
-<div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowTitle">AZAM ALE TV KE LIVE</div><div class="liveB">● LIVE</div></div>
-<div class="ticker"><div class="break">BREAKING</div><div class="scroll"><span id="scrollTxt">AZAM ALE TV KE LIVE | TILL 3624692 | KARIBU |</span></div></div>
+<div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowTitle">Inapakia...</div><div class="liveB">● LIVE</div></div>
+<div class="ticker"><div class="break">BREAKING</div><div class="scroll"><span id="scrollTxt">AZAM ALE TV KE LIVE | TILL 3624692 | </span></div></div>
 </div>
 
-<div class="dashboard">
-<div style="display:flex;justify-content:space-between;font-size:11px;color:#888;margin-top:6px"><span id="status">🌍 SYNC: Watu wote wanaona kitu kimoja</span><span id="cnt">0 videos</span></div>
+<div class="admin">
+<div style="display:flex;justify-content:space-between;font-size:11px;color:#888"><span id="syncInfo">🌍 SYNC: Kila mtu anaona kitu kimoja</span><span id="cnt">0 videos</span></div>
 <div class="card">
-<h3 style="color:#ff6a00;font-size:14px"><i class="fa-solid fa-sliders"></i> ADMIN DASHBOARD - Imeunganishwa na TV</h3>
-<p style="font-size:11px;color:#888">Weka link tu, jina litajiauto kwa TV ikiscroll</p>
-<input id="vLink" placeholder="Weka YouTube link (live au normal) https://youtu.be/...">
+<h3 style="color:#ff6a00;font-size:14px">ADMIN DASHBOARD - Imeunganishwa na TV</h3>
+<p style="font-size:11px;color:#888">Weka YouTube link tu (live pia), jina litajiauto na kiscroll kwa TV</p>
+<input id="vLink" placeholder="Weka YouTube link hapa - https://youtu.be/xxxx au live link">
 <select id="vCat"><option>Burudani</option><option>Habari</option><option>Matangazo</option><option>Michezo</option><option>Dini</option></select>
-<button class="btn add" id="addBtn">+ WEKA KWENYE TV - Watu wote wataona</button>
-<button class="btn stop" id="stopBtn"><i class="fa-solid fa-pause"></i> STOP / PLAY TV</button>
-<div id="log" style="background:#000;padding:8px;border-radius:8px;margin-top:8px;font-size:11px;color:#00ff88">✅ Imeunganishwa tayari</div>
+<button class="btn add" id="addBtn">+ WEKA KWENYE TV</button>
+<div id="log" style="background:#000;padding:8px;border-radius:8px;margin-top:8px;font-size:11px;color:#00ff88">✅ Tayari</div>
 </div>
-<div id="list" style="margin-top:12px"></div>
+<div id="list"></div>
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 const KV_URL = "https://kvdb.io/G7qV3x9AzamAleTV2026/state";
-let playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];
-let cur=0,startTime=Date.now(),isPlaying=true;
-let player,isMuted=true;
-const isAdmin = location.search.includes('admin=1') || location.hash.includes('admin');
+let playlist = JSON.parse(localStorage.getItem('azam_final_pl')||'[{"id":"2dIjeG0d2Xw","title":"HURUMA - STEPHEN KASOLO","cat":"Burudani"}]');
+let cur = parseInt(localStorage.getItem('azam_final_cur')||'0');
+let startTime = parseInt(localStorage.getItem('azam_final_time')||''+Date.now());
+let isPlaying = true;
+let player, isMuted = true;
+const isAdmin = location.search.includes('admin=1');
 if(isAdmin) document.body.classList.add('isAdmin');
 
 function getId(u){u=(u||'').trim();if(!u)return null;if(u.length==11&&!u.includes(' '))return u;let m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|embed\/|shorts\/|live\/|watch\?v=))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
-async function fetchTitle(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let j=await r.json();return j.title;}catch(e){return 'Burudani Mpya';}}
+async function fetchTitle(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let j=await r.json();return j.title;}catch(e){return 'Burudani - AZAM TV';}}
 
-window.onYouTubeIframeAPIReady=function(){
-  player=new YT.Player('player',{videoId:playlist[cur].id,playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1},events:{onReady:(e)=>{e.target.mute();seekSync();if(isPlaying)e.target.playVideo();},onStateChange:(e)=>{if(e.data==0){cur=(cur+1)%playlist.length;startTime=Date.now();push();seekSync();if(player)player.loadVideoById(playlist[cur].id);}}}});
-}
-function seekSync(){
-  if(!playlist[cur]) return;
-  document.getElementById('nowTitle').textContent=playlist[cur].title;
-  document.getElementById('scrollTxt').textContent=`🔴 LIVE: ${playlist[cur].title.toUpperCase()} | ${playlist[cur].cat} | TILL 3624692 | ${new Date().toLocaleTimeString()} | AZAM ALE TV KE LIVE | `;
-  if(!player) return;
-  let elapsed=Math.floor((Date.now()-startTime)/1000);
-  if(elapsed>3 && elapsed<10000){try{player.seekTo(elapsed,true);}catch(e){}}
-}
-async function push(){
+function saveLocal(){localStorage.setItem('azam_final_pl',JSON.stringify(playlist));localStorage.setItem('azam_final_cur',cur);localStorage.setItem('azam_final_time',startTime);}
+async function pushGlobal(){
+  saveLocal();
   let state={playlist,cur,startTime,isPlaying};
-  localStorage.setItem('azamtv_state',JSON.stringify(state));
-  try{await fetch(KV_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state)});}catch(e){}
+  try{await fetch(KV_URL,{method:'POST',body:JSON.stringify(state)});}catch(e){}
   render();
 }
-async function pull(){
+async function pullGlobal(){
   try{let r=await fetch(KV_URL);if(!r.ok)return;let j=await r.json();if(!j||!j.playlist)return;
-    if(JSON.stringify(j.playlist)!==JSON.stringify(playlist)||j.cur!==cur||j.startTime!==startTime){
+    if(j.cur!==cur || j.startTime!==startTime || JSON.stringify(j.playlist)!==JSON.stringify(playlist)){
       playlist=j.playlist;cur=j.cur;startTime=j.startTime;isPlaying=j.isPlaying;
+      saveLocal();
       if(player&&playlist[cur]){
-        let currentId=player.getVideoData?player.getVideoData().video_id:null;
-        if(currentId!==playlist[cur].id) player.loadVideoById(playlist[cur].id);
-        seekSync();
-        if(isPlaying) player.playVideo(); else player.pauseVideo();
+        if(player.getVideoData&&player.getVideoData().video_id!==playlist[cur].id) player.loadVideoById(playlist[cur].id);
+        doSeek();
+        isPlaying?player.playVideo():player.pauseVideo();
       }
       render();
     }
   }catch(e){}
 }
+function doSeek(){
+  if(!playlist[cur])return;
+  document.getElementById('nowTitle').textContent=playlist[cur].title;
+  document.getElementById('scrollTxt').textContent=`🔴 LIVE NOW: ${playlist[cur].title.toUpperCase()} | ${playlist[cur].cat} | TILL 3624692 | AZAM ALE TV KE LIVE | ${new Date().toLocaleTimeString()} | `;
+  if(!player)return;
+  let elapsed=Math.floor((Date.now()-startTime)/1000);
+  if(elapsed>3){try{player.seekTo(elapsed,true);}catch(e){}}
+}
 function render(){
-  if(!isAdmin) return;
+  if(!isAdmin)return;
   document.getElementById('cnt').textContent=playlist.length+' videos';
   let box=document.getElementById('list');box.innerHTML='';
   playlist.forEach((v,i)=>{
     let d=document.createElement('div');d.className='item';if(i==cur)d.style.borderLeftColor='#00ff88';
-    d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"><div style="flex:1"><b style="font-size:12px">${i==cur?'▶ '+v.title:v.title}</b><br><small style="color:#888">${v.cat}</small></div><div class="act"><button style="background:#00ff88;color:#000" onclick="playIdx(${i})">PLAY</button><button style="background:#333;color:#fff" onclick="pauseIdx()">STOP</button><button style="background:#ff003322;color:#ff5a7a" onclick="delIdx(${i})">X</button></div>`;
+    d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"><div style="flex:1"><b style="font-size:12px">${i==cur?'▶ '+v.title:v.title}</b><br><small style="color:#888">${v.cat}</small></div><div class="act"><button class="play" onclick="playIdx(${i})">PLAY</button><button class="stop" onclick="stopIdx()">STOP</button><button class="del" onclick="delIdx(${i})">DELETE</button></div>`;
     box.appendChild(d);
   });
 }
-window.playIdx=i=>{cur=i;startTime=Date.now();isPlaying=true;push();if(player)player.loadVideoById(playlist[cur].id);};
-window.pauseIdx=()=>{isPlaying=!isPlaying;push();if(player){isPlaying?player.playVideo():player.pauseVideo();}};
-window.delIdx=i=>{if(!confirm('Futa?'))return;playlist.splice(i,1);if(cur>=playlist.length)cur=0;startTime=Date.now();push();};
+window.playIdx=i=>{cur=i;startTime=Date.now();isPlaying=true;pushGlobal();if(player)player.loadVideoById(playlist[cur].id);};
+window.stopIdx=()=>{isPlaying=!isPlaying;pushGlobal();if(player){isPlaying?player.playVideo():player.pauseVideo();}};
+window.delIdx=i=>{if(!confirm('Futa hii video?'))return;playlist.splice(i,1);if(cur>=playlist.length)cur=0;startTime=Date.now();pushGlobal();};
 
-document.getElementById('addBtn')?.addEventListener('click',async()=>{
-  let link=document.getElementById('vLink').value;let id=getId(link);if(!id){alert('Link si sahihi');return;}
-  document.getElementById('log').textContent='⏳ Nachukua jina...';
-  let title=await fetchTitle(id);let cat=document.getElementById('vCat').value;
+window.onYouTubeIframeAPIReady=function(){
+  player=new YT.Player('player',{videoId:playlist[cur].id,playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,enablejsapi:1},events:{
+    onReady:(e)=>{e.target.mute();doSeek();if(isPlaying)e.target.playVideo();},
+    onStateChange:(e)=>{if(e.data==0){cur=(cur+1)%playlist.length;startTime=Date.now();pushGlobal();if(player)player.loadVideoById(playlist[cur].id);}}
+  }});
+}
+
+document.getElementById('addBtn').onclick=async()=>{
+  let link=document.getElementById('vLink').value;let id=getId(link);
+  if(!id){alert('Weka link sahihi ya YouTube');return;}
+  document.getElementById('log').textContent='⏳ Nachukua jina la mziki...';
+  let title=await fetchTitle(id);
+  let cat=document.getElementById('vCat').value;
   playlist.push({id,title,cat});cur=playlist.length-1;startTime=Date.now();isPlaying=true;
-  document.getElementById('vLink').value='';await push();
-  document.getElementById('log').textContent='✅ "'+title+'" LIVE kwa wote!';
+  document.getElementById('vLink').value='';
+  await pushGlobal();
+  document.getElementById('log').textContent='✅ "'+title+'" - Sasa LIVE kwa wote dunia!';
   if(player){player.loadVideoById(id);player.playVideo();}
-});
-document.getElementById('stopBtn')?.addEventListener('click',()=>{isPlaying=!isPlaying;push();if(player){isPlaying?player.playVideo():player.pauseVideo();}});
+};
 document.getElementById('muteBtn').onclick=function(){
   if(!player)return;
-  if(isMuted){player.unMute();player.setVolume(100);this.innerHTML='<i class="fa-solid fa-volume-high"></i>';this.style.background='#ff6a00';isMuted=false;}
-  else{player.mute();this.innerHTML='<i class="fa-solid fa-volume-xmark"></i>';this.style.background='rgba(0,0,0,.75)';isMuted=true;}
-}
+  if(isMuted){player.unMute();player.setVolume(100);document.getElementById('muteIcon').className='fa-solid fa-volume-high';document.getElementById('muteLabel').textContent='SAUTI IMEWASHWA 🔊';this.style.background='#00ff88';this.style.color='#000';isMuted=false;}
+  else{player.mute();document.getElementById('muteIcon').className='fa-solid fa-volume-xmark';document.getElementById('muteLabel').textContent='BONYEZA KUWASHA SAUTI 🔊';this.style.background='#ff6a00';this.style.color='#fff';isMuted=true;}
+};
 setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString();},1000);
-setInterval(pull,3000);
-pull();
-let local=JSON.parse(localStorage.getItem('azamtv_state')||'null');if(local&&local.playlist){playlist=local.playlist;cur=local.cur;startTime=local.startTime;isPlaying=local.isPlaying;}
-render();seekSync();
+setInterval(pullGlobal,3500);
+pullGlobal();render();doSeek();
 </script>
 </body>
-                                                                           </html>
+</html>
