@@ -1,58 +1,100 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AZAM ALE TV KE LIVE</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;color:#fff;overflow:hidden}
-#tv{width:100vw;height:100vh;position:relative;background:#000}
+body{background:#070a14;color:#fff}
+.top{background:#0a1024;padding:10px;display:flex;justify-content:space-between;border-bottom:2px solid #ff6a00}
+#tvWrap{width:100%;height:52vh;background:#000;position:relative;overflow:hidden}
 #player{width:100%;height:100%;border:0}
-.lower{position:absolute;bottom:32px;left:0;right:0;display:flex;z-index:2}
-.red{background:#cc0000;color:#fff;padding:8px 14px;font-weight:900;font-size:12px}
-.black{background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;flex:1;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.live{background:#ff6a00;color:#000;padding:8px 12px;font-weight:900;font-size:11px}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:32px;display:flex;align-items:center;overflow:hidden;z-index:2}
-.break{background:#fff;color:#cc0000;padding:3px 8px;font-weight:900;font-size:10px;margin-left:6px;border-radius:2px}
-.scroll{flex:1;overflow:hidden;white-space:nowrap;margin-left:10px}
-.scroll span{display:inline-block;color:#fff;font-weight:700;font-size:13px;animation:scr 18s linear infinite}
+.lower{position:absolute;bottom:30px;left:0;right:0;display:flex;z-index:2}
+.red{background:#cc0000;color:#fff;padding:6px 10px;font-weight:900;font-size:11px}
+.black{background:rgba(0,0,0,0.85);color:#fff;padding:6px 10px;flex:1;font-weight:700;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{background:#ff6a00;color:#000;padding:6px 10px;font-weight:900;font-size:10px}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:28px;display:flex;align-items:center;overflow:hidden;z-index:2}
+.break{background:#fff;color:#cc0000;padding:2px 6px;font-weight:900;font-size:9px;margin-left:5px;border-radius:2px}
+.scroll{flex:1;overflow:hidden;white-space:nowrap;margin-left:8px}
+.scroll span{display:inline-block;color:#fff;font-weight:700;font-size:12px;animation:scr 15s linear infinite}
 @keyframes scr{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.form{background:#121a2e;padding:12px;border-radius:10px;margin:10px}
+input,select{width:100%;padding:11px;margin:5px 0;border-radius:8px;background:#000;color:#fff;border:1px solid #333}
+.btn{width:100%;padding:12px;background:#ff6a00;color:#fff;border:0;border-radius:8px;font-weight:900;margin-top:6px}
+.item{display:flex;gap:8px;background:#121a2e;padding:8px;border-radius:8px;margin:6px 0;border-left:3px solid #ff6a00}
+.adminOnly{display:block}
+.tvOnly.adminOnly{display:none}
+.tvOnly #tvWrap{height:100vh}
 </style>
 </head>
-<body>
-<div id="tv">
-<iframe id="player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
-<div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowTitle">Loading...</div><div class="live">● LIVE</div></div>
+<body id="body">
+<div class="top"><div><b>AZAM ALE TV</b> <small style="color:#ff6a00">KE LIVE</small></div><div style="background:#ff6a00;padding:6px 12px;border-radius:20px;font-weight:900;font-size:10px">● LIVE</div></div>
+
+<div id="tvWrap">
+<iframe id="player" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+<div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowT">Loading...</div><div class="live">● LIVE</div></div>
 <div class="ticker"><div class="break">BREAKING</div><div class="scroll"><span id="scrollTxt">AZAM ALE TV KE LIVE | TILL 3624692 |</span></div></div>
 </div>
+
+<div class="adminOnly">
+<div style="padding:8px;display:flex;justify-content:space-between;font-size:12px"><b id="nowT2">Loading...</b><span id="cnt">0</span></div>
+<div class="form">
+<input id="vTitle" placeholder="Jina la mwimbaji">
+<input id="vLink" placeholder="YouTube link">
+<select id="vCat"><option>Burudani</option><option>Habari</option><option>Matangazo</option></select>
+<button class="btn" id="addBtn">+ WEKA VIDEO - ITACHEZA TV PAPO HAPO</button>
+</div>
+<div id="list" style="padding:0 10px"></div>
+</div>
+
 <script>
-let playlist = JSON.parse(localStorage.getItem('azam_v3')||'[]');
-let cur = parseInt(localStorage.getItem('azam_cur3')||'0');
+let playlist=JSON.parse(localStorage.getItem('azam_v3')||'[]');
+let cur=parseInt(localStorage.getItem('azam_cur3')||'0');
+let getId=u=>{u=(u||'').trim();if(!u)return null;if(u.length==11&&!u.includes('/')&&!u.includes(' '))return u;let m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|embed\/|shorts\/|watch\?v=))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
 
-function playVideo(){
-if(playlist.length==0){
-playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];
+function playNow(){
+if(playlist.length==0){playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];localStorage.setItem('azam_v3',JSON.stringify(playlist));}
+let v=playlist[cur];if(!v)return;
+document.getElementById('player').src=`https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1&enablejsapi=1`;
+document.getElementById('nowT').textContent=v.title;
+let t2=document.getElementById('nowT2');if(t2)t2.textContent=v.title;
+document.getElementById('scrollTxt').textContent=`🔴 ${v.title.toUpperCase()} | ${v.cat} | TILL 3624692 | AZAM ALE TV KE LIVE | `;
 }
-let v = playlist[cur];
-if(!v) return;
-document.getElementById('player').src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1`;
-document.getElementById('nowTitle').textContent = v.title;
-document.getElementById('scrollTxt').textContent = `🔴 LIVE: ${v.title.toUpperCase()} | ${v.cat} | TILL 3624692 | AZAM ALE TV KE LIVE | `;
+
+function save(){localStorage.setItem('azam_v3',JSON.stringify(playlist));localStorage.setItem('azam_cur3',cur);render();playNow();}
+function render(){
+let c=document.getElementById('cnt');if(c)c.textContent=playlist.length+' videos';
+let box=document.getElementById('list');if(!box)return;box.innerHTML='';
+playlist.forEach((v,i)=>{
+let d=document.createElement('div');d.className='item';
+d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" style="width:50px;height:30px;border-radius:4px"><div style="flex:1"><b style="font-size:11px">${v.title}</b><br><small style="color:#888;font-size:10px">${v.cat}</small></div><button onclick="playIdx(${i})" style="background:#00ff88;color:#000;border:0;padding:5px 10px;border-radius:20px;font-weight:800;font-size:10px">PLAY</button><button onclick="delIdx(${i})" style="background:#ff000033;color:#ff5a7a;border:0;padding:5px 8px;border-radius:20px;margin-left:4px">X</button>`;
+box.appendChild(d);
+});
+}
+window.playIdx=i=>{cur=i;save();}
+window.delIdx=i=>{if(!confirm('Futa?'))return;playlist.splice(i,1);if(cur>=playlist.length)cur=0;save();}
+
+document.getElementById('addBtn').onclick=()=>{
+let t=document.getElementById('vTitle').value||'Burudani';
+let l=document.getElementById('vLink').value;
+let cat=document.getElementById('vCat').value;
+let id=getId(l);
+if(!id){alert('Link si sahihi! Weka https://youtu.be/XXXX');return;}
+playlist.push({id,title:t,cat:cat});
+document.getElementById('vTitle').value='';document.getElementById('vLink').value='';
+cur=playlist.length-1;
+save();
+};
+
+// TV MODE: Kama ni mgeni (ale-tv.vercel.app) - ficha admin
+if(!location.search.includes('admin')){
+document.getElementById('body').classList.add('tvOnly');
+}else{
+document.getElementById('body').classList.remove('tvOnly');
 }
 
-playVideo();
-
-// HII NDIO INAFANYA VIDEO IFIKE - INA-CHECK KILA 2 SECONDS KAMA UMEWEKA MPYA
-setInterval(()=>{
-let p = JSON.parse(localStorage.getItem('azam_v3')||'[]');
-let c = parseInt(localStorage.getItem('azam_cur3')||'0');
-if(JSON.stringify(p)!==JSON.stringify(playlist) || c!==cur){
-playlist=p;cur=c;playVideo();
-}
-},2000);
-
-// Auto next video after 5 min (YouTube inaisha)
-setTimeout(()=>{if(playlist.length>0){cur=(cur+1)%playlist.length;localStorage.setItem('azam_cur3',cur);playVideo();}}, 300000);
+render();playNow();
 </script>
 </body>
-                                                       </html>
+</html>
