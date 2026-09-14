@@ -1,80 +1,20 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ADMIN - AZAM ALE TV</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#060a18;color:#fff}
-#tvWrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
-#player{width:100%;height:100%;border:0}
-.liveZoom{position:absolute;top:10px;right:10px;z-index:5;background:#ff0000;color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:11px;animation:zoom 1s infinite}
-@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
-.top{position:absolute;top:0;left:0;right:0;height:32px;background:linear-gradient(#000,transparent);display:flex;justify-content:space-between;padding:0 10px;align-items:center;z-index:4;font-size:12px}
-.clock{color:#00ff88;font-weight:900}
-.lower{position:absolute;bottom:28px;left:0;right:0;display:flex;z-index:4;font-size:11px}
-.red{background:#cc0000;padding:5px 10px;font-weight:900}
-.black{background:rgba(0,0,0,.9);padding:5px 10px;flex:1;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:26px;display:flex;align-items:center;z-index:4}
-.scroll{flex:1;overflow:hidden;white-space:nowrap;margin-left:8px}
-.scroll span{display:inline-block;color:#fff;font-size:11px;font-weight:700;animation:scr 18s linear infinite}
-@keyframes scr{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.card{background:#121a2e;padding:12px;border-radius:12px;margin:10px;border:1px solid #1e2a4a}
-input,select{width:100%;padding:12px;margin:5px 0;border-radius:10px;background:#000;color:#fff;border:1px solid #333}
-.btn{width:100%;padding:13px;border-radius:10px;border:0;font-weight:900;margin-top:6px;cursor:pointer}
-.add{background:#ff6a00;color:#fff}
-.item{display:flex;gap:8px;background:#0d1429;padding:10px;border-radius:10px;margin:6px 0;border-left:4px solid #ff6a00;align-items:center}
-.item img{width:60px;height:34px;border-radius:6px}
-.act{display:flex;gap:5px}
-.act button{padding:8px 11px;border-radius:20px;border:0;font-weight:800;font-size:11px;cursor:pointer}
-.play{background:#00ff88;color:#000}
-.stop{background:#444;color:#fff}
-.del{background:#ff003322;color:#ff5a7a}
-</style>
-</head>
-<body>
-<div id="tvWrap">
-<div class="top"><div><b>AZAM ALE TV</b> <span style="color:#ff6a00">ADMIN</span></div><div class="clock" id="clock">00:00:00</div></div>
-<div class="liveZoom">● LIVE</div>
-<div id="player"></div>
-<div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowTitle">Loading...</div></div>
-<div class="ticker"><div class="scroll"><span id="scrollTxt">AZAM ALE TV | TILL 3624692 | </span></div></div>
-</div>
-
-<div class="card">
-<h3 style="color:#ff6a00">ADMIN DASHBOARD - Imeunganishwa</h3>
-<p style="font-size:11px;color:#888">Weka link tu, jina litajiauto na kiscroll kwa TV</p>
-<input id="vLink" placeholder="Weka YouTube link (live pia) https://youtu.be/...">
-<select id="vCat"><option>Burudani</option><option>Habari</option><option>Matangazo</option><option>Michezo</option><option>Dini</option></select>
-<button class="btn add" id="addBtn">+ WEKA VIDEO - Watu wote wataona</button>
-<div id="log" style="background:#000;padding:8px;border-radius:8px;margin-top:8px;font-size:11px;color:#00ff88">✅ Tayari - Imeunganishwa na TV</div>
-<div style="text-align:center;margin-top:8px"><a href="/" style="color:#ff6a00;font-size:12px">▶ Fungua TV ya watazamaji</a></div>
-</div>
-<div id="list" style="padding:0 10px"></div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM ALE TV LIVE</title>
+<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}</style>
+</head><body>
+<div id="top"><b>AZAM ALE TV</b><span style="background:red;padding:5px 12px;border-radius:20px;font-size:12px">● LIVE</span></div>
+<div id="player">Hakuna video</div>
+<h3 id="now"></h3>
+<div id="list" style="padding:10px"></div>
 <script>
-const KV_URL="https://kvdb.io/G7qV3x9AzamAleTV2026/state";
-let playlist=JSON.parse(localStorage.getItem('azam_pl')||'[{"id":"2dIjeG0d2Xw","title":"HURUMA - STEPHEN KASOLO","cat":"Burudani"}]'),cur=parseInt(localStorage.getItem('azam_cur')||'0'),startTime=parseInt(localStorage.getItem('azam_time')||''+Date.now()),isPlaying=true,player;
-function getId(u){u=(u||'').trim();if(!u)return null;if(u.length==11&&!u.includes(' '))return u;let m=u.match(/(?:youtu\.be\/|youtube\.com\/(?:.*v=|embed\/|shorts\/|live\/|watch\?v=))([A-Za-z0-9_-]{11})/);return m?m[1]:null;}
-async function fetchTitle(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let j=await r.json();return j.title;}catch(e){return 'Burudani Mpya';}}
-function saveLocal(){localStorage.setItem('azam_pl',JSON.stringify(playlist));localStorage.setItem('azam_cur',cur);localStorage.setItem('azam_time',startTime);}
-async function push(){saveLocal();let s={playlist,cur,startTime,isPlaying};try{await fetch(KV_URL,{method:'POST',body:JSON.stringify(s)});document.getElementById('log').textContent='🌍 Imewekwa - watu wote wanaona sasa!';}catch(e){}render();doSeek();}
-function doSeek(){if(!playlist[cur])return;document.getElementById('nowTitle').textContent=playlist[cur].title;document.getElementById('scrollTxt').textContent=`🔴 LIVE: ${playlist[cur].title.toUpperCase()} | ${playlist[cur].cat} | TILL 3624692 | ${new Date().toLocaleTimeString()} | `;if(player){let e=Math.floor((Date.now()-startTime)/1000);if(e>3)try{player.seekTo(e,true);}catch(e){}}}
-function render(){document.getElementById('list').innerHTML='';playlist.forEach((v,i)=>{let d=document.createElement('div');d.className='item';if(i==cur)d.style.borderLeftColor='#00ff88';d.innerHTML=`<img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"><div style="flex:1"><b style="font-size:11px">${i==cur?'▶ '+v.title:v.title}</b><br><small style="color:#888">${v.cat}</small></div><div class="act"><button class="play" onclick="playIdx(${i})">PLAY</button><button class="stop" onclick="stopIdx()">STOP</button><button class="del" onclick="delIdx(${i})">DELETE</button></div>`;document.getElementById('list').appendChild(d);});}
-window.playIdx=i=>{cur=i;startTime=Date.now();isPlaying=true;push();if(player)player.loadVideoById(playlist[cur].id);};
-window.stopIdx=()=>{isPlaying=!isPlaying;push();if(player){isPlaying?player.playVideo():player.pauseVideo();}};
-window.delIdx=i=>{if(!confirm('Futa hii?'))return;playlist.splice(i,1);if(cur>=playlist.length)cur=0;startTime=Date.now();push();};
-window.onYouTubeIframeAPIReady=function(){player=new YT.Player('player',{videoId:playlist[cur].id,playerVars:{autoplay:1,mute:1,controls:0,rel:0,playsinline:1},events:{onReady:(e)=>{e.target.mute();doSeek();e.target.playVideo();},onStateChange:(e)=>{if(e.data==0){cur=(cur+1)%playlist.length;startTime=Date.now();push();player.loadVideoById(playlist[cur].id);}}}});};
-document.getElementById('addBtn').onclick=async()=>{
-  let link=document.getElementById('vLink').value,id=getId(link);if(!id){alert('Link si sahihi');return;}
-  document.getElementById('log').textContent='⏳ Nachukua jina la mziki...';let title=await fetchTitle(id);let cat=document.getElementById('vCat').value;
-  playlist.push({id,title,cat});cur=playlist.length-1;startTime=Date.now();isPlaying=true;document.getElementById('vLink').value='';await push();if(player)player.loadVideoById(id);
-};
-setInterval(()=>{document.getElementById('clock').textContent=new Date().toLocaleTimeString();},1000);
-async function pull(){try{let r=await fetch(KV_URL);if(!r.ok)return;let j=await r.json();if(j&&j.playlist){playlist=j.playlist;cur=j.cur;startTime=j.startTime;isPlaying=j.isPlaying;saveLocal();render();doSeek();}}catch(e){}}
-setInterval(pull,4000);render();pull();
-</script>
-</body>
-</html>
+let vids=[{id:'dQw4w9WgXcQ',title:'Zipporah - Sample',cat:'Burudani'}];
+function render(){
+ if(vids.length==0)return;
+ play(vids[0].id,vids[0].title);
+ let h='';vids.forEach(v=>{h+=`<div class=item onclick="play('${v.id}','${v.title}')"><b>${v.title}</b><br><small>${v.cat}</small></div>`});
+ document.getElementById('list').innerHTML=h;
+}
+window.play=(id,t)=>{document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder=0 allowfullscreen></iframe>`;document.getElementById('now').innerText=t}
+render();
+</script></body></html>
