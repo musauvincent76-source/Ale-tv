@@ -1,18 +1,87 @@
 <!DOCTYPE html>
 <html lang="sw">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV ADMIN</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:white;font-family:Arial;padding:20px}h1{color:#ff0000;margin:20px 0}input{width:100%;padding:14px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:white;margin-bottom:12px}.btn{width:100%;padding:14px;background:#ff0000;border:0;border-radius:10px;color:white;font-weight:bold}.card{background:#1a1a1a;padding:14px;border-radius:12px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}.small{font-size:12px;color:#888}.del{background:#333;border:0;color:white;padding:6px 10px;border-radius:6px}a{color:#ff0000;text-decoration:none;display:block;margin-top:20px;text-align:center}</style>
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AZAM ALE TV - Admin</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#0a1433;color:white;font-family:Arial;display:flex;min-height:100vh}
+.sidebar{width:220px;background:#07102a;border-right:2px solid #ff6600;padding:16px;display:flex;flex-direction:column;gap:10px}
+.logo{color:#ff6600;font-weight:900;font-size:22px;line-height:1}.logo small{color:white;display:block;font-size:12px;letter-spacing:2px;font-weight:600}
+.menu{margin-top:20px;display:flex;flex-direction:column;gap:8px}
+.m-item{padding:12px;border-radius:12px;cursor:pointer;color:#9aa3c7}.m-item.active{background:#ff6600;color:white;font-weight:bold}
+.status{margin-top:auto;background:#00000066;padding:12px;border-radius:12px;font-size:12px}.online{color:#00ff88;font-weight:bold}
+.main{flex:1;padding:16px;background:#0a1433}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.card{background:#13204a;border-radius:16px;padding:14px;border:1px solid #1e3269}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.stat{background:#13204a;border-radius:16px;padding:16px;text-align:center;border:1px solid #1e3269}.stat b{font-size:28px;display:block}
+.stat.tiny b{color:white}.stat b{color:#ff6600}
+.btn-ona{background:#ff6600;border:0;color:white;padding:10px 18px;border-radius:30px;font-weight:900}
+.form{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+input,select{padding:14px;border-radius:30px;border:1px solid #2a3c6e;background:#0a1433;color:white;outline:none}
+.btn-add{background:#ff6600;border:0;padding:14px;border-radius:30px;color:white;font-weight:900;font-size:15px}
+.playlist{margin-top:18px}
+.p-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.p-card{background:#0f1d40;border-left:4px solid #00ff88;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.live-dot{background:#ff0022;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:bold}
+.del{background:#ff2d55;border:0;color:white;width:32px;height:32px;border-radius:50%}
+@media(max-width:700px){.sidebar{display:none}.main{padding:12px}}
+</style>
 </head>
 <body>
-<h1>ALE TV ADMIN</h1>
-<input id="ytLink" placeholder="Weka YouTube link"><input id="ytTitle" placeholder="Title"><button class="btn" onclick="addVideo()">+ ADD VIDEO</button><div id="list"></div><a href="/">← Home</a>
+<div class="sidebar">
+<div class="logo">AZAM<br><small>ALE TV KE LIVE</small></div>
+<div class="menu">
+<div class="m-item active">📺 Dashboard</div>
+<div class="m-item">🎬 Playlist Manager</div>
+<div class="m-item">🔴 Studio Live</div>
+<div class="m-item">💰 TILL 3624692</div>
+</div>
+<div class="status">
+<div style="font-size:10px;color:#8a94b8">SYSTEM STATUS</div>
+<div class="online">● ONLINE - Azam Style</div>
+<div style="margin-top:6px;color:#6b7696" id="statusTxt">Fresh install - No hidden videos</div>
+</div>
+</div>
+
+<div class="main">
+<div class="top">
+<div><h2>Admin Dashboard</h2><div style="font-size:12px;color:#8a94b8">Azam TV Experience • ALE TV KE LIVE</div></div>
+<button class="btn-ona" onclick="location.href='/'">📺 ONA TV</button>
+</div>
+
+<div class="stats">
+<div class="stat"><b id="jumla">0</b><span style="font-size:11px;color:#8a94b8">JUMLA VIDEO</span></div>
+<div class="stat"><b id="liveNow">0</b><span style="font-size:11px;color:#8a94b8">LIVE NOW</span></div>
+<div class="stat tiny" style="grid-column:span 2"><b>TINY</b><span style="font-size:11px;color:#8a94b8">QUALITY</span></div>
+</div>
+
+<div class="card">
+<div style="font-weight:900"><span style="color:#ff6600">+</span> WEKA VIDEO MPYA - <span style="color:#ff6600">YouTube</span></div>
+<div class="form">
+<input id="vTitle" placeholder="Jina la video (mf: Habari za jioni)">
+<input id="vLink" placeholder="Weka YouTube link hapa">
+<select id="vCat"><option>Habari</option><option>Burudani</option><option>Michezo</option><option>Matangazo</option></select>
+<button class="btn-add" onclick="addVideo()">+ WEKA KWENYE PLAYLIST</button>
+<div style="font-size:11px;color:#6b7696;text-align:center">Inashika youtube.com na youtu.be - hakuna blob, hakuna kujificha!</div>
+</div>
+</div>
+
+<div class="playlist">
+<div class="p-head"><h3>🎬 Playlist Yangu</h3><button onclick="clearAll()" style="background:transparent;border:1px solid #ff2d55;color:#ff2d55;padding:6px 14px;border-radius:20px">Futa Zote</button></div>
+<div id="list"></div>
+</div>
+
+</div>
+
 <script>
-function getId(u){let m=u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);if(m)return m[1];if(u.length===11)return u;return null;}
+function getId(u){let m=u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]{11})/);if(m)return m[1];if(u.length===11)return u;return null;}
 function getVideos(){try{return JSON.parse(localStorage.getItem('aleTvVideos')||'[]')}catch(e){return []}}
-function saveVideos(v){localStorage.setItem('aleTvVideos',JSON.stringify(v));render();}
-function addVideo(){let l=document.getElementById('ytLink').value.trim();let t=document.getElementById('ytTitle').value.trim()||'Video';let id=getId(l);if(!id){alert('Link sio ya YouTube!');return;}let v=getVideos();v.push({id:id,title:t,date:new Date().toLocaleString()});saveVideos(v);document.getElementById('ytLink').value='';document.getElementById('ytTitle').value='';alert('Imeongezwa! Sasa nenda Home.');}
-function del(i){let v=getVideos();v.splice(i,1);saveVideos(v);}
-function render(){let v=getVideos();let h='';v.slice().reverse().forEach((x,idx)=>{let ri=v.length-1-idx;h+=`<div class="card"><div><div style="font-weight:bold">${x.title}</div><div class="small">${x.id} • ${x.date}</div></div><button class="del" onclick="del(${ri})">X</button></div>`;});document.getElementById('list').innerHTML=h;}
+function save(v){localStorage.setItem('aleTvVideos',JSON.stringify(v));render();}
+function addVideo(){let t=document.getElementById('vTitle').value.trim();let l=document.getElementById('vLink').value.trim();let c=document.getElementById('vCat').value;if(!l)return alert('Weka link!');let id=getId(l);if(!id)return alert('Link si ya YouTube!');let v=getVideos();v.push({id:id,title:t||'Video',cat:c,date:new Date().toLocaleString()});save(v);document.getElementById('vTitle').value='';document.getElementById('vLink').value='';}
+function del(i){let v=getVideos();v.splice(i,1);save(v);}
+function clearAll(){if(confirm('Futa zote?')){localStorage.removeItem('aleTvVideos');render();}}
+function render(){let v=getVideos();document.getElementById('jumla').innerText=v.length;document.getElementById('liveNow').innerText=v.length>0?1:0;document.getElementById('statusTxt').innerText=v.length>0?v.length+' videos active':'Fresh install - No hidden videos';let h='';v.slice().reverse().forEach((x,idx)=>{let ri=v.length-1-idx;h+=`<div class="p-card"><div><div class="live-dot">● LIVE</div><div style="font-weight:bold;margin-top:4px">${x.title} - ${x.id}</div><div style="font-size:11px;color:#8a94b8">${x.cat} • ${x.id} • ${x.date}</div></div><button class="del" onclick="del(${ri})">X</button></div>`});document.getElementById('list').innerHTML=h||'<div style="color:#6b7696;text-align:center;padding:20px">Hakuna video bado</div>';}
 render();
 </script>
 </body>
