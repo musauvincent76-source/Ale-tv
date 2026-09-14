@@ -14,6 +14,7 @@ body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hi
 #unmute{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#ff6a00;color:#fff;padding:14px 22px;border-radius:30px;font-weight:bold;z-index:10;border:0;animation:pulse 1s infinite;cursor:pointer}
 @keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.08)}}
 #videoClock{position:absolute;bottom:8px;right:10px;background:rgba(0,0,0,0.75);padding:3px 10px;border-radius:5px;font-size:13px;font-weight:bold;z-index:5;border:1px solid rgba(255,255,255,0.2)}
+#blockSeek{position:absolute;bottom:0;left:0;width:100%;height:50px;z-index:4;background:transparent}
 .ticker{width:100%;background:#c00;white-space:nowrap;overflow:hidden;padding:8px 0;border-top:2px solid #ff6a00;border-bottom:2px solid #ff6a00}
 .ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite;font-weight:bold;font-size:14px}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
@@ -30,6 +31,7 @@ body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hi
 <button id="unmute" onclick="unmute()">🔊 GUSA HAPA KUWASHA SAUTI</button>
 <div id="player"></div>
 <div id="videoClock">00:00:00</div>
+<div id="blockSeek"></div>
 </div>
 
 <div class="ticker"><span id="tick">🔴 Loading song title... </span></div>
@@ -37,17 +39,23 @@ body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hi
 <script>
 var tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";document.head.appendChild(tag);
 var player;
-function onYouTubeIframeAPIReady(){player=new YT.Player('player',{videoId:'W6IsAStN2NY',playerVars:{autoplay:1,mute:1,playsinline:1,rel:0},events:{onReady:onReady,onStateChange:onState}})}
-function onReady(){updateTitle()}
+var lastTime=0;
+function onYouTubeIframeAPIReady(){player=new YT.Player('player',{videoId:'W6IsAStN2NY',playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,controls:0,disablekb:1,fs:0,modestbranding:1,iv_load_policy:3},events:{onReady:onReady,onStateChange:onState}})}
+function onReady(){updateTitle(); setInterval(blockSeek, 500);}
 function onState(e){if(e.data==1){document.getElementById('unmute').style.display='block';updateTitle()}}
 function unmute(){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('unmute').style.display='none'}
 function updateTitle(){
 try{
 var title=player.getVideoData().title;
-if(title){document.getElementById('tick').innerText="🎵 NOW PLAYING: "+title+" | AZAM ALE TV LIVE - Habari Mubashara | Burudani | Matangazo ya Moja kwa Moja | ";}
+if(title){document.getElementById('tick').innerText="🎵 NOW PLAYING: "+title+" | AZAM ALE TV LIVE | ";}
 }catch(e){}
 }
-// Saa mbili - juu na kwenye video kama ulivyopoint arrow
+function blockSeek(){
+if(player && player.getCurrentTime){
+var curr=player.getCurrentTime();
+if(Math.abs(curr-lastTime)>2){player.seekTo(lastTime,true);}else{lastTime=curr;}
+}
+}
 setInterval(function(){
 var t=new Date().toLocaleTimeString('en-GB');
 document.getElementById('clockTop').innerText=t;
@@ -56,4 +64,4 @@ document.getElementById('videoClock').innerText=t;
 document.body.addEventListener('click',function(){if(player&&player.isMuted&&player.isMuted()){unmute()}},{once:true});
 </script>
 </body>
-  </html>
+</html>
