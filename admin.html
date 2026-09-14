@@ -1,34 +1,19 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV ADMIN</title>
-<style>
-body{background:#0a0a0a;color:#fff;font-family:system-ui;padding:15px}
-.box{background:#1a1a1a;padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #222}
-input{width:100%;padding:12px;background:#000;border:1px solid #333;border-radius:8px;color:#fff;margin-bottom:10px}
-.btn{width:100%;padding:12px;background:#ff0000;color:#fff;border:0;border-radius:8px;font-weight:700}
-.item{display:flex;justify-content:space-between;align-items:center;background:#111;border:1px solid #222;padding:10px;border-radius:10px;margin-bottom:8px}
-</style>
+<html lang="sw">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV ADMIN</title>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:white;font-family:Arial;padding:20px}h1{color:#ff0000;margin:20px 0}input{width:100%;padding:14px;background:#1a1a1a;border:1px solid #333;border-radius:10px;color:white;margin-bottom:12px}.btn{width:100%;padding:14px;background:#ff0000;border:0;border-radius:10px;color:white;font-weight:bold}.card{background:#1a1a1a;padding:14px;border-radius:12px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}.small{font-size:12px;color:#888}.del{background:#333;border:0;color:white;padding:6px 10px;border-radius:6px}a{color:#ff0000;text-decoration:none;display:block;margin-top:20px;text-align:center}</style>
 </head>
 <body>
-<h2 style="color:#ff0000">ALE TV ADMIN</h2>
-<div class="box">
-<input id="link" placeholder="Weka YouTube link">
-<input id="title" placeholder="Title">
-<button class="btn" onclick="add()">+ ADD VIDEO</button>
-</div>
-<div class="box" id="list"></div>
-<div style="text-align:center"><a href="index.html" style="color:red">← Home</a></div>
+<h1>ALE TV ADMIN</h1>
+<input id="ytLink" placeholder="Weka YouTube link"><input id="ytTitle" placeholder="Title"><button class="btn" onclick="addVideo()">+ ADD VIDEO</button><div id="list"></div><a href="/">← Home</a>
 <script>
-let s=JSON.parse(localStorage.getItem('ale_tv')||'{"playlist":[]}');
-function save(){localStorage.setItem('ale_tv',JSON.stringify(s))}
-function getId(u){try{let a=new URL(u);if(a.hostname.includes('youtu.be'))return a.pathname.slice(1);return a.searchParams.get('v')}catch{return u.slice(-11)}}
-function add(){let l=document.getElementById('link').value.trim();let t=document.getElementById('title').value.trim();if(!l)return alert('Weka link!');s.playlist.push({id:Date.now(),ytid:getId(l),title:t||'Video '+(s.playlist.length+1),status:s.playlist.length==0?'now':'queued'});save();load();document.getElementById('link').value='';document.getElementById('title').value=''}
-function del(id){s.playlist=s.playlist.filter(v=>v.id!=id);if(s.playlist.length&&!s.playlist.find(v=>v.status=='now'))s.playlist[0].status='now';save();load()}
-function load(){let c=document.getElementById('list');if(!s.playlist.length){c.innerHTML='<div style="opacity:.4;text-align:center">Hakuna video</div>';return}c.innerHTML=s.playlist.map(v=>`<div class=item><div><b>${v.title}</b><br><small style="opacity:.5">${v.ytid} • ${v.status}</small></div><button onclick="del(${v.id})" style="background:#222;color:#fff;border:0;padding:6px 10px;border-radius:6px">X</button></div>`).join('')}
-load();
+function getId(u){let m=u.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{11})/);if(m)return m[1];if(u.length===11)return u;return null;}
+function getVideos(){try{return JSON.parse(localStorage.getItem('aleTvVideos')||'[]')}catch(e){return []}}
+function saveVideos(v){localStorage.setItem('aleTvVideos',JSON.stringify(v));render();}
+function addVideo(){let l=document.getElementById('ytLink').value.trim();let t=document.getElementById('ytTitle').value.trim()||'Video';let id=getId(l);if(!id){alert('Link sio ya YouTube!');return;}let v=getVideos();v.push({id:id,title:t,date:new Date().toLocaleString()});saveVideos(v);document.getElementById('ytLink').value='';document.getElementById('ytTitle').value='';alert('Imeongezwa! Sasa nenda Home.');}
+function del(i){let v=getVideos();v.splice(i,1);saveVideos(v);}
+function render(){let v=getVideos();let h='';v.slice().reverse().forEach((x,idx)=>{let ri=v.length-1-idx;h+=`<div class="card"><div><div style="font-weight:bold">${x.title}</div><div class="small">${x.id} • ${x.date}</div></div><button class="del" onclick="del(${ri})">X</button></div>`;});document.getElementById('list').innerHTML=h;}
+render();
 </script>
 </body>
 </html>
