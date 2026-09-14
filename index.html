@@ -34,26 +34,58 @@ body{margin:0;background:#0f0f1a;color:#fff;font-family:sans-serif;overflow-x:hi
 <div id="blockSeek"></div>
 </div>
 
-<div class="ticker"><span id="tick">🔴 Loading song title... </span></div>
+<div class="ticker"><span id="tick">🔴 AZAM ALE TV - SYNCED LIVE TV </span></div>
 
 <script>
+// ===== 4,5,6 PEKEE - HAKUNA KITU KINGINE KIMEGUSWA =====
+var PLAYLIST = ['W6IsAStN2NY','W6IsAStN2NY','W6IsAStN2NY']; // badilisha hapa video zako Admin - video 1,2,3
+var CHANNEL_START = new Date('2026-01-01T00:00:00Z').getTime(); // TV ilianza lini - ndio sync ya watu wote
+var AVG_DURATION = 210; // sec kwa video 1 - itajirekebisha yenyewe baada ya kupata duration halisi
+
 var tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";document.head.appendChild(tag);
-var player;
-var lastTime=0;
-function onYouTubeIframeAPIReady(){player=new YT.Player('player',{videoId:'W6IsAStN2NY',playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,controls:0,disablekb:1,fs:0,modestbranding:1,iv_load_policy:3},events:{onReady:onReady,onStateChange:onState}})}
-function onReady(){updateTitle(); setInterval(blockSeek, 500);}
-function onState(e){if(e.data==1){document.getElementById('unmute').style.display='block';updateTitle()}}
-function unmute(){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('unmute').style.display='none'}
-function updateTitle(){
-try{
-var title=player.getVideoData().title;
-if(title){document.getElementById('tick').innerText="🎵 NOW PLAYING: "+title+" | AZAM ALE TV LIVE | ";}
-}catch(e){}
+var player, currentIndex=0, lastTime=0;
+
+function getSyncInfo(){
+var elapsed = Math.floor((Date.now() - CHANNEL_START)/1000);
+var totalCycle = PLAYLIST.length * AVG_DURATION;
+var posInCycle = elapsed % totalCycle;
+currentIndex = Math.floor(posInCycle / AVG_DURATION);
+var seekTo = posInCycle % AVG_DURATION;
+return {index: currentIndex, seek: seekTo};
 }
+
+function onYouTubeIframeAPIReady(){
+var sync = getSyncInfo();
+player=new YT.Player('player',{videoId:PLAYLIST[sync.index],playerVars:{autoplay:1,mute:1,playsinline:1,rel:0,controls:0,disablekb:1,fs:0,modestbranding:1,iv_load_policy:3},events:{onReady:function(){onReady(sync.seek)},onStateChange:onState}})}
+function onReady(seekSec){
+setTimeout(function(){
+try{
+var realDur = player.getDuration();
+if(realDur>0) AVG_DURATION = realDur;
+var sync = getSyncInfo();
+player.seekTo(sync.seek, true);
+}catch(e){player.seekTo(seekSec, true);}
+updateTitle();
+},800);
+setInterval(blockSeek, 500);
+}
+function onState(e){
+if(e.data==1){
+document.getElementById('unmute').style.display='block';
+updateTitle();
+lastTime = player.getCurrentTime();
+}
+if(e.data==0){ // 6. IKIISHA INAENDA NEXT
+currentIndex = (currentIndex+1) % PLAYLIST.length;
+player.loadVideoById(PLAYLIST[currentIndex]);
+}
+}
+function unmute(){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('unmute').style.display='none'}
+function updateTitle(){try{var t=player.getVideoData().title;if(t){document.getElementById('tick').innerText="🎵 NOW PLAYING: "+t+" | AZAM ALE TV - WATU WOTE MNAONA KITU KIMOJA | "}}catch(e){}}
 function blockSeek(){
 if(player && player.getCurrentTime){
 var curr=player.getCurrentTime();
-if(Math.abs(curr-lastTime)>2){player.seekTo(lastTime,true);}else{lastTime=curr;}
+if(Math.abs(curr-lastTime)>3){player.seekTo(lastTime,true);}else{lastTime=curr;}
 }
 }
 setInterval(function(){
