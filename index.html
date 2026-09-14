@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AZAM ALE TV LIVE</title>
-<style>body{margin:0;background:#000;color:#fff;font-family:sans-serif}#top{background:#111;padding:14px;display:flex;justify-content:space-between}#player{width:100%;height:56vh;background:#111;display:flex;align-items:center;justify-content:center}#now{padding:12px}.item{background:#1a1a2e;padding:14px;margin:8px;border-radius:12px;cursor:pointer}</style>
+<title>ADMIN ALE TV</title>
+<style>body{margin:0;background:#0a0a1a;color:#fff;font-family:sans-serif;padding:15px}input,select{width:100%;padding:15px;margin:8px 0;border-radius:12px;border:none;background:#1a1a2e;color:#fff;box-sizing:border-box}button{width:100%;padding:15px;background:#ff6b00;border:none;border-radius:12px;color:#fff;font-weight:bold}</style>
 </head><body>
-<div id="top"><b>AZAM ALE TV</b><span style="background:red;padding:5px 12px;border-radius:20px;font-size:12px">● LIVE</span></div>
-<div id="player">Hakuna video</div>
-<h3 id="now"></h3>
-<div id="list" style="padding:10px"></div>
+<h2>ADMIN DASHBOARD</h2>
+<input id="t" placeholder="Jina la video">
+<input id="l" placeholder="YouTube link https://youtu.be/...">
+<select id="c"><option>Burudani</option><option>Habari</option><option>Muziki</option></select>
+<button onclick="add()">+ WEKA VIDEO</button>
+<div id="list" style="margin-top:20px"></div>
+<p><a href="index.html" style="color:orange">Fungua TV</a></p>
 <script>
-let vids=[{id:'dQw4w9WgXcQ',title:'Zipporah - Sample',cat:'Burudani'}];
-function render(){
- if(vids.length==0)return;
- play(vids[0].id,vids[0].title);
- let h='';vids.forEach(v=>{h+=`<div class=item onclick="play('${v.id}','${v.title}')"><b>${v.title}</b><br><small>${v.cat}</small></div>`});
- document.getElementById('list').innerHTML=h;
-}
-window.play=(id,t)=>{document.getElementById('player').innerHTML=`<iframe width="100%" height="100%" src="https://www.youtube.com/embed/${id}?autoplay=1" frameborder=0 allowfullscreen></iframe>`;document.getElementById('now').innerText=t}
+function get(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+function save(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
+function getId(u){let m=u.match(/(?:youtu\.be\/|v=)([^&]+)/);return m?m[1]:u}
+function add(){let t=document.getElementById('t').value,l=document.getElementById('l').value,c=document.getElementById('c').value;if(!t||!l)return alert('Jaza');let v=get();v.push({id:getId(l),title:t,cat:c});save(v);render();alert('Imewekwa!')}
+function render(){let v=get();document.getElementById('list').innerHTML=v.map(x=>`<div style=background:#1a1a2e;padding:10px;margin:6px;border-radius:8px>${x.title}</div>`).join('')||'Hakuna'}
 render();
 </script></body></html>
