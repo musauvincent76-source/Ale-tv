@@ -1,17 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>AZAM ALE TV KE LIVE</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#000;color:#fff;overflow:hidden}
 #tv{width:100vw;height:100vh;position:relative;background:#000}
-#player{width:100%;height:100%}
+#player{width:100%;height:100%;border:0}
 .lower{position:absolute;bottom:32px;left:0;right:0;display:flex;z-index:2}
 .red{background:#cc0000;color:#fff;padding:8px 14px;font-weight:900;font-size:12px}
-.black{background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;flex:1;font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.black{background:rgba(0,0,0,0.85);color:#fff;padding:8px 12px;flex:1;font-weight:700;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .live{background:#ff6a00;color:#000;padding:8px 12px;font-weight:900;font-size:11px}
 .ticker{position:absolute;bottom:0;left:0;right:0;background:#cc0000;height:32px;display:flex;align-items:center;overflow:hidden;z-index:2}
 .break{background:#fff;color:#cc0000;padding:3px 8px;font-weight:900;font-size:10px;margin-left:6px;border-radius:2px}
@@ -22,21 +21,38 @@ body{background:#000;color:#fff;overflow:hidden}
 </head>
 <body>
 <div id="tv">
-<div id="player"></div>
+<iframe id="player" src="" allowfullscreen allow="autoplay; encrypted-media"></iframe>
 <div class="lower"><div class="red">AZAM ALE TV</div><div class="black" id="nowTitle">Loading...</div><div class="live">● LIVE</div></div>
 <div class="ticker"><div class="break">BREAKING</div><div class="scroll"><span id="scrollTxt">AZAM ALE TV KE LIVE | TILL 3624692 |</span></div></div>
 </div>
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let playlist=JSON.parse(localStorage.getItem('azam_v3')||'[]');
-let cur=parseInt(localStorage.getItem('azam_cur3')||'0');
-let player;
-function renderTV(){if(playlist[cur]){document.getElementById('nowTitle').textContent=playlist[cur].title;document.getElementById('scrollTxt').textContent=`🔴 LIVE: ${playlist[cur].title.toUpperCase()} | ${playlist[cur].cat} | TILL 3624692 | AZAM ALE TV KE LIVE |`;}}
-function onYouTubeIframeAPIReady(){
-if(playlist.length==0)playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];
-player=new YT.Player('player',{videoId:playlist[cur]?.id||'2dIjeG0d2Xw',width:'100%',height:'100%',playerVars:{autoplay:1,controls:1,rel:0,playsinline:1},events:{onReady:e=>{e.target.playVideo();renderTV();},onStateChange:e=>{if(e.data==0){cur=(cur+1)%playlist.length;localStorage.setItem('azam_cur3',cur);player.loadVideoById(playlist[cur].id);renderTV();}}}});
+let playlist = JSON.parse(localStorage.getItem('azam_v3')||'[]');
+let cur = parseInt(localStorage.getItem('azam_cur3')||'0');
+
+function playVideo(){
+if(playlist.length==0){
+playlist=[{id:'2dIjeG0d2Xw',title:'HURUMA - STEPHEN KASOLO',cat:'Burudani'}];
 }
-setInterval(()=>{let p=JSON.parse(localStorage.getItem('azam_v3')||'[]');let c=parseInt(localStorage.getItem('azam_cur3')||'0');if(p.length!=playlist.length||c!=cur){playlist=p;cur=c;if(player&&playlist[cur]){player.loadVideoById(playlist[cur].id);renderTV();}}},2000);
+let v = playlist[cur];
+if(!v) return;
+document.getElementById('player').src = `https://www.youtube.com/embed/${v.id}?autoplay=1&rel=0&playsinline=1`;
+document.getElementById('nowTitle').textContent = v.title;
+document.getElementById('scrollTxt').textContent = `🔴 LIVE: ${v.title.toUpperCase()} | ${v.cat} | TILL 3624692 | AZAM ALE TV KE LIVE | `;
+}
+
+playVideo();
+
+// HII NDIO INAFANYA VIDEO IFIKE - INA-CHECK KILA 2 SECONDS KAMA UMEWEKA MPYA
+setInterval(()=>{
+let p = JSON.parse(localStorage.getItem('azam_v3')||'[]');
+let c = parseInt(localStorage.getItem('azam_cur3')||'0');
+if(JSON.stringify(p)!==JSON.stringify(playlist) || c!==cur){
+playlist=p;cur=c;playVideo();
+}
+},2000);
+
+// Auto next video after 5 min (YouTube inaisha)
+setTimeout(()=>{if(playlist.length>0){cur=(cur+1)%playlist.length;localStorage.setItem('azam_cur3',cur);playVideo();}}, 300000);
 </script>
 </body>
-</html>
+                                                       </html>
