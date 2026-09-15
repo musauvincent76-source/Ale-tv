@@ -1,88 +1,95 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE FULL DASHBOARD</title>
-<style>body{margin:0;background:#0f172a;color:#fff;font-family:sans-serif;padding:12px}.header{background:linear-gradient(90deg,#f59e0b,#ef4444);padding:14px;border-radius:12px;text-align:center;font-weight:bold}.stat{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin:10px 0}.stat div{background:#1e293b;padding:10px;border-radius:10px;text-align:center}.stat b{font-size:18px;color:#f59e0b;display:block}input,textarea,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:none;background:#1e293b;color:#fff;box-sizing:border-box}button{padding:12px;border:none;border-radius:10px;font-weight:bold;cursor:pointer}.box{border:2px dashed #f59e0b;padding:14px;border-radius:12px;background:#1e293b;margin-top:10px}.card{background:#1e293b;padding:10px;margin:6px 0;border-radius:10px;display:flex;justify-content:space-between;align-items:center}.badge{background:#f59e0b;color:#000;padding:2px 8px;border-radius:20px;font-size:11px}.tab{width:33%;background:#334155;color:#fff;padding:10px}.tab.active{background:#f59e0b;color:#000}.thumb{width:60px;height:40px;border-radius:6px;object-fit:cover}</style></head><body>
-<div class="header">🔥 ALE TV - FULL DASHBOARD + AUTO DESC 🔥</div>
-<div class="stat">
-<div><b id="total">0</b><small>Videos</small></div>
-<div><b id="views">1.2k</b><small>Views</small></div>
-<div><b id="live">● LIVE</b><small>Status</small></div>
-<div><b id="storage">0KB</b><small>Size</small></div>
-</div>
-<div style="display:flex;gap:4px">
-<button class="tab active" onclick="showTab('folder')" id="tabF">📁 FOLDER 1</button>
-<button class="tab" onclick="showTab('manage')" id="tabM">📊 MANAGE</button>
-<button class="tab" onclick="showTab('tools')" id="tabT">🛠️ TOOLS</button>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV ADMIN</title>
+<style>
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
+h2{color:#f59e0b;text-align:center}
+.card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
+input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
+button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
+.btn-add{background:#f59e0b;color:#000;width:100%}
+.btn-del{background:#ff0000;color:#fff}
+.btn-ticker{background:#00ff88;color:#000;width:100%}
+.list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
+.stats{display:flex;gap:10px;text-align:center}
+.stats div{background:#222;flex:1;padding:10px;border-radius:8px}
+.stats b{color:#f59e0b;font-size:18px;display:block}
+.preview-logo{width:100px;height:100px;object-fit:contain;background:#000;border:1px dashed #f59e0b;border-radius:8px;display:block;margin:10px auto}
+</style></head><body>
+<h2>🔥 ALE TV ADMIN 🔥</h2>
+
+<div class="stats">
+<div><b id="totalV">0</b>Videos</div>
+<div><b id="liveV">LIVE</b></div>
+<div><b id="time">00:00</b>Now</div>
 </div>
 
-<div id="folderBox" class="box">
-<h3 style="margin:0;color:#f59e0b">📁 FOLDER 1 - HAIGUSWI</h3>
-<p style="font-size:11px;color:#94a3b8">Andika jina la wimbo tu, description itajiandika auto na itascroll kwa TV kama Citizen TV!</p>
-<input id="t" placeholder="Jina la video *" oninput="autoDesc()" onblur="autoDesc()">
-<textarea id="desc" placeholder="Description itajiandika auto hapa..."></textarea>
-<select id="cat"><option>Muziki</option><option>Habari</option><option>Exclusive</option><option>Michezo</option><option>Burudani</option></select>
-<input id="l" placeholder="Link ya YouTube *" oninput="previewThumb()">
-<img id="thumbPreview" class="thumb" style="display:none;width:100%;height:120px;margin-top:6px">
-<button onclick="addV()" style="background:#f59e0b;width:100%">📥 WEKA FOLDER 1 (Auto Desc)</button>
+<div class="card">
+<h3>🖼️ Logo Upload</h3>
+<img id="logoPrev" class="preview-logo" src="">
+<input type="file" id="logoFile" accept="image/*" onchange="uploadLogo(this)">
+<button onclick="removeLogo()" style="background:#333;color:#fff;width:100%">❌ Toa Logo</button>
+<small style="color:#888">Logo itaonekana juu badala ya ALE TV text</small>
 </div>
 
-<div id="manageBox" class="box" style="display:none;border-color:#22c55e">
-<h3 style="margin:0;color:#22c55e">📊 MANAGE VIDEOS</h3>
-<input id="search" placeholder="🔍 Tafuta..." oninput="show()">
-<select id="filterCat" onchange="show()"><option value="">All Categories</option><option>Muziki</option><option>Habari</option><option>Exclusive</option><option>Michezo</option></select>
-<div style="display:flex;gap:6px"><button onclick="exportData()" style="background:#22c55e;width:50%">📤 Backup</button><button onclick="clearAll()" style="background:#ef4444;width:50%">🗑 Futa Zote</button></div>
+<div class="card">
+<h3>➕ Weka Video Mpya</h3>
+<input id="ytLink" placeholder="YouTube Link au ID">
+<input id="vTitle" placeholder="Title">
+<textarea id="vDesc" placeholder="Description"></textarea>
+<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option></select>
+<div style="display:flex;gap:5px">
+<input id="schedTime" type="time" style="flex:1"><select id="schedDay" style="flex:1"><option value="all">Kila Siku</option><option value="1">Jumatatu</option><option value="2">Jumanne</option><option value="3">Jumatano</option><option value="4">Alhamisi</option><option value="5">Ijumaa</option><option value="6">Jumamosi</option><option value="0">Jumapili</option></select>
+</div>
+<small style="color:#888">Schedule: Weka saa video icheze (optional)</small>
+<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
 </div>
 
-<div id="toolsBox" class="box" style="display:none;border-color:#3b82f6">
-<h3 style="margin:0;color:#3b82f6">🛠️ TOOLS ZINGINE</h3>
-<p style="font-size:12px">Ticker ya Citizen TV, Auto Desc, Trending</p>
-<label style="font-size:12px">Ujumbe wa Ticker (ita-scroll chini ya TV):</label>
-<input id="tickerMsg" placeholder="BREAKING: Karibu Ale TV..." oninput="saveTicker()">
-<button onclick="saveTicker()" style="background:#3b82f6;width:100%">💾 Hifadhi Ticker</button>
+<div class="card">
+<h3>📢 Ticker</h3>
+<input id="tickerCustom" placeholder="Habari ya ticker...">
+<button class="btn-ticker" onclick="saveTicker()">UPDATE TICKER</button>
+<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
 </div>
 
-<div id="list" style="margin-top:12px"></div>
-<a href="index.html" style="display:block;text-align:center;margin:15px;color:#f59e0b;font-weight:bold">→ Fungua TV na SCROLL 📺</a>
+<div class="card">
+<h3>📋 Videos (<span id="count">0</span>) - na Schedule</h3>
+<div id="list"></div>
+<button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
+</div>
+
 <script>
-let editIndex=-1;
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v));updateStats()}
-function getId(u){let m=u.match(/(?:youtu\.be\/|v=|embed\/)([^&?\/]+)/);return m?m[1].slice(0,11):u.trim().slice(0,11)}
-function autoDesc(){
- let title=t.value.trim();
- if(!title)return;
- let catV=cat.value;
- let descs=[
-  `🎵 Sasa inacheza: ${title} | ${catV} Exclusive kwenye ALE TV v7 - Usikose! 🔥`,
-  `🔴 LIVE: ${title} - Video kali ya ${catV} inayo-trend sasa Kenya! Tazama full HD kwenye ALE TV.`,
-  `⚡ BREAKING: ${title} | ${catV} Mpya! Description auto-generated na ALE TV System. Enjoy!`,
-  `📺 ${title} - Ipo tayari kwenye Folder 1! ${catV} kali kutoka ALE TV, cheza sasa!`
- ];
- let random=descs[Math.floor(Math.random()*descs.length)];
- // only auto if desc empty or was auto-generated before
- if(desc.value.trim()==='' || desc.value.includes('Sasa inacheza') || desc.value.includes('LIVE:') || desc.value.includes('BREAKING:') || desc.value.includes('Ipo tayari')){
-   desc.value=random;
- }
- saveTickerAuto(title);
+function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
+function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m?m[1]:url;}
+function uploadLogo(input){
+ let file=input.files[0]; if(!file) return;
+ let reader=new FileReader();
+ reader.onload=function(e){localStorage.setItem('ale_logo',e.target.result); document.getElementById('logoPrev').src=e.target.result; alert('Logo imewekwa!');}
+ reader.readAsDataURL(file);
 }
-function saveTickerAuto(title){
- let ticker = `🔥 SASA: ${title} | 📺 ALE TV LIVE | 🎵 ${cat.value} EXCLUSIVE | 🔴 Usikose video zote kali... *** `;
- localStorage.setItem('ale_ticker',ticker);
+function removeLogo(){localStorage.removeItem('ale_logo'); document.getElementById('logoPrev').src=''; alert('Logo imetolewa');}
+function addVideo(){
+ let id=extractId(document.getElementById('ytLink').value.trim());
+ if(id.length!=11){alert('Link mbaya!');return}
+ let v=getV();
+ v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV Video',desc:document.getElementById('vDesc').value||'',cat:document.getElementById('vCat').value,time:document.getElementById('schedTime').value||'',day:document.getElementById('schedDay').value});
+ saveV(v); alert('Imewekwa na Schedule!'); location.reload();
 }
-function saveTicker(){localStorage.setItem('ale_ticker_custom',tickerMsg.value);alert('Ticker imehifadhiwa!')}
-function previewThumb(){let id=getId(l.value);if(id.length==11){thumbPreview.src='https://img.youtube.com/vi/'+id+'/mqdefault.jpg';thumbPreview.style.display='block';}}
-function showTab(w){
- folderBox.style.display=w=='folder'?'block':'none';
- manageBox.style.display=w=='manage'?'block':'none';
- toolsBox.style.display=w=='tools'?'block':'none';
- tabF.className=w=='folder'?'tab active':'tab';
- tabM.className=w=='manage'?'tab active':'tab';
- tabT.className=w=='tools'?'tab active':'tab';
+function saveTicker(){localStorage.setItem('ale_ticker_custom',document.getElementById('tickerCustom').value); alert('Ticker updated!'); document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom');}
+function render(){
+ let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
+ document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
+ let logo=localStorage.getItem('ale_logo'); if(logo) document.getElementById('logoPrev').src=logo;
+ let html=''; v.forEach((x,i)=>{
+  let sched=x.time?`⏰ ${x.time} ${x.day=='all'?'Kila siku':''}`:'🔀 Random';
+  html+=`<div class="list-item"><div><b>${x.title}</b><br><small style="color:#f59e0b">${x.cat}</small> | <small style="color:#00ff88">${sched}</small><br><small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
+ });
+ document.getElementById('list').innerHTML=html||'Hakuna video';
 }
-function addV(){let a=t.value.trim(),b=desc.value.trim(),c=l.value.trim(),cc=cat.value;if(!a||!c)return alert('Weka jina na link!');let id=getId(c);let v=getV();if(editIndex>=0){v[editIndex]={id:id,title:a,desc:b,cat:cc};editIndex=-1;}else{v.push({id:id,title:a,desc:b,cat:cc});}saveV(v);t.value='';desc.value='';l.value='';thumbPreview.style.display='none';show();alert('Imeingia Folder 1 na Description Auto + Scroll!');}
-function delV(i){if(confirm('Futa?')){let v=getV();v.splice(i,1);saveV(v);show();}}
-function editV(i){let v=getV()[i];t.value=v.title;desc.value=v.desc;l.value=v.id;cat.value=v.cat||'Muziki';editIndex=i;showTab('folder');previewThumb();}
-function clearAll(){if(confirm('Futa ZOTE?')){localStorage.removeItem('ale_videos');show();}}
-function updateStats(){let v=getV();total.innerText=v.length;let s=new Blob([localStorage.getItem('ale_videos')||'']).size;storage.innerText=(s/1024).toFixed(1)+'KB';views.innerText=(v.length*127+342)+' views'}
-function show(){let v=getV();let q=(search.value||'').toLowerCase();let fc=filterCat.value;let h='';for(let i=v.length-1;i>=0;i--){if(q&&!v[i].title.toLowerCase().includes(q))continue;if(fc&&v[i].cat!=fc)continue;h+='<div class=card><div style=display:flex;gap:8px;align-items:center><img src=https://img.youtube.com/vi/'+v[i].id+'/mqdefault.jpg class=thumb><div><b>'+v[i].title+'</b><br><span class=badge>'+v[i].cat+'</span> <small style=color:#94a3b8>'+v[i].id+'</small></div></div><div><button onclick=editV('+i+') style=background:#3b82f6;padding:6px>✏️</button> <button onclick=delV('+i+') style=background:#ef4444;padding:6px>🗑</button></div></div>'}list.innerHTML=h;updateStats()}
-function exportData(){let blob=new Blob([localStorage.getItem('ale_videos')],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ale_backup.json';a.click();}
-show();tickerMsg.value=localStorage.getItem('ale_ticker_custom')||'';updateStats();
-</script></body></html>
+function delV(i){if(confirm('Futa?')){let v=getV(); v.splice(i,1); saveV(v); render();}}
+function clearAll(){if(confirm('Futa zote?')){localStorage.removeItem('ale_videos'); render();}}
+setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
+render();
+</script>
+</body></html>
