@@ -43,9 +43,8 @@ function getV(){try{let s=localStorage.getItem('ale_videos'); let v=s?JSON.parse
 let videos=getV();
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 
-// TV YA KWELI - KILA MTU DUNIANI ANATAZAMA KIMOJA
 function getSynced(){
- let total=videos.length*240; // kila video dakika 4
+ let total=videos.length*240;
  let now=Math.floor(Date.now()/1000);
  let elapsed=now%total;
  return{idx:Math.floor(elapsed/240),seek:elapsed%240}
@@ -64,14 +63,13 @@ function onYouTubeIframeAPIReady(){
  document.getElementById('loading').style.display='none';
  player=new YT.Player('main',{
   videoId:v.id,
-  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,iv_load_policy:3,start:v.isLive?0:current.seek},
+  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,iv_load_policy:3,origin:window.location.origin,start:v.isLive?0:current.seek},
   events:{
    onReady:(e)=>{ready=true; e.target.playVideo(); setTimeout(()=>{try{e.target.unMute()}catch(err){}},1000);},
    onStateChange:(e)=>{
     let hint=document.getElementById('tapHint');
     if(e.data==1){hint.style.display='none';}
     if(e.data==2){hint.style.display='block';}
-    // IKIISHA - HAIENDI NEXT YA KAWAIDA, INARUDI KWENYE MUDA WA DUNIA
     if(e.data==0){
       let n=getSynced();
       current=n;
@@ -83,17 +81,19 @@ function onYouTubeIframeAPIReady(){
   }
  });
 }
-// UKIPLAY - HAIRUDI PALE ULIACHA, INASONGA MBELE KAMA WENGINE
 function playNow(){
- if(player && ready){
-  let n=getSynced(); // PATA MUDA MPYA WA DUNIA
-  current=n;
-  let nv=videos[current.idx];
-  updateInfo(nv);
-  player.loadVideoById({videoId:nv.id,startSeconds:nv.isLive?0:n.seek});
-  setTimeout(()=>{try{player.playVideo(); player.unMute();}catch(e){}},300);
-  document.getElementById('tapHint').style.display='none';
+ if(!player || !ready) return;
+ let n=getSynced();
+ let nv=videos[n.idx];
+ if(n.idx===current.idx){
+   try{ player.seekTo(n.seek, true); player.playVideo(); player.unMute(); }catch(e){}
+ }else{
+   current=n;
+   updateInfo(nv);
+   player.loadVideoById({videoId:nv.id,startSeconds:nv.isLive?0:n.seek});
+   setTimeout(()=>{try{player.playVideo(); player.unMute();}catch(e){}},300);
  }
+ document.getElementById('tapHint').style.display='none';
 }
 document.getElementById('playerBox').addEventListener('click',()=>{
  if(!player) return;
@@ -101,12 +101,8 @@ document.getElementById('playerBox').addEventListener('click',()=>{
  if(s==1){player.pauseVideo();}
  else{playNow();}
 });
-// UKIRUDI ONLINE BAADA YA KUWA OFFLINE - JUMP MOJA KWA MOJA
 document.addEventListener('visibilitychange',()=>{
- if(document.visibilityState==='visible'){
-   console.log('Rudi online - syncing dunia...');
-   playNow();
- }
+ if(document.visibilityState==='visible'){ playNow(); }
 });
 window.addEventListener('online',()=>{playNow();});
 setTimeout(()=>{if(!ready && typeof YT!=='undefined' && YT.Player){onYouTubeIframeAPIReady();}},3000);
