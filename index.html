@@ -34,7 +34,7 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',cat:'BURUDANI'}]}
+let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',cat:'BURUDANI',isLive:false}]}
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
 let current=getSyncedIndex(); let player;
@@ -44,14 +44,16 @@ function onYouTubeIframeAPIReady(){
  let nowSec=Math.floor(Date.now()/1000);
  if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos}
  let v=videos[current.idx]; updateInfo(v);
- player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:current.seek},events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}});
+ let startAt=v.isLive?0:current.seek;
+ player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:startAt},events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}});
 }
 function updateInfo(v){
  document.getElementById('vTitle').innerText=v.title;
  document.getElementById('vDesc').innerText=v.desc||'';
  document.getElementById('vCat').innerText=v.cat||'BURUDANI';
  document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('ticker').innerText=' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE *** ';
+ let custom=localStorage.getItem('ale_ticker_custom');
+ document.getElementById('ticker').innerText=custom||' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE *** ';
 }
 function onStateChange(e){
  let hint=document.getElementById('tapHint');
