@@ -1,124 +1,134 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#000;color:#fff;font-family:'Segoe UI',Arial;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+*{box-sizing:border-box;margin:0;padding:0}body{background:#000;color:#fff;font-family:Arial;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+/* TOP BAR KAMA PICHA */
+#top{height:46px;background:#000;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 10px;flex-shrink:0}
+#logo{font-weight:900;font-size:16px;display:flex;align-items:center;gap:4px}
+#logo span{color:#ff8c00}
+#centerPill{background:#111;border:1px solid #333;padding:5px 14px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+#liveBtn{background:#d60000;color:#fff;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:900;letter-spacing:0.5px}
 
-/* HEADER MPYA - GLASS */
-#top{height:44px;background:rgba(255,140,0,0.95);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:space-between;padding:0 14px;flex-shrink:0;box-shadow:0 2px 20px rgba(255,140,0,0.3)}
-#logo{font-weight:900;font-size:16px;color:#000;letter-spacing:1px;display:flex;align-items:center;gap:6px}
-#logo span{background:#000;color:#ff8c00;padding:2px 6px;border-radius:4px}
-#rightTop{display:flex;align-items:center;gap:8px}
-#clock{background:#000;color:#ff8c00;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:1px}
-#liveDot{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:900;box-shadow:0 0 10px red;animation:pulseLive 1.2s infinite}
-@keyframes pulseLive{0%{box-shadow:0 0 0 0 red}70%{box-shadow:0 0 0 8px rgba(255,0,0,0)}100%{box-shadow:0 0 0 0 rgba(255,0,0,0)}}
+/* SECOND HEADER KAMA PICHA - AVATAR + TITLE */
+#secondHead{height:56px;background:#000;display:flex;align-items:center;padding:0 10px;gap:10px;flex-shrink:0;border-bottom:1px solid #111}
+#avatar{width:38px;height:38px;border-radius:50%;background:#222;overflow:hidden;flex-shrink:0;border:1px solid #333}
+#avatar img{width:100%;height:100%;object-fit:cover}
+#headText{flex:1;overflow:hidden}
+#headText b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.3px}
+#headText small{font-size:11px;color:#aaa;display:block}
+#headTime{color:#ff8c00;font-size:11px;font-weight:700;flex-shrink:0}
 
-/* STAGE */
-#stage{flex:1;background:#050505;position:relative;overflow:hidden}
-
-/* OFF SCREEN MPYA */
-#off{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1a1a1a 0%,#000 70%)}
-#tvIcon{width:80px;height:80px;background:linear-gradient(145deg,#222,#111);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:38px;box-shadow:0 10px 30px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.1);animation:float 3s ease-in-out infinite}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-#offTitle{margin-top:16px;font-weight:900;font-size:18px;letter-spacing:2px;background:linear-gradient(90deg,#ff8c00,#ff3c00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-#offSub{margin-top:6px;color:#666;font-size:11px;letter-spacing:1px}
-#loadingBar{margin-top:18px;width:120px;height:2px;background:#222;border-radius:2px;overflow:hidden}
-#loadingProgress{height:100%;width:40%;background:#ff8c00;animation:load 1.2s infinite}
-@keyframes load{0%{transform:translateX(-100%)}100%{transform:translateX(300%)}}
-
-/* PLAYER */
-#playerWrap{width:100%;height:100%;position:relative;display:none}
+/* VIDEO STAGE */
+#stage{flex:1;background:#000;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#off{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#playerWrap{width:100%;height:100%;position:relative;display:none;background:#000}
 #yt{width:100%;height:100%}
-#playCenter{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:72px;height:72px;background:rgba(255,140,0,0.95);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;color:#000;font-weight:900;z-index:10;cursor:pointer;box-shadow:0 0 40px rgba(255,140,0,0.6);border:3px solid #fff;display:none}
 
-/* GRAPHICS MPYA CHINI */
-#brandBar{position:absolute;bottom:0;left:0;right:0;height:68px;background:linear-gradient(to top,rgba(0,0,0,0.95) 20%,transparent);z-index:4;pointer-events:none;display:flex;align-items:flex-end;padding:10px 12px;gap:10px}
-#brandLogo{width:44px;height:44px;background:linear-gradient(135deg,#ff8c00,#ff3c00);border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:10px;text-align:center;line-height:1}
-#brandText b{display:block;font-size:13px;letter-spacing:0.5px}
-#brandText small{display:block;font-size:10px;color:#ffae42;margin-top:2px}
+/* RED BAR KAMA PICHA */
+#redBar{height:32px;background:#cc0000;display:flex;align-items:center;padding:0 8px;gap:10px;flex-shrink:0}
+#catBadge{background:#fff;color:#cc0000;padding:3px 12px;border-radius:14px;font-size:10px;font-weight:900}
+#redTicker{flex:1;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* FOOTER TICKER MPYA */
-#footer{height:32px;background:#0f0f0f;border-top:1px solid #222;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
-#ticker{white-space:nowrap;animation:scroll 50s linear infinite;padding-left:100%;font-size:11px;font-weight:600;letter-spacing:0.5px;color:#aaa}
-@keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+/* BOTTOM INFO KAMA PICHA */
+#bottomInfo{background:#000;padding:12px 12px 10px 12px;flex-shrink:0;border-top:1px solid #111}
+#bottomInfo b{font-size:15px;display:block}
+#bottomInfo small{font-size:11px;color:#ff8c00;display:block;margin-top:2px;letter-spacing:0.5px}
+#descBox{margin-top:10px;background:#111;border-left:3px solid #ff8c00;padding:10px 12px;border-radius:6px;font-size:12px;color:#ccc}
+#bottomTime{float:right;color:#ff8c00;font-size:11px;margin-top:-18px}
 </style>
 <script src="https://www.youtube.com/iframe_api"></script>
 </head><body>
 
 <div id="top">
-<div id="logo">ALE <span>TV HD</span></div>
-<div id="rightTop"><div id="clock">00:00:00</div><div id="liveDot">● LIVE</div></div>
+<div id="logo">🔥 ALE TV</div>
+<div id="centerPill">🌅 <span id="greet">Good Evening | Habari ya Jioni</span></div>
+<div id="liveBtn">● LIVE</div>
+</div>
+
+<div id="secondHead">
+<div id="avatar"><img id="avImg" src="https://i.pravatar.cc/100?img=12"></div>
+<div id="headText"><b id="hTitle">ALE TV HD - INAPAKIA...</b><small id="hSub">BURUDANI</small></div>
+<div id="headTime" id="clock2">16:28:25</div>
 </div>
 
 <div id="stage">
 <div id="off">
-<div id="tvIcon">📺</div>
-<div id="offTitle">ALE TV HD</div>
-<div id="offSub" id="offText">INAANZA SEKUNDE 1...</div>
-<div id="loadingBar"><div id="loadingProgress"></div></div>
+<div style="font-size:40px">📺</div>
+<div style="color:#ff8c00;font-weight:900;margin-top:10px;font-size:14px">ALE TV HD</div>
+<div style="color:#555;font-size:10px;margin-top:5px" id="offText">PLAYLIST: INAPAKIA...</div>
+</div>
+<div id="playerWrap"><div id="yt"></div></div>
 </div>
 
-<div id="playerWrap">
-<div id="yt"></div>
-<div id="playCenter" onclick="unMute()">▶</div>
-<div id="brandBar">
-<div id="brandLogo">ALE<br>HD</div>
-<div id="brandText"><b id="bTitle">ALE TV HD</b><small id="bSub">BURUDANI 24/7 • PLAYLIST MODE</small></div>
-</div>
-</div>
+<div id="redBar">
+<div id="catBadge">BURUDANI</div>
+<div id="redTicker">🔥 ALE TV Video | <span id="redTitle">MAMA AFRICA</span></div>
 </div>
 
-<div id="footer"><div id="ticker" id="tk">★ ALE TV HD ★ BURUDANI BILA KUKOMA ★</div></div>
+<div id="bottomInfo">
+<div id="bottomTime" id="clock3">16:28:25</div>
+<b id="bTitle">ALE TV Video</b>
+<small id="bCat">BURUDANI</small>
+<div id="descBox" id="bDesc">MAMA AFRICA - H.E KALENZO TOSHA 2027</div>
+</div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
 let player=null, videos=[], curIdx=0, hasStarted=false;
-setInterval(()=>{let d=new Date(); document.getElementById('clock').innerText=d.toLocaleTimeString('en-GB',{hour12:false});},1000);
 
-function makePlayer(id, start=0){
- if(!id){ console.log('no id'); return; }
+function updateClocks(){
+ let d=new Date(); let t=d.toLocaleTimeString('en-GB',{hour12:false});
+ document.getElementById('clock2').innerText=t;
+ document.getElementById('clock3').innerText=t;
+ let h=d.getHours();
+ let g=h<12?"Good Morning | Habari ya Asubuhi":h<17?"Good Afternoon | Habari ya Mchana":"Good Evening | Habari ya Jioni";
+ document.getElementById('greet').innerText=g;
+}
+setInterval(updateClocks,1000); updateClocks();
+
+function makePlayer(id,start=0){
+ if(!id) return;
  if(player) try{player.destroy()}catch{}
  document.getElementById('off').style.display='none';
  document.getElementById('playerWrap').style.display='block';
  hasStarted=true;
- // MUHIMU: mute:1 ndio inaruhusu autoplay kwa simu bila kukaa
  player=new YT.Player('yt',{
   width:'100%',height:'100%',videoId:id,
   playerVars:{autoplay:1,controls:1,rel:0,modestbranding:0,fs:1,playsinline:1,mute:1,start:start},
   events:{
-   onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute();},800); document.getElementById('playCenter').style.display='none';},
-   onStateChange:e=>{
-    if(e.data==0){ curIdx=(curIdx+1)%videos.length; makePlayer(videos[curIdx].videoId); }
-    if(e.data==1) document.getElementById('playCenter').style.display='none';
-   }
+   onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute();},600);},
+   onStateChange:e=>{ if(e.data==0){ curIdx=(curIdx+1)%videos.length; makePlayer(videos[curIdx].videoId); } }
   }
  });
 }
-window.unMute=()=>{ if(player){player.unMute(); player.setVolume(100);} document.getElementById('playCenter').style.display='none'; }
+
+function setUI(v){
+ document.getElementById('hTitle').innerText=v.title.toUpperCase();
+ document.getElementById('hSub').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('catBadge').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('redTitle').innerText=v.title;
+ document.getElementById('bTitle').innerText=v.title;
+ document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('bDesc').innerText=v.desc||v.title;
+}
 
 onValue(ref(db,'videos'),s=>{
   let d=s.val(); if(!d) return;
   videos=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
-  document.getElementById('offText').innerText=`${videos.length} VIDEOS - INAANZA SASA`;
-  document.getElementById('bTitle').innerText=videos[0].title;
-  document.getElementById('bSub').innerText=videos[0].desc||'BURUDANI 24/7';
-  document.getElementById('tk').innerText=`★ SASA: ${videos[0].title} ★ INAYOFUATA: ${videos[1]?.title||''} ★`;
-  if(!hasStarted){
+  document.getElementById('offText').innerText=`PLAYLIST: ${videos.length} VIDEOS`;
+  if(!hasStarted && videos.length>0){
+    setUI(videos[0]);
     makePlayer(videos[0].videoId);
   }
 });
 
 onValue(ref(db,'live'),s=>{
  let v=s.val(); if(!v||!v.videoId) return;
- let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) curIdx=idx;
- document.getElementById('bTitle').innerText=v.title;
- document.getElementById('bSub').innerText=v.desc||'LIVE';
- document.getElementById('tk').innerText=`★ LIVE: ${v.title} ★ ${v.desc} ★`;
  let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
- makePlayer(v.videoId,start);
+ let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) curIdx=idx;
+ setUI(v);
+ makePlayer(v.videoId, v.isLiveNow?0:start);
 });
-
-window.onYouTubeIframeAPIReady=()=>{ if(videos.length>0 &&!hasStarted) makePlayer(videos[0].videoId); };
-// force start baada ya 1.5sec hata YT API ikichelewa
-setTimeout(()=>{ if(!hasStarted && videos.length>0) makePlayer(videos[0].videoId); },1500);
+window.onYouTubeIframeAPIReady=()=>{};
+setTimeout(()=>{ if(!hasStarted && videos.length>0) makePlayer(videos[0].videoId); },1200);
 </script></body></html>
