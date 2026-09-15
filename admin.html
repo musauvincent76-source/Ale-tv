@@ -5,24 +5,14 @@
 .tab{flex:1;padding:12px;text-align:center;background:#222;border-radius:10px;font-size:13px;font-weight:900;cursor:pointer}
 .tab.active{background:#ff8c00;color:#000}
 .panel{display:none;padding:10px}.panel.active{display:block}
-.tvPreview{border:4px solid #ff8c00;border-radius:14px;overflow:hidden;height:320px;background:#000;position:relative}
-.tvPreview iframe,.tvPreview img{width:100%;height:100%;border:0;object-fit:cover}
 input,textarea,select{width:100%;padding:13px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#161616;color:#fff}
 .btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:900;font-size:16px;margin-top:8px;cursor:pointer}
-.syncBadge{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,0.8);color:#0f0;border:1px solid #0f0;padding:4px 10px;border-radius:20px;font-size:10px;z-index:5}
 </style></head><body>
 <div class="header"><span>ALE ADMIN</span><span id="status" style="background:#000;color:#ff8c00;padding:5px 12px;border-radius:20px;font-size:11px">OFFLINE</span></div>
 <div class="tabs"><div class="tab active" onclick="openTab('dash',this)">DASHBOARD</div><div class="tab" onclick="openTab('playlist',this)">PLAYLIST</div><div class="tab" onclick="openTab('settings',this)">SETTINGS</div></div>
 
 <div id="dash" class="panel active">
-<button class="btn" style="background:#ff8c00;color:#000" onclick="window.open('/','_blank')">📺 ONA TV YA PUBLIC - INAENDA PAMOJA NA HII PREVIEW</button>
-
-<div class="tvPreview" style="margin-top:10px">
-<div style="position:absolute;top:8px;left:8px;background:red;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:900;z-index:5">● LIVE PREVIEW - SYNC NA PUBLIC</div>
-<div id="sync" class="syncBadge">SYNC: 0s</div>
-<div id="preview" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555">Weka link</div>
-</div>
-<div style="margin-top:6px;background:#111;padding:8px;border-radius:8px;font-size:11px;color:#888">✅ Hii preview na TV ya public zinaenda pamoja - same second. Ukiweka PLAY hapa, public inaona hapo hapo.</div>
+<button class="btn" style="background:#ff8c00;color:#000" onclick="window.open('/','_blank')">📺 ONA TV YA PUBLIC</button>
 
 <div style="margin-top:10px;background:#111;padding:12px;border-radius:12px">
 <input id="link" placeholder="Weka YouTube au FB link" oninput="autoFetch()"><div id="autoInfo" style="font-size:11px;color:#0f0;margin:4px 0"></div>
@@ -42,12 +32,11 @@ const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXz
 window.openTab=(id,el)=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
 function getYTId(u){let m=u.match(/(?:youtu\.be\/|v=|embed\/|watch\?v=|shorts\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
 function isFb(u){return u.includes('facebook.com')||u.includes('fb.watch');}
-let liveCurrent=null, syncTimer=null;
 
 window.autoFetch=async()=>{
  let url=document.getElementById('link').value.trim(); if(url.length<8) return;
  let id=getYTId(url);
- if(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let d=await r.json();document.getElementById('title').value=d.title;document.getElementById('desc').value=d.title+' | ALE TV';document.getElementById('autoInfo').innerText='✅ '+d.title.substring(0,40);}catch{} document.getElementById('preview').innerHTML=`<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg">`;}
+ if(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let d=await r.json();document.getElementById('title').value=d.title;document.getElementById('desc').value=d.title+' | ALE TV';document.getElementById('autoInfo').innerText='✅ '+d.title.substring(0,40);}catch{}}
 }
 window.goLive=async(liveNow)=>{
  let url=document.getElementById('link').value.trim(); if(!url) return alert('Weka link');
@@ -57,23 +46,11 @@ window.goLive=async(liveNow)=>{
 window.stopLive=async()=>{await remove(ref(db,'live')); alert('STOP - TV zote mbili zimezimwa');}
 window.saveSettings=async()=>{await set(ref(db,'settings'),{name:document.getElementById('sName').value,ticker:document.getElementById('sTicker').value}); alert('Saved');}
 
-function renderPreview(v){
-  if(!v) return;
-  let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
-  document.getElementById('preview').innerHTML=`<iframe src="https://www.youtube.com/embed/${v.videoId}?autoplay=1&mute=1&controls=0&rel=0&start=${v.isLiveNow?0:start}" allow="autoplay"></iframe>`;
-  clearInterval(syncTimer);
-  syncTimer=setInterval(()=>{
-    let sec=Math.floor((Date.now()-v.startAt)/1000);
-    document.getElementById('sync').innerText=`SYNC NA PUBLIC: ${sec}s • PUBLIC INAONA HAPA HAPA`;
-  },1000);
-}
-
 onValue(ref(db,'live'),s=>{
-  let v=s.val(); liveCurrent=v;
+  let v=s.val();
   document.getElementById('status').innerText=v?'● LIVE - SYNC NA PUBLIC':'OFFLINE';
   document.getElementById('status').style.background=v?'red':'#000';
   document.getElementById('status').style.color=v?'#fff':'#ff8c00';
-  if(v) renderPreview(v);
 });
 
 onValue(ref(db,'videos'),s=>{
