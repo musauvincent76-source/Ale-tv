@@ -66,21 +66,17 @@ function updateInfo(v){
 function togglePlay(){
  if(!player) return;
  let state=player.getPlayerState();
- if(state==1){
-  player.pauseVideo();
- }else{
-  player.playVideo();
- }
+ if(state==1){player.pauseVideo();}else{player.playVideo();}
 }
 function onStateChange(e){
  let btn=document.getElementById('playBtn');
  if(e.data==1){
-  btn.innerText='⏸️'; btn.style.opacity='0.5';
+  btn.style.display='none';
   localStorage.setItem('ale_last_idx',current.idx);
   localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
  }
  if(e.data==2){
-  btn.innerText='▶️'; btn.style.opacity='1'; btn.style.display='flex';
+  btn.style.display='flex'; btn.innerText='▶️';
  }
  if(e.data==0){
   current.idx=(current.idx+1)%videos.length;
@@ -91,9 +87,7 @@ function onStateChange(e){
 }
 document.getElementById('playBtn').addEventListener('click',togglePlay);
 document.getElementById('playerBox').addEventListener('click',function(e){
- if(e.target.id!=='clock' && e.target.id!=='playBtn'){
-  togglePlay();
- }
+ if(e.target.id!=='clock'){togglePlay();}
 });
 </script>
 </body></html>
