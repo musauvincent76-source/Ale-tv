@@ -9,16 +9,16 @@ input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color
 button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
 .btn-add{background:#f59e0b;color:#000;width:100%}
 .btn-del{background:#ff0000;color:#fff}
+.btn-edit{background:#00f5ff;color:#000}
 .btn-ticker{background:#00ff88;color:#000;width:100%}
+.btn-tv{background:#00ff88;color:#000;width:100%;padding:14px;font-size:16px;margin-bottom:12px}
 .list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
 .stats{display:flex;gap:10px;text-align:center}
 .stats div{background:#222;flex:1;padding:10px;border-radius:8px}
 .stats b{color:#f59e0b;font-size:18px;display:block}
 </style></head><body>
 <h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
-<div style="display:flex;gap:10px;margin-bottom:15px">
-<a href="index.html" target="_blank" style="flex:1;text-decoration:none"><button style="width:100%;background:#00ff88;color:#000;padding:12px;font-size:15px">📺 FUNGUA TV - LIVE</button></a>
-</div>
+<button class="btn-tv" onclick="openTV()">📺 FUNGUA TV - ANGALIA LIVE</button>
 <div class="stats">
 <div><b id="totalV">0</b>Videos</div>
 <div><b id="liveV">LIVE</b>Status</div>
@@ -29,8 +29,10 @@ button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:p
 <input id="ytLink" placeholder="Weka YouTube Link au ID (https://youtube.com/watch?v=...)">
 <input id="vTitle" placeholder="Title ya video">
 <textarea id="vDesc" placeholder="Description"></textarea>
-<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option></select>
-<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#ff4444"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAMING</label>
+<select id="vCat">
+<option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option>
+</select>
+<label style="display:flex;align-items:center;gap:8px;margin:8px 0;color:#ff4444;font-size:13px"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAM (Mechi/Live News)</label>
 <button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
 </div>
 <div class="card">
@@ -45,9 +47,10 @@ button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:p
 <button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
 </div>
 <script>
+function openTV(){window.open('index.html','_blank'); setTimeout(()=>{window.location.href='index.html';},300);}
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
-function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m?m[1]:url;}
+function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/|live\/)([A-Za-z0-9_-]{11})/); return m?m[1]:url;}
 function addVideo(){
  let link=document.getElementById('ytLink').value.trim();
  let id=extractId(link);
@@ -61,7 +64,7 @@ function render(){
  let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
  document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
  let html=''; v.forEach((x,i)=>{
-  let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px">LIVE</span>':'';
+  let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:2px 6px;border-radius:3px;font-size:10px">LIVE</span>':'';
   html+=`<div class="list-item"><div><b>${x.title}</b>${liveTag}<br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
  });
  document.getElementById('list').innerHTML=html||'Hakuna video';
