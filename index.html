@@ -1,42 +1,56 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:sans-serif}
-#wrap{width:100%;background:#000;position:relative}
 #player{width:100%;aspect-ratio:16/9;background:#000}
-#player iframe{width:100%;height:100%}
-#tickerBar{position:absolute;bottom:0;left:0;right:0;background:#f59e0b;color:#000;font-weight:900;padding:5px 0;font-size:13px;white-space:nowrap;overflow:hidden;z-index:2}
-#tickerBar span{display:inline-block;padding-left:100%;animation:cross 25s linear infinite}
-@keyframes cross{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 8px;border-radius:3px;font-size:11px;font-weight:900;z-index:2}
-</style></head><body>
-<div id="wrap">
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#f59e0b;color:#000;font-weight:900;padding:6px;white-space:nowrap;overflow:hidden}
+.ticker span{display:inline-block;animation:move 20s linear infinite}
+@keyframes move{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+.wrap{position:relative;width:100%}
+</style>
+</head>
+<body>
+<div class="wrap">
 <div id="player"></div>
-<div id="live">🔴 LIVE</div>
-<div id="tickerBar"><span id="tick">ALE TV - Karibu...</span></div>
+<div class="ticker"><span id="tick">ALE TV LIVE</span></div>
 </div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function getSeek(id){let k='ale_start_'+id;let s=localStorage.getItem(k);if(!s){s=Date.now();localStorage.setItem(k,s);}return Math.floor((Date.now()-parseInt(s))/1000);}
+function getSeek(id){
+  let k='ale_start_'+id;
+  let s=localStorage.getItem(k);
+  if(!s){s=Date.now();localStorage.setItem(k,s);}
+  return Math.floor((Date.now()-parseInt(s))/1000);
+}
 let player;
-function load(){let s=document.createElement('script');s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s);}
+let tag=document.createElement('script');
+tag.src="https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+
 window.onYouTubeIframeAPIReady=()=>{
- let v=getV(); if(!v.length){document.getElementById('tick').innerText='Hakuna video - weka Admin'; return;}
+ let v=getV();
+ if(!v.length) return;
  let cur=v[v.length-1];
+ document.getElementById('tick').innerText=cur.title+" | "+(localStorage.getItem('ale_ticker_custom')||"ALE TV LIVE");
  let seek=getSeek(cur.id);
- document.getElementById('tick').innerText=cur.title+" | "+(localStorage.getItem('ale_ticker_custom')||"ALE TV LIVE - Exclusive")+" | "+cur.title;
  player=new YT.Player('player',{
-  videoId:cur.id,
-  playerVars:{autoplay:1,mute:0,controls:1,rel:0,modestbranding:1,playsinline:1,start:seek},
-  events:{
-   onReady:e=>{e.target.seekTo(seek,true); e.target.playVideo();},
-   onStateChange:e=>{if(e.data==2){setTimeout(()=>{player.seekTo(getSeek(cur.id),true);player.playVideo();},500);}}
-  }
+   videoId:cur.id,
+   playerVars:{autoplay:1,mute:1,controls:1,rel:0,start:seek},
+   events:{
+     onReady:e=>{
+       e.target.seekTo(seek,true);
+       e.target.playVideo();
+       setTimeout(()=>{e.target.unMute();},1000);
+     }
+   }
  });
 };
-load();
 </script>
-</body></html>
+</body>
+</html>
