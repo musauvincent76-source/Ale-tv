@@ -2,133 +2,102 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ALE TV</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV HD - NEW</title>
 <script src="https://www.youtube.com/iframe_api"></script>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@600;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:Roboto,Arial,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#top{height:52px;background:#080808;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #1a1a1a}
-#logo{font-weight:900;font-size:18px;letter-spacing:0.5px}
-#logo i{color:#ff6a00}
-#greetBox{background:#1a1a1a;border:1px solid #333;border-radius:20px;padding:6px 14px;font-size:11px;display:flex;align-items:center;gap:6px;max-width:52%;white-space:nowrap;overflow:hidden}
-#liveBadge{background:#e50000;color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:900;display:flex;align-items:center;gap:4px}
+body{background:#070709;color:#fff;font-family:Inter,Arial;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#top{height:56px;background:rgba(10,10,12,0.9);backdrop-filter:blur(20px);border-bottom:1px solid #1e1e22;display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+#logo{font-weight:800;font-size:20px;letter-spacing:-0.5px}
+#logo span{color:#ff7a00}
+#right{display:flex;align-items:center;gap:10px}
+#clock{font-size:12px;color:#888;background:#151519;padding:6px 12px;border-radius:100px;font-weight:600}
+#live{font-size:11px;background:#ff0000;padding:6px 14px;border-radius:100px;font-weight:800;animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.7}}
 
-#head{height:62px;background:#000;display:flex;align-items:center;padding:0 12px;gap:10px;border-bottom:1px solid #111}
-#av{width:42px;height:42px;border-radius:50%;background:#222;overflow:hidden;flex-shrink:0}
-#av img{width:100%;height:100%;object-fit:cover}
-#ht{flex:1;overflow:hidden}
-#ht b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:1.2}
-#ht span{font-size:11px;color:#999;display:block;margin-top:2px}
-#timeOrange{color:#ff8c00;font-size:12px;font-weight:700}
-
-#videoBox{flex:1;background:#000;position:relative;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#off{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:2}
-#playerWrap{width:100%;height:100%;position:absolute;inset:0;display:none;background:#000}
+#main{flex:1;display:flex;flex-direction:column;background:#000;position:relative}
+#videoWrap{flex:1;position:relative;background:#000;overflow:hidden}
 #yt{width:100%;height:100%}
+#off{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:2;background:radial-gradient(circle at center,#1a1a1f 0%,#000 70%)}
+#off h1{font-size:28px;font-weight:800;letter-spacing:-1px}
+#off p{color:#666;font-size:12px;margin-top:6px}
+#loader{width:40px;height:40px;border:3px solid #222;border-top-color:#ff7a00;border-radius:50%;animation:spin 0.8s linear infinite;margin-top:20px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
-#redBar{height:36px;background:#d40000;display:flex;align-items:center;padding:0 10px;gap:10px;flex-shrink:0}
-#burudani{background:#fff;color:#000;padding:4px 14px;border-radius:4px;font-size:11px;font-weight:900}
-#redText{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info{height:88px;background:linear-gradient(0deg,#0c0c0f 0%,rgba(0,0,0,0) 100%);position:absolute;bottom:0;left:0;right:0;padding:16px;z-index:3;display:flex;align-items:flex-end;gap:12px}
+#infoIcon{width:48px;height:48px;background:linear-gradient(135deg,#ff7a00,#ff3d00);border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000}
+#infoText{flex:1}
+#infoText b{font-size:14px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:70vw}
+#infoText small{font-size:11px;color:#ff7a00;text-transform:uppercase;letter-spacing:1px}
 
-#bottom{background:#000;padding:14px 12px 18px 12px}
-#bottom b{font-size:15px}
-#bottom.cat{color:#ff8c00;font-size:11px;margin-top:3px;display:block}
-#desc{margin-top:12px;background:#141414;border-left:3px solid #ff8c00;padding:12px;border-radius:4px;font-size:12px;color:#ccc}
+#tickerBar{height:36px;background:#ff7a00;color:#000;display:flex;align-items:center;padding:0 14px;font-size:11px;font-weight:800;letter-spacing:0.5px}
+#tickerText{white-space:nowrap;animation:marquee 25s linear infinite}
+@keyframes marquee{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
 </style>
 </head>
 <body>
 
 <div id="top">
-<div id="logo"><i>🔥</i> ALE TV</div>
-<div id="greetBox">🌄 <span id="gText">Good Evening | Habari ya Jioni</span></div>
-<div id="liveBadge">● LIVE</div>
+<div id="logo">ALE <span>TV</span></div>
+<div id="right">
+<div id="clock">00:00:00</div>
+<div id="live">LIVE</div>
+</div>
 </div>
 
-<div id="head">
-<div id="av"><img id="avImg" src="https://i.pravatar.cc/100?img=32"></div>
-<div id="ht"><b id="mainTitle">MAMA AFRICA - H. E KALONZO MUSYOKA</b><span id="subTitle">MAMA AFRICA</span></div>
-<div id="timeOrange">16:28:25</div>
-</div>
-
-<div id="videoBox">
+<div id="main">
+<div id="videoWrap">
 <div id="off">
-<div style="font-size:50px;opacity:0.2">📺</div>
-<div style="margin-top:10px;color:#ff8c00;font-weight:900">ALE TV HD</div>
-<div id="offSub" style="font-size:10px;color:#555;margin-top:4px">INAANZA...</div>
+<h1>ALE TV HD</h1>
+<p id="offP">Inapakia matangazo...</p>
+<div id="loader"></div>
 </div>
-<div id="playerWrap"><div id="yt"></div></div>
+<div id="yt"></div>
+<div id="info">
+<div id="infoIcon">HD</div>
+<div id="infoText">
+<b id="title">ALE TV HD</b>
+<small id="cat">Burudani 24/7</small>
 </div>
-
-<div id="redBar">
-<div id="burudani">BURUDANI</div>
-<div id="redText">🔥 ALE TV Video | <span id="redTitle">MAMA AFRICA - H. E KALONZO MUSYOKA</span></div>
 </div>
-
-<div id="bottom">
-<b id="bTitle">ALE TV Video</b>
-<span class="cat" id="bCat">BURUDANI</span>
-<div id="desc">MAMA AFRICA - H.E KALENZO TOSHA 2027</div>
+</div>
+<div id="tickerBar"><div id="tickerText">🔥 ALE TV HD - BURUDANI BILA KUKOMA | MAMA AFRICA | HABARI | MUZIKI | LIVE 24/7</div></div>
 </div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-let player=null, videos=[], curIdx=0, started=false;
+let player=null, videos=[], cur=0, started=false;
 
-function setClock(){
- let d=new Date(); let s=d.toLocaleTimeString('en-GB',{hour12:false});
- document.getElementById('timeOrange').innerText=s;
- let h=d.getHours();
- let greet = h<12?"Good Morning | Habari ya Asubuhi": h<17?"Good Afternoon | Habari ya Mchana":"Good Evening | Habari ya Jioni";
- document.getElementById('gText').innerText=greet;
-}
-setInterval(setClock,1000); setClock();
+setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{hour12:false})},1000);
 
-function updateUI(v){
- document.getElementById('mainTitle').innerText=v.title.toUpperCase();
- document.getElementById('subTitle').innerText=(v.desc||v.cat||'MAMA AFRICA').toUpperCase().substring(0,30);
- document.getElementById('burudani').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('redTitle').innerText=v.title;
- document.getElementById('bTitle').innerText=v.title;
- document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('desc').innerText=v.desc||v.title;
-}
-
-function playVideo(id, start=0){
+function play(id, s=0){
  if(!id) return;
  if(player) try{player.destroy()}catch{}
  document.getElementById('off').style.display='none';
- document.getElementById('playerWrap').style.display='block';
  started=true;
- player=new YT.Player('yt',{
-  width:'100%',height:'100%',videoId:id,
-  playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1,fs:1,playsinline:1,mute:1,start:start},
-  events:{
-   onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute(); e.target.setVolume(100);},700);},
-   onStateChange:e=>{ if(e.data==0){ curIdx=(curIdx+1)%videos.length; updateUI(videos[curIdx]); playVideo(videos[curIdx].videoId); } }
-  }
+ player=new YT.Player('yt',{width:'100%',height:'100%',videoId:id,
+ playerVars:{autoplay:1,controls:1,modestbranding:1,fs:1,playsinline:1,mute:1,start:s,rel:0},
+ events:{onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute();},800);},
+ onStateChange:e=>{if(e.data==0){cur=(cur+1)%videos.length; document.getElementById('title').innerText=videos[cur].title; play(videos[cur].videoId)}}}
  });
 }
 
 onValue(ref(db,'videos'),snap=>{
- let d=snap.val(); if(!d) {document.getElementById('offSub').innerText='HAKUNA VIDEO - WEKA ADMIN'; return;}
+ let d=snap.val(); if(!d) {document.getElementById('offP').innerText='Hakuna video - weka admin'; return;}
  videos=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
- if(!started){
-  updateUI(videos[0]);
-  playVideo(videos[0].videoId);
- }
+ if(!started){ document.getElementById('title').innerText=videos[0].title; document.getElementById('cat').innerText=videos[0].cat||'BURUDANI'; play(videos[0].videoId); }
 });
 
 onValue(ref(db,'live'),snap=>{
- let v=snap.val(); if(!v||!v.videoId) return;
- let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) curIdx=idx;
- updateUI(v);
- let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
- playVideo(v.videoId, v.isLiveNow?0:start);
+ let v=snap.val(); if(!v?.videoId) return;
+ let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) cur=idx;
+ document.getElementById('title').innerText=v.title; document.getElementById('cat').innerText=v.cat||'LIVE';
+ let st=Math.floor((Date.now()-v.startAt)/1000); if(st<0) st=0;
+ play(v.videoId, v.isLiveNow?0:st);
 });
-
-window.onYouTubeIframeAPIReady=()=>{};
 </script>
 </body>
-              </html>
+ </html>
