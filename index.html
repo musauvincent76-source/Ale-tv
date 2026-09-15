@@ -1,123 +1,130 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title><style>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title>
+<style>
 *{box-sizing:border-box;margin:0;padding:0}body{background:#000;color:#fff;font-family:Arial;height:100vh;overflow:hidden}
-#h{height:50px;background:linear-gradient(90deg,#ff8c00,#ffb347);display:flex;justify-content:space-between;align-items:center;padding:0 14px;position:fixed;top:0;left:0;right:0;z-index:10}
-#stage{position:fixed;top:50px;left:0;right:0;bottom:44px;background:#000}
-#off{width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;background:radial-gradient(#111,#000)}
-#playerWrap{width:100%;height:100%;position:relative;display:none}
-#block{position:absolute;inset:0;z-index:2}
-#soundPop{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.85);border:2px solid #ff8c00;color:#fff;padding:12px 20px;border-radius:30px;font-weight:900;font-size:14px;z-index:10;display:none;cursor:pointer;animation:pulse 1.5s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 #ff8c00}70%{box-shadow:0 0 0 10px rgba(255,140,0,0)}100%{box-shadow:0 0 0 0 rgba(255,140,0,0)}}
-#nextInfo{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.8);border:1px solid #ff8c00;padding:8px 12px;border-radius:10px;font-size:11px;z-index:10;display:none}
-#footer{position:fixed;bottom:0;left:0;right:0;height:44px;background:#0a0a0a;border-top:3px solid #ff8c00;display:flex;align-items:center;overflow:hidden}
-#tk{white-space:nowrap;animation:scroll 60s linear infinite;padding-left:100%}
+#top{height:42px;background:linear-gradient(90deg,#ff6a00,#ff9a00);display:flex;align-items:center;justify-content:space-between;padding:0 12px;position:fixed;top:0;left:0;right:0;z-index:20}
+#top b{color:#000;font-weight:900;font-size:15px}
+#rightTop{display:flex;align-items:center;gap:8px}
+#clock{background:#000;color:#ff8c00;padding:5px 10px;border-radius:6px;font-weight:900;font-size:13px;border:1px solid #ff8c00}
+#liveDot{background:#e60000;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:900;animation:blink 1s infinite}
+@keyframes blink{0%,50%{opacity:1}51%,100%{opacity:0.6}}
+#stage{position:fixed;top:42px;left:0;right:0;bottom:38px;background:#000;overflow:hidden}
+#playerWrap{width:100%;height:100%;position:relative;background:#000}
+#yt{width:100%;height:100%}
+#hideYT{position:absolute;right:0;bottom:0;width:180px;height:70px;background:linear-gradient(to top, rgba(0,0,0,0.9), transparent);z-index:4;pointer-events:none}
+#blockAll{position:absolute;inset:0;z-index:3}
+#watermark{position:absolute;top:12px;left:12px;background:rgba(0,0,0,0.6);border:1px solid rgba(255,140,0,0.6);padding:6px 12px;border-radius:6px;font-weight:900;font-size:11px;z-index:5}
+#watermark span{color:#ff8c00}
+#lowerThird{position:absolute;bottom:18px;left:0;background:linear-gradient(90deg,rgba(0,0,0,0.95),rgba(255,140,0,0.9));border-left:4px solid #ff8c00;padding:10px 18px;min-width:55%;max-width:90%;z-index:5}
+#playBtn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(255,140,0,0.95);color:#000;width:90px;height:90px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:900;z-index:11;cursor:pointer;box-shadow:0 0 30px #ff8c00;border:4px solid #fff;animation:pulse 1.5s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #ff8c00}70%{box-shadow:0 0 0 20px rgba(255,140,0,0)}100%{box-shadow:0 0 0 0 rgba(255,140,0,0)}}
+#nextBar{position:absolute;bottom:0;left:0;right:0;height:3px;background:#222;z-index:6}
+#nextProgress{height:100%;width:0%;background:#ff8c00;transition:width 1s linear}
+#footer{position:fixed;bottom:0;left:0;right:0;height:38px;background:#0a0a0a;border-top:2px solid #ff8c00;display:flex;align-items:center;overflow:hidden;z-index:20}
+#ticker{white-space:nowrap;animation:scroll 80s linear infinite;padding-left:100%;font-size:13px;font-weight:700}
 @keyframes scroll{from{transform:translateX(0)}to{transform:translateX(-100%)}}
+#off{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,#1a1a1a,#000)}
 </style>
 <script src="https://www.youtube.com/iframe_api"></script>
 </head><body>
-<div id="h"><b style="color:#000">ALE TV HD</b><div style="display:flex;gap:8px;align-items:center"><span id="liveBadge" style="background:red;color:#fff;padding:5px 12px;border-radius:20px;font-size:11px">● LIVE</span><span id="nextCount" style="background:#000;color:#ff8c00;padding:5px 10px;border-radius:20px;font-size:10px;display:none"></span></div></div>
-
+<div id="top"><b>ALE TV HD</b><div id="rightTop"><div id="clock">00:00:00</div><div id="liveDot">● LIVE</div></div></div>
 <div id="stage">
-<div id="off"><div style="font-size:50px">📺</div><div style="color:#ff8c00;font-weight:900;margin-top:10px">ALE TV HD INAANDAA...</div></div>
-<div id="playerWrap">
-<div id="block"></div>
-<div id="yt"></div>
-<div id="soundPop" onclick="unMute()">🔊 BONYEZA HAPA KUWASHA SAUTI</div>
-<div id="nextInfo">⏭ Inayofuata inaanza sekunde <span id="sec">8</span>...</div>
+<div id="off"><div style="font-size:60px">📺</div><div style="color:#ff8c00;font-weight:900;margin-top:12px">ALE TV HD</div><div style="color:#555;font-size:12px;margin-top:6px">INAANDAA...</div></div>
+<div id="playerWrap" style="display:none">
+<div id="blockAll"></div><div id="hideYT"></div><div id="yt"></div>
+<div id="watermark"><span>ALE</span> TV HD</div>
+<div id="lowerThird"><b id="ltTitle">ALE TV HD</b><small id="ltSub">BURUDANI</small></div>
+<div id="playBtn" onclick="doPlay()">▶</div>
+<div id="nextBar"><div id="nextProgress"></div></div>
 </div>
 </div>
-
-<div id="footer"><div id="tk">★ ALE TV HD ★ BURUDANI 24/7 ★</div></div>
+<div id="footer"><div id="ticker" id="tk">★ ALE TV HD ★ SYNC MODE ★</div></div>
 
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue,set}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const app=initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"});
+const db=getDatabase(app);
 
-let player=null, liveData=null, videosList=[], currentIndex=0, timer=null, isMuted=true, autoNextArmed=false;
+let player=null, videos=[], curIdx=0, checkInt=null, autoArmed=false, liveData=null, isMaster=false;
 
-function makePlayer(videoId, startSec=0){
-  if(player){ player.destroy(); }
-  document.getElementById('playerWrap').style.display='block';
-  document.getElementById('off').style.display='none';
-  player = new YT.Player('yt', {
-    width:'100%', height:'100%',
-    videoId: videoId,
-    playerVars:{autoplay:1, controls:0, rel:0, modestbranding:1, playsinline:1, start:startSec, mute:1},
-    events:{
-      onReady:(e)=>{ e.target.playVideo(); isMuted=true; document.getElementById('soundPop').style.display='block'; checkTime(); },
-      onStateChange:(e)=>{
-        if(e.data==0){ // imeisha
-          playNext();
-        }
-      }
-    }
-  });
+setInterval(()=>{let d=new Date(); document.getElementById('clock').innerText=d.toLocaleTimeString('en-GB',{hour12:false});},1000);
+
+function makePlayer(id,start=0){
+ if(player) try{player.destroy()}catch{}
+ document.getElementById('off').style.display='none';
+ document.getElementById('playerWrap').style.display='block';
+ document.getElementById('playBtn').style.display='flex';
+ player=new YT.Player('yt',{
+  width:'100%',height:'100%',videoId:id,
+  playerVars:{autoplay:1,controls:0,rel:0,modestbranding:1,fs:0,iv_load_policy:3,disablekb:1,playsinline:1,start:start,mute:1},
+  events:{ onReady:e=>{e.target.playVideo(); startCheck();}, onStateChange:e=>{if(e.data==0) handleEnded();} }
+ });
+}
+window.doPlay=()=>{
+ if(player){ player.playVideo(); player.unMute(); player.setVolume(100); }
+ document.getElementById('playBtn').style.display='none';
 }
 
-window.unMute=()=>{
-  if(player){ player.unMute(); player.setVolume(100); isMuted=false; document.getElementById('soundPop').style.display='none'; }
+// Kila mtu anaona kimoja - master ndio anabadilisha Firebase
+async function handleEnded(){
+  // Jaribu kuwa master wa kubadilisha video
+  if(videos.length==0) return;
+  curIdx=(curIdx+1)%videos.length;
+  let next=videos[curIdx];
+  // Andika kwa Firebase - watu wote wata-sync kupitia onValue
+  try{
+    await set(ref(db,'live'),{
+      title: next.title,
+      desc: next.desc||'',
+      cat: next.cat||'Burudani',
+      url: next.url||'',
+      videoId: next.videoId,
+      type: 'youtube',
+      isLiveNow: false,
+      startAt: Date.now(), // SAA MPYA - wote wataanza hapa
+      auto: true
+    });
+  }catch(e){
+    // kama huna permission ya kuandika, cheza tu local
+    makePlayer(next.videoId,0);
+  }
 }
 
-function checkTime(){
-  clearInterval(timer);
-  timer=setInterval(()=>{
-    if(!player ||!player.getDuration) return;
-    let dur=player.getDuration();
-    let cur=player.getCurrentTime();
-    let remain=dur-cur;
-    if(dur>0 && remain<=8 && remain>0 &&!autoNextArmed){
-      autoNextArmed=true;
-      document.getElementById('nextInfo').style.display='block';
-      let s=8;
-      let countInt=setInterval(()=>{
-        s--; document.getElementById('sec').innerText=s;
-        if(s<=0) clearInterval(countInt);
-      },1000);
-      // Preload next video kwa background - inaanza bila delay
-      setTimeout(()=>{ playNext(); }, 5000);
-    }
-    if(remain>9) autoNextArmed=false;
-  },500);
-}
-
-function playNext(){
-  clearInterval(timer);
-  document.getElementById('nextInfo').style.display='none';
-  autoNextArmed=false;
-  if(videosList.length==0) return;
-  currentIndex=(currentIndex+1)%videosList.length;
-  let next=videosList[currentIndex];
-  if(!next.videoId) { playNext(); return; }
-  document.getElementById('tk').innerText=`★ SASA: ${next.title} ★ ${next.desc} ★ ALE TV HD ★`;
-  makePlayer(next.videoId,0);
+function startCheck(){
+ clearInterval(checkInt);
+ checkInt=setInterval(()=>{
+  if(!player||!player.getDuration) return;
+  let dur=player.getDuration(), cur=player.getCurrentTime(), rem=dur-cur;
+  if(dur>0){
+   document.getElementById('nextProgress').style.width=((cur/dur)*100)+'%';
+   if(rem<=8 && rem>0 &&!autoArmed){
+    autoArmed=true;
+    document.getElementById('tk').innerText=`★ INAYOFUATA: ${videos[(curIdx+1)%videos.length]?.title||''} INAANZA SEKUNDE 8... ★`;
+    setTimeout(()=>handleEnded(),5000); // 3 sec kabla haijaisha
+   }
+   if(rem>9) autoArmed=false;
+  }
+ },500);
 }
 
 onValue(ref(db,'videos'),s=>{
   let d=s.val(); if(!d) return;
-  videosList=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
+  videos=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
 });
 
 onValue(ref(db,'live'),s=>{
-  liveData=s.val();
-  if(!liveData) return;
-  // kama admin ameweka LIVE, icheze hiyo kwanza
-  let start=Math.floor((Date.now()-liveData.startAt)/1000);
-  if(start<0) start=0;
-  // tafuta index ya hiyo video kwenye playlist
-  let idx=videosList.findIndex(v=>v.videoId===liveData.videoId);
-  if(idx>=0) currentIndex=idx;
+ let v=s.val(); if(!v||!v.videoId) return;
+ // Kama ni video ile ile inayocheza, usi-reload
+ if(liveData && liveData.videoId===v.videoId && Math.abs(v.startAt-liveData.startAt)<2000) return;
 
-  document.getElementById('tk').innerText=`★ ${liveData.title} ★ ${liveData.desc} ★`;
+ liveData=v;
+ let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
+ let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) curIdx=idx;
+ document.getElementById('ltTitle').innerText=v.title.toUpperCase();
+ document.getElementById('ltSub').innerText=(v.desc||'ALE TV HD').toUpperCase();
+ document.getElementById('tk').innerText=`★ SASA: ${v.title} ★ ${v.desc} ★ WATU WOTE WANAONA HII PAMOJA ★`;
 
-  if(liveData.type==='youtube' && liveData.videoId){
-    if(typeof YT!=='undefined' && YT.Player){
-      makePlayer(liveData.videoId, liveData.isLiveNow?0:start);
-    }else{
-      window.onYouTubeIframeAPIReady=()=>makePlayer(liveData.videoId, liveData.isLiveNow?0:start);
-    }
-  }
+ if(typeof YT!=='undefined' && YT.Player) makePlayer(v.videoId, v.isLiveNow?0:start);
+ else window.onYouTubeIframeAPIReady=()=>makePlayer(v.videoId, v.isLiveNow?0:start);
 });
-
-window.onYouTubeIframeAPIReady=()=>{
-  if(liveData && liveData.videoId) makePlayer(liveData.videoId,0);
-}
+window.onYouTubeIframeAPIReady=()=>{ if(liveData) makePlayer(liveData.videoId,0); };
 </script></body></html>
