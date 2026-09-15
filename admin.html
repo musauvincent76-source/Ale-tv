@@ -2,178 +2,111 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV - ADMIN</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#0a0a0a;color:#fff;font-family:sans-serif;padding:12px}
-h2{color:#f59e0b;margin:0 0 12px 0}
+*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:sans-serif;padding:15px}
+.top{border-bottom:2px solid #f59e0b;padding-bottom:10px;margin-bottom:15px;display:flex;justify-content:space-between;align-items:center}
+.logo{color:#f59e0b;font-weight:900;font-size:20px}
 .card{background:#111;border:1px solid #222;border-radius:10px;padding:12px;margin-bottom:12px}
-label{font-size:12px;color:#f59e0b;font-weight:bold;display:block;margin:8px 0 4px}
-input,textarea,select{width:100%;padding:10px;border-radius:6px;border:1px solid #333;background:#1a1a1a;color:#fff;font-size:14px}
-textarea{height:70px}
-button{width:100%;padding:12px;border:0;border-radius:8px;font-weight:900;cursor:pointer;margin-top:8px;font-size:14px}
+label{color:#f59e0b;font-size:12px;font-weight:bold;display:block;margin:10px 0 4px}
+input,textarea,select{width:100%;padding:12px;border-radius:8px;border:1px solid #333;background:#1a1a1a;color:#fff}
+button{width:100%;padding:13px;border:0;border-radius:8px;font-weight:900;margin-top:10px;cursor:pointer}
 .btn-gold{background:#f59e0b;color:#000}
-.btn-red{background:#b80000;color:#fff}
 .btn-dark{background:#222;color:#fff;border:1px solid #333}
-.row{display:flex;gap:8px}
-.row button{flex:1}
-.live-box{border-left:4px solid #ff0000}
-.queue-box{border-left:4px solid #f59e0b}
 .small{font-size:11px;color:#888;margin-top:4px}
-.status{padding:6px 10px;border-radius:6px;font-size:12px;font-weight:bold;display:inline-block}
-.s-live{background:#ff0000;color:#fff}
-.s-queue{background:#f59e0b;color:#000}
-.video-item{background:#1a1a1a;padding:8px;border-radius:6px;margin:6px 0;display:flex;justify-content:space-between;align-items:center}
+.live{border-left:4px solid #ff0000}
+.item{background:#1a1a1a;padding:8px;border-radius:6px;margin:6px 0;font-size:13px;display:flex;justify-content:space-between;align-items:center}
 </style>
 </head><body>
-<h2>🔥 ALE TV ADMIN</h2>
+<div class="top"><div class="logo">🔥 ALE TV ADMIN</div><div id="status" style="font-size:12px;color:#0f0">● Connected</div></div>
 
-<div class="card live-box">
-<div class="status s-live">● LIVE SASA</div>
-<div id="currentLive" style="margin-top:8px">Inapakia...</div>
-<div id="liveTime" class="small"></div>
-</div>
-
-<div class="card queue-box">
-<div class="status s-queue">⏭️ QUEUE - Inayofuata</div>
-<div id="queueBox" style="margin-top:8px">Hakuna video queue</div>
+<div class="card live">
+<b style="color:#ff0000">● LIVE SASA</b>
+<div id="nowPlaying" style="margin-top:6px">Inapakia...</div>
 </div>
 
 <div class="card">
-<label>📺 YouTube URL au ID</label>
-<input id="ytInput" placeholder="https://youtu.be/xxxx au dQw4w9WgXcQ">
-<div class="small">Weka link ya YouTube, system itatoa ID yenyewe</div>
-
-<label>🏷️ Title</label>
-<input id="title" placeholder="Ex: TAARIFA YA HABARI">
-
+<label>📺 YouTube Link au ID</label>
+<input id="yt" placeholder="https://youtu.be/xxxxx au ID">
+<label>📌 Title</label>
+<input id="title" placeholder="TAARIFA YA HABARI">
 <label>📂 Category</label>
-<select id="cat">
-<option>LIVE</option><option>HABARI</option><option>BURUDANI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option>
-</select>
-
+<select id="cat"><option>LIVE</option><option>HABARI</option><option>BURUDANI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option></select>
 <label>📝 Description</label>
-<textarea id="desc" placeholder="Maelezo mafupi..."></textarea>
-
-<div class="row">
-<button class="btn-gold" onclick="addToQueue()">⏭️ WEKA QUEUE (Ngoja iishe)</button>
-<button class="btn-red" onclick="forcePlay()">⚡ CHEZA SASA (Katiza)</button>
-</div>
-<div class="small">QUEUE = ngoja inayocheza iishe (TV ya kweli) | CHEZA SASA = katiza mara moja</div>
+<textarea id="desc" placeholder="Maelezo..."></textarea>
+<button class="btn-gold" onclick="wekaVideo()">🔥 WEKA LIVE SASA</button>
+<div class="small">Hii ndio iliyokuwa inafanya kazi zamani - inatuma moja kwa moja kama TV</div>
 </div>
 
 <div class="card">
-<label>📢 Ticker Text (chini)</label>
-<input id="ticker" placeholder="Habari mpya...">
-<div class="row">
-<button class="btn-gold" onclick="updateTicker()">Badilisha Ticker</button>
-<button class="btn-dark" onclick="clearQueue()">Futa Queue</button>
-</div>
+<label>📢 Ticker (chini ya video)</label>
+<input id="ticker" placeholder="Andika habari...">
+<button class="btn-gold" onclick="wekaTicker()">Badilisha Ticker</button>
 </div>
 
 <div class="card">
-<h4 style="margin:0;color:#f59e0b">📋 Video Zote Firebase</h4>
-<div id="allVideos"></div>
-<button class="btn-dark" onclick="loadVideos()">🔄 Refresh</button>
+<b>📋 Video zote</b>
+<div id="list"></div>
+<button class="btn-dark" onclick="location.reload()">Refresh</button>
 </div>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getDatabase,ref,push,set,onValue,remove,update} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"};
-const app=initializeApp(cfg);const db=getDatabase(app);
+import {getDatabase,ref,push,set,onValue,remove} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-function getYTId(url){
+const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"};
+const app=initializeApp(cfg);
+const db=getDatabase(app);
+
+function ytId(url){
   url=url.trim();
   if(!url) return null;
-  if(url.length===11 &&!url.includes('/') ) return url;
-  let m=url.match(/(?:youtu\.be\/|v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/);
+  if(url.length===11 &&!url.includes('/') &&!url.includes('?')) return url;
+  let m=url.match(/(?:youtu\.be\/|v=|\/embed\/|shorts\/)([A-Za-z0-9_-]{11})/);
   return m?m[1]:null;
 }
-function fixTime(t){ if(!t) return Date.now(); let n=Number(t); if(n<1e12) n=n*1000; return n; }
 
-window.addToQueue = async ()=>{
-  let yt=document.getElementById('ytInput').value;
-  let id=getYTId(yt);
-  if(!id) return alert('Weka YouTube URL sahihi!');
+window.wekaVideo = async ()=>{
+  let raw=document.getElementById('yt').value;
+  let id=ytId(raw);
+  if(!id) return alert('Weka YouTube link sahihi mkuu!');
   let title=document.getElementById('title').value||'ALE TV LIVE';
   let cat=document.getElementById('cat').value||'LIVE';
-  let desc=document.getElementById('desc').value||'';
+  let desc=document.getElementById('desc').value||'ALE TV LIVE';
   let data={
     id:id,
     title:title,
     cat:cat,
     desc:desc,
-    created:Date.now(), // MS - muhimu!
     createdAt:Date.now(),
-    isLive:false
+    created:Date.now()
   };
+  // HII NDIO YA ZAMANI - push kwa videos kama zamani
   await push(ref(db,'videos'),data);
-  alert('✅ Imewekwa QUEUE! Itaanza baada ya inayocheza iishe');
-  document.getElementById('ytInput').value='';
+  alert('✅ Imewekwa! Sasa inaenda moja kwa moja kwa TV');
+  document.getElementById('yt').value='';
+  document.getElementById('title').value='';
+  document.getElementById('desc').value='';
 };
 
-window.forcePlay = async ()=>{
-  let yt=document.getElementById('ytInput').value;
-  let id=getYTId(yt);
-  if(!id) return alert('Weka YouTube URL!');
-  let title=document.getElementById('title').value||'ALE TV LIVE';
-  let cat=document.getElementById('cat').value||'LIVE';
-  let desc=document.getElementById('desc').value||'';
-  if(!confirm('⚠️ Unataka KUKATIZA inayocheza na kucheza hii SASA?')) return;
-  let data={id:id,title:title,cat:cat,desc:desc,created:Date.now(),createdAt:Date.now(),isLive:false};
-  // futa zote na weka hii moja tu - ndio ianze sasa
-  let snap=await new Promise(r=>onValue(ref(db,'videos'),s=>r(s),{onlyOnce:true}));
-  let all=snap.val();
-  if(all){
-    for(let k in all){ await remove(ref(db,'videos/'+k)); }
-  }
-  await push(ref(db,'videos'),data);
-  alert('⚡ Inacheza SASA!');
-};
-
-window.updateTicker = async ()=>{
+window.wekaTicker = async ()=>{
   let t=document.getElementById('ticker').value;
-  if(!t) return alert('Andika ticker!');
-  await set(ref(db,'ticker'),{text:t,updated:Date.now()});
-  alert('Ticker updated');
-};
-window.clearQueue = async ()=>{
-  if(!confirm('Futa queue zote isipokuwa inayocheza?')) return;
-  let snap=await new Promise(r=>onValue(ref(db,'videos'),s=>r(s),{onlyOnce:true}));
-  let all=snap.val(); if(!all) return;
-  let sorted=Object.entries(all).sort((a,b)=>(b[1].createdAt||b[1].created||0)-(a[1].createdAt||a[1].created||0));
-  // baki na ya kwanza tu (inayocheza)
-  for(let i=1;i<sorted.length;i++){ await remove(ref(db,'videos/'+sorted[i][0])); }
-  alert('Queue zimefutwa');
+  if(!t) return alert('Andika ticker');
+  await set(ref(db,'ticker'),{text:t});
+  alert('Ticker imebadilika');
 };
 
-function loadVideos(){
-  onValue(ref(db,'videos'),snap=>{
-    let d=snap.val();
-    let currDiv=document.getElementById('currentLive');
-    let queueDiv=document.getElementById('queueBox');
-    let allDiv=document.getElementById('allVideos');
-    if(!d){
-      currDiv.innerHTML='Hakuna video';
-      queueDiv.innerHTML='Hakuna queue';
-      allDiv.innerHTML='Hakuna';
-      return;
-    }
-    let arr=Object.entries(d).map(([k,v])=>({key:k,...v})).sort((a,b)=>(b.createdAt||b.created||0)-(a.createdAt||a.created||0));
-    let latest=arr[0];
-    let liveTime=fixTime(latest.createdAt||latest.created);
-    let elapsed=Math.floor((Date.now()-liveTime)/1000);
-    currDiv.innerHTML=`<b>${latest.title}</b><br><small>${latest.id} | ${latest.cat}</small><br><small>Elapsed: ${Math.floor(elapsed/60)}m ${elapsed%60}s</small>`;
-    document.getElementById('liveTime').innerText='Started: '+new Date(liveTime).toLocaleString();
+// Onyesha live kama zamani
+onValue(ref(db,'videos'),snap=>{
+  let d=snap.val();
+  if(!d){ document.getElementById('nowPlaying').innerHTML='Hakuna video'; return; }
+  let arr=Object.values(d).sort((a,b)=>(b.createdAt||b.created||0)-(a.createdAt||a.created||0));
+  let v=arr[0];
+  document.getElementById('nowPlaying').innerHTML=`<b>${v.title}</b><br><small>${v.id} | ${v.cat}</small>`;
+  document.getElementById('list').innerHTML=arr.map(v=>`<div class="item"><span>${v.title}<br><small>${v.id}</small></span><small>${v.cat}</small></div>`).join('');
+});
 
-    if(arr.length>1){
-      queueDiv.innerHTML=arr.slice(1).map((v,i)=>`<div class="video-item"><span>${i+1}. ${v.title} (${v.id})</span><button style="width:auto;padding:4px 8px" class="btn-red" onclick="deleteOne('${v.key}')">X</button></div>`).join('');
-    } else {
-      queueDiv.innerHTML='Hakuna video queue - weka mpya itangoja hapa';
-    }
-    allDiv.innerHTML=arr.map(v=>`<div class="video-item"><span>${v.title}<br><small>${v.id}</small></span><span style="font-size:10px">${v.cat}</span></div>`).join('');
-  });
-}
-window.deleteOne = async (k)=>{ if(confirm('Futa hii?')) await remove(ref(db,'videos/'+k)); };
-loadVideos();
-setInterval(loadVideos,5000);
+onValue(ref(db,'.info/connected'),s=>{
+  document.getElementById('status').innerHTML=s.val()?'● Connected':'● Offline';
+  document.getElementById('status').style.color=s.val()?'#0f0':'#f00';
+});
 </script>
 </body></html>
