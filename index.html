@@ -14,129 +14,95 @@ body{background:#000;color:#fff;font-family:sans-serif}
 #ticker{flex:1;white-space:nowrap;overflow:hidden;color:#000;font-weight:900;font-size:13px}
 #ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-/* SAA KWA KONA - kama ulivyosema */
-#clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#f59e0b;border:2px solid #f59e0b;border-bottom:0;border-left:0;padding:5px 12px;border-radius:0 10px 0 0;font-weight:900;font-size:15px;letter-spacing:1px;box-shadow:2px -2px 10px rgba(0,0,0,.9)}
+#clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#f59e0b;border:2px solid #f59e0b;border-bottom:0;border-left:0;padding:5px 12px;border-radius:0 10px 0 0;font-weight:900;font-size:15px}
 </style></head><body>
 
 <div id="wrap">
 <div id="player"></div>
-<div id="overlay" onclick="return false;"></div>
+<div id="overlay"></div>
 <div id="live">🔴 LIVE</div>
-
 <div id="clockBox">00:00:00</div>
-
-<div id="tickerWrap">
-<div id="ticker"><span id="tick">ALE TV LIVE - Karibu...</span></div>
-</div>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE...</span></div></div>
 </div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 
-// WORLD TIME - video inaenda na saa ya ukweli
-function getWorldSeek(id){
- let k='ale_start_'+id;
- let s=localStorage.getItem(k);
- if(!s){ s=Date.now(); localStorage.setItem(k,s); }
- let elapsed = Math.floor((Date.now() - parseInt(s))/1000);
- return elapsed;
+// BIRTH YA CHANNEL - ndio TV iende kama Citizen, hata ukizima simu
+function getChannelBirth(){
+ let b=localStorage.getItem('ale_channel_birth');
+ if(!b){ b=Date.now(); localStorage.setItem('ale_channel_birth',b); }
+ return parseInt(b);
 }
 
-let player,cur=null,videos=[],currentIdx=0;
+let player, cur=null, videos=[], currentIdx=0;
+const SLOT = 600; // kila video inapewa dakika 10 kwa TV, ndio kila mtu apate tofauti
 
-function playIndex(idx){
- videos=getV(); if(!videos.length) return;
- if(idx>=videos.length) idx=0;
- currentIdx=idx;
+function findWhatIsOnNow(){
+ videos=getV(); if(!videos.length) return {idx:0, seek:0};
+ let birth=getChannelBirth();
+ let now=Date.now();
+ let elapsedSec=Math.floor((now-birth)/1000);
+ let idx=Math.floor(elapsedSec/SLOT) % videos.length;
+ let seekInSlot=elapsedSec % SLOT;
+ // na pia seek ya ndani ya video yenyewe
+ let k='ale_start_'+videos[idx].id;
+ let s=localStorage.getItem(k);
+ if(!s){ localStorage.setItem(k, now - (seekInSlot*1000)); }
+ let realSeek = seekInSlot;
+ return {idx, seek: realSeek};
+}
+
+function playNow(){
+ let what=findWhatIsOnNow();
+ currentIdx=what.idx;
  cur=videos[currentIdx];
- let seek=getWorldSeek(cur.id);
- document.getElementById('tick').innerText='🔴 '+cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE Exclusive')+' | '+cur.title;
+ if(!cur) return;
+ document.getElementById('tick').innerText='🔴 '+cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE')+' | '+cur.title;
  if(player && player.loadVideoById){
-   player.loadVideoById({videoId:cur.id,startSeconds:seek});
-   player.playVideo();
- }else{
-   createPlayer(cur.id,seek);
- }
+   player.loadVideoById({videoId:cur.id,startSeconds:what.seek});
+ }else{ createPlayer(cur.id, what.seek); }
 }
 
 function createPlayer(vId,seek){
- if(!window.YT){
-   let t=document.createElement('script');
-   t.src="https://www.youtube.com/iframe_api";
-   document.head.appendChild(t);
-   window.onYouTubeIframeAPIReady=()=>{ doCreate(vId,seek); };
- }else{ doCreate(vId,seek); }
+ if(!window.YT){ let t=document.createElement('script'); t.src="https://www.youtube.com/iframe_api"; document.head.appendChild(t); window.onYouTubeIframeAPIReady=()=>{ doCreate(vId,seek); }; }
+ else{ doCreate(vId,seek); }
 }
-
 function doCreate(vId,seek){
  player=new YT.Player('player',{
   videoId:vId,
   playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,origin:window.location.origin},
   events:{
    onReady:e=>{
-     e.target.seekTo(seek,true);
-     e.target.playVideo();
+     e.target.seekTo(seek,true); e.target.playVideo();
      setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},800);
-     // force isicheze picha tu
      let c=0; let f=setInterval(()=>{c++; try{if(player.getPlayerState()!=1)player.playVideo(); else clearInterval(f);}catch{} if(c>20)clearInterval(f);},400);
    },
    onStateChange:e=>{
-     // 0 = video imeisha - enda mbele, USIRUDIE
-     if(e.data==0){
-       playIndex(currentIdx+1);
-     }
-     // 2 = mtu amejaribu kupause / kubonyeza - mrudishe MBELE na saa
-     if(e.data==2){
-       setTimeout(()=>{
-         let real=getWorldSeek(cur.id);
-         player.seekTo(real,true);
-         player.playVideo();
-       },300);
-     }
+     if(e.data==0){ playNow(); } // imeisha enda kwa ile iko ON sasa, si next ya list
+     if(e.data==2){ setTimeout(()=>{ let w=findWhatIsOnNow(); player.seekTo(w.seek,true); player.playVideo(); },300); }
    }
   }
  });
 }
 
-// saa ya Nairobi kwa kona
-setInterval(()=>{
- let now=new Date();
- document.getElementById('clockBox').innerText=now.toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
-},1000);
+setInterval(()=>{ document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'}); },1000);
 
-// WORLD SYNC KILA SEKUNDE - ukitoka online ukirudi unapata mbele
+// kila sec 5 angalia kama TV imehamia video nyingine dunia mzima
 setInterval(()=>{
- if(cur && player && player.getCurrentTime){
+ if(!videos.length) return;
+ let w=findWhatIsOnNow();
+ if(w.idx!==currentIdx){ playNow(); }
+ else{
   try{
-   let real=getWorldSeek(cur.id);
-   let nowT=player.getCurrentTime();
-   // kama yuko nyuma zaidi ya 3 sec, msukume MBELE na saa
-   if(real - nowT > 3){
-     player.seekTo(real,true);
-   }
-   // kama video imezidi duration yake, enda next automatically
-   if(player.getDuration && real > player.getDuration() - 2){
-     playIndex(currentIdx+1);
-   }
+   let diff=Math.abs(player.getCurrentTime()-w.seek);
+   if(diff>8){ player.seekTo(w.seek,true); }
   }catch{}
  }
-},2000);
+},3000);
 
-// mtu akitoka tab akirudi - sync mara moja
-document.addEventListener('visibilitychange',()=>{
- if(!document.hidden && cur && player){
-   let real=getWorldSeek(cur.id);
-   player.seekTo(real,true);
-   player.playVideo();
- }
-});
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) playNow(); });
 
-// zuia kusongeza kabisa
-document.getElementById('overlay').addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
-document.getElementById('overlay').addEventListener('dblclick',e=>e.preventDefault());
-
-// anza na video ya mwisho
-let v=getV();
-if(v.length) playIndex(v.length-1);
+let v=getV(); if(v.length) playNow();
 </script>
 </body></html>
