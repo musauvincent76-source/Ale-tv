@@ -3,32 +3,50 @@
 <title>ALE TV KENYA</title>
 <style>
 body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.topbar{background:#0a0a0a;padding:10px;border-bottom:2px solid #f59e0b;display:flex;justify-content:space-between}
-.logo{color:#f59e0b;font-weight:900}
-.player{width:100%;height:65vh;background:#000}
-iframe{width:100%;height:100%;border:0}
-.chips{display:flex;gap:6px;padding:8px;overflow-x:auto;background:#111}
-.chip{padding:7px 14px;background:#222;border-radius:20px;font-size:13px;cursor:pointer;white-space:nowrap}
-.chip.active{background:#f59e0b;color:#000;font-weight:900}
+.topbar{background:#0a0a0a;padding:10px 12px;border-bottom:2px solid #f59e0b;display:flex;justify-content:space-between;align-items:center}
+.logo{color:#f59e0b;font-weight:900;font-size:20px}
+.live{color:#fff;background:red;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:bold}
+#player{width:100%;height:70vh;background:#000;position:relative}
+#main{width:100%;height:100%}
+#msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#f59e0b}
+.info{padding:12px;background:#111}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;line-height:30px;white-space:nowrap;overflow:hidden}
+.ticker span{display:inline-block;animation:scroll 30s linear infinite;padding-left:100%}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 </style></head><body>
-<div class="topbar"><div class="logo">🔥 ALE TV KENYA</div><div style="color:red">● LIVE</div></div>
-<div class="chips">
-<div class="chip active" onclick="play('UChBQgieUidXV1CmDxSdRm3g',this)">CITIZEN</div>
-<div class="chip" onclick="play('UC3J_w5RqZf3qX1l3kZ8X5AA',this)">NTV KENYA</div>
-<div class="chip" onclick="play('UC5N_u6rJ8eP5x6Z6b5L5AA',this)">KTN NEWS</div>
-<div class="chip" onclick="playLive('DVSRNx8VSFM',this)">BACKUP CITIZEN</div>
-</div>
-<div class="player"><iframe id="yt" src="https://www.youtube.com/embed/live_stream?channel=UChBQgieUidXV1CmDxSdRm3g&autoplay=1&mute=1" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+<div class="topbar"><div class="logo">🔥 ALE TV KENYA</div><div class="live">● LIVE</div></div>
+<div id="player"><div id="msg">⏳ Inapakia ALE TV...</div><div id="main"></div><div class="ticker"><span id="tickerText">🔥 ALE TV KENYA - TV YAKO LIVE 🔥</span></div></div>
+<div class="info"><h3 id="title" style="margin:0">ALE TV</h3><p id="desc" style="color:#aaa;font-size:13px;margin:5px 0">Karibu...</p></div>
 
 <script>
-function play(channelId, el){
- document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active');
- document.getElementById('yt').src=`https://www.youtube.com/embed/live_stream?channel=${channelId}&autoplay=1&mute=0`;
+let videos=[]; let idx=0; let player=null;
+function playVideo(i){
+ idx=i; let v=videos[i];
+ document.getElementById('title').innerText=v.title;
+ document.getElementById('desc').innerText=v.desc||'';
+ document.getElementById('tickerText').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV')+' 🔥';
+ document.getElementById('msg').style.display='none';
+ if(player){ player.loadVideoById(v.id); }
+ else{
+  player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1},
+   events:{onReady:e=>{e.target.playVideo(); setTimeout(()=>{try{e.target.unMute()}catch{}},800);}}
+  });
+ }
 }
-function playLive(videoId, el){
- document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active')); el.classList.add('active');
- document.getElementById('yt').src=`https://www.youtube.com/embed/${videoId}?autoplay=1&mute=0`;
-}
-// Kama admin yako ina video, ita-load
+window.onYouTubeIframeAPIReady=()=>{ if(videos.length>0) playVideo(0); };
+</script>
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv",storageBucket:"ale-tv.firebasestorage.app",messagingSenderId:"548271956392",appId:"1:548271956392:web:6993343a96da96f7757d9d"};
+const app=initializeApp(cfg);const db=getDatabase(app);
+onValue(ref(db,'videos'),snap=>{
+ let data=snap.val(); if(!data) return;
+ videos=Object.values(data).reverse();
+ if(videos.length>0 &&!player) playVideo(0);
+});
+onValue(ref(db,'ticker'),snap=>{ let d=snap.val(); if(d&&d.text) document.getElementById('tickerText').innerText='🔥 '+d.text+' 🔥'; });
 </script>
 </body></html>
