@@ -1,134 +1,134 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>ALE TV</title>
+<script src="https://www.youtube.com/iframe_api"></script>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{background:#000;color:#fff;font-family:Arial;height:100vh;overflow:hidden;display:flex;flex-direction:column}
-/* TOP BAR KAMA PICHA */
-#top{height:46px;background:#000;border-bottom:1px solid #222;display:flex;align-items:center;justify-content:space-between;padding:0 10px;flex-shrink:0}
-#logo{font-weight:900;font-size:16px;display:flex;align-items:center;gap:4px}
-#logo span{color:#ff8c00}
-#centerPill{background:#111;border:1px solid #333;padding:5px 14px;border-radius:20px;font-size:11px;display:flex;align-items:center;gap:6px;white-space:nowrap}
-#liveBtn{background:#d60000;color:#fff;padding:5px 14px;border-radius:20px;font-size:11px;font-weight:900;letter-spacing:0.5px}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:Roboto,Arial,sans-serif;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#top{height:52px;background:#080808;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #1a1a1a}
+#logo{font-weight:900;font-size:18px;letter-spacing:0.5px}
+#logo i{color:#ff6a00}
+#greetBox{background:#1a1a1a;border:1px solid #333;border-radius:20px;padding:6px 14px;font-size:11px;display:flex;align-items:center;gap:6px;max-width:52%;white-space:nowrap;overflow:hidden}
+#liveBadge{background:#e50000;color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:900;display:flex;align-items:center;gap:4px}
 
-/* SECOND HEADER KAMA PICHA - AVATAR + TITLE */
-#secondHead{height:56px;background:#000;display:flex;align-items:center;padding:0 10px;gap:10px;flex-shrink:0;border-bottom:1px solid #111}
-#avatar{width:38px;height:38px;border-radius:50%;background:#222;overflow:hidden;flex-shrink:0;border:1px solid #333}
-#avatar img{width:100%;height:100%;object-fit:cover}
-#headText{flex:1;overflow:hidden}
-#headText b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:0.3px}
-#headText small{font-size:11px;color:#aaa;display:block}
-#headTime{color:#ff8c00;font-size:11px;font-weight:700;flex-shrink:0}
+#head{height:62px;background:#000;display:flex;align-items:center;padding:0 12px;gap:10px;border-bottom:1px solid #111}
+#av{width:42px;height:42px;border-radius:50%;background:#222;overflow:hidden;flex-shrink:0}
+#av img{width:100%;height:100%;object-fit:cover}
+#ht{flex:1;overflow:hidden}
+#ht b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;line-height:1.2}
+#ht span{font-size:11px;color:#999;display:block;margin-top:2px}
+#timeOrange{color:#ff8c00;font-size:12px;font-weight:700}
 
-/* VIDEO STAGE */
-#stage{flex:1;background:#000;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center}
-#off{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#playerWrap{width:100%;height:100%;position:relative;display:none;background:#000}
+#videoBox{flex:1;background:#000;position:relative;width:100%;overflow:hidden;display:flex;align-items:center;justify-content:center}
+#off{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:2}
+#playerWrap{width:100%;height:100%;position:absolute;inset:0;display:none;background:#000}
 #yt{width:100%;height:100%}
 
-/* RED BAR KAMA PICHA */
-#redBar{height:32px;background:#cc0000;display:flex;align-items:center;padding:0 8px;gap:10px;flex-shrink:0}
-#catBadge{background:#fff;color:#cc0000;padding:3px 12px;border-radius:14px;font-size:10px;font-weight:900}
-#redTicker{flex:1;font-size:11px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#redBar{height:36px;background:#d40000;display:flex;align-items:center;padding:0 10px;gap:10px;flex-shrink:0}
+#burudani{background:#fff;color:#000;padding:4px 14px;border-radius:4px;font-size:11px;font-weight:900}
+#redText{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* BOTTOM INFO KAMA PICHA */
-#bottomInfo{background:#000;padding:12px 12px 10px 12px;flex-shrink:0;border-top:1px solid #111}
-#bottomInfo b{font-size:15px;display:block}
-#bottomInfo small{font-size:11px;color:#ff8c00;display:block;margin-top:2px;letter-spacing:0.5px}
-#descBox{margin-top:10px;background:#111;border-left:3px solid #ff8c00;padding:10px 12px;border-radius:6px;font-size:12px;color:#ccc}
-#bottomTime{float:right;color:#ff8c00;font-size:11px;margin-top:-18px}
+#bottom{background:#000;padding:14px 12px 18px 12px}
+#bottom b{font-size:15px}
+#bottom.cat{color:#ff8c00;font-size:11px;margin-top:3px;display:block}
+#desc{margin-top:12px;background:#141414;border-left:3px solid #ff8c00;padding:12px;border-radius:4px;font-size:12px;color:#ccc}
 </style>
-<script src="https://www.youtube.com/iframe_api"></script>
-</head><body>
+</head>
+<body>
 
 <div id="top">
-<div id="logo">🔥 ALE TV</div>
-<div id="centerPill">🌅 <span id="greet">Good Evening | Habari ya Jioni</span></div>
-<div id="liveBtn">● LIVE</div>
+<div id="logo"><i>🔥</i> ALE TV</div>
+<div id="greetBox">🌄 <span id="gText">Good Evening | Habari ya Jioni</span></div>
+<div id="liveBadge">● LIVE</div>
 </div>
 
-<div id="secondHead">
-<div id="avatar"><img id="avImg" src="https://i.pravatar.cc/100?img=12"></div>
-<div id="headText"><b id="hTitle">ALE TV HD - INAPAKIA...</b><small id="hSub">BURUDANI</small></div>
-<div id="headTime" id="clock2">16:28:25</div>
+<div id="head">
+<div id="av"><img id="avImg" src="https://i.pravatar.cc/100?img=32"></div>
+<div id="ht"><b id="mainTitle">MAMA AFRICA - H. E KALONZO MUSYOKA</b><span id="subTitle">MAMA AFRICA</span></div>
+<div id="timeOrange">16:28:25</div>
 </div>
 
-<div id="stage">
+<div id="videoBox">
 <div id="off">
-<div style="font-size:40px">📺</div>
-<div style="color:#ff8c00;font-weight:900;margin-top:10px;font-size:14px">ALE TV HD</div>
-<div style="color:#555;font-size:10px;margin-top:5px" id="offText">PLAYLIST: INAPAKIA...</div>
+<div style="font-size:50px;opacity:0.2">📺</div>
+<div style="margin-top:10px;color:#ff8c00;font-weight:900">ALE TV HD</div>
+<div id="offSub" style="font-size:10px;color:#555;margin-top:4px">INAANZA...</div>
 </div>
 <div id="playerWrap"><div id="yt"></div></div>
 </div>
 
 <div id="redBar">
-<div id="catBadge">BURUDANI</div>
-<div id="redTicker">🔥 ALE TV Video | <span id="redTitle">MAMA AFRICA</span></div>
+<div id="burudani">BURUDANI</div>
+<div id="redText">🔥 ALE TV Video | <span id="redTitle">MAMA AFRICA - H. E KALONZO MUSYOKA</span></div>
 </div>
 
-<div id="bottomInfo">
-<div id="bottomTime" id="clock3">16:28:25</div>
+<div id="bottom">
 <b id="bTitle">ALE TV Video</b>
-<small id="bCat">BURUDANI</small>
-<div id="descBox" id="bDesc">MAMA AFRICA - H.E KALENZO TOSHA 2027</div>
+<span class="cat" id="bCat">BURUDANI</span>
+<div id="desc">MAMA AFRICA - H.E KALENZO TOSHA 2027</div>
 </div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-let player=null, videos=[], curIdx=0, hasStarted=false;
+let player=null, videos=[], curIdx=0, started=false;
 
-function updateClocks(){
- let d=new Date(); let t=d.toLocaleTimeString('en-GB',{hour12:false});
- document.getElementById('clock2').innerText=t;
- document.getElementById('clock3').innerText=t;
+function setClock(){
+ let d=new Date(); let s=d.toLocaleTimeString('en-GB',{hour12:false});
+ document.getElementById('timeOrange').innerText=s;
  let h=d.getHours();
- let g=h<12?"Good Morning | Habari ya Asubuhi":h<17?"Good Afternoon | Habari ya Mchana":"Good Evening | Habari ya Jioni";
- document.getElementById('greet').innerText=g;
+ let greet = h<12?"Good Morning | Habari ya Asubuhi": h<17?"Good Afternoon | Habari ya Mchana":"Good Evening | Habari ya Jioni";
+ document.getElementById('gText').innerText=greet;
 }
-setInterval(updateClocks,1000); updateClocks();
+setInterval(setClock,1000); setClock();
 
-function makePlayer(id,start=0){
+function updateUI(v){
+ document.getElementById('mainTitle').innerText=v.title.toUpperCase();
+ document.getElementById('subTitle').innerText=(v.desc||v.cat||'MAMA AFRICA').toUpperCase().substring(0,30);
+ document.getElementById('burudani').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('redTitle').innerText=v.title;
+ document.getElementById('bTitle').innerText=v.title;
+ document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('desc').innerText=v.desc||v.title;
+}
+
+function playVideo(id, start=0){
  if(!id) return;
  if(player) try{player.destroy()}catch{}
  document.getElementById('off').style.display='none';
  document.getElementById('playerWrap').style.display='block';
- hasStarted=true;
+ started=true;
  player=new YT.Player('yt',{
   width:'100%',height:'100%',videoId:id,
-  playerVars:{autoplay:1,controls:1,rel:0,modestbranding:0,fs:1,playsinline:1,mute:1,start:start},
+  playerVars:{autoplay:1,controls:1,rel:0,modestbranding:1,fs:1,playsinline:1,mute:1,start:start},
   events:{
-   onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute();},600);},
-   onStateChange:e=>{ if(e.data==0){ curIdx=(curIdx+1)%videos.length; makePlayer(videos[curIdx].videoId); } }
+   onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute(); e.target.setVolume(100);},700);},
+   onStateChange:e=>{ if(e.data==0){ curIdx=(curIdx+1)%videos.length; updateUI(videos[curIdx]); playVideo(videos[curIdx].videoId); } }
   }
  });
 }
 
-function setUI(v){
- document.getElementById('hTitle').innerText=v.title.toUpperCase();
- document.getElementById('hSub').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('catBadge').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('redTitle').innerText=v.title;
- document.getElementById('bTitle').innerText=v.title;
- document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('bDesc').innerText=v.desc||v.title;
-}
-
-onValue(ref(db,'videos'),s=>{
-  let d=s.val(); if(!d) return;
-  videos=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
-  document.getElementById('offText').innerText=`PLAYLIST: ${videos.length} VIDEOS`;
-  if(!hasStarted && videos.length>0){
-    setUI(videos[0]);
-    makePlayer(videos[0].videoId);
-  }
+onValue(ref(db,'videos'),snap=>{
+ let d=snap.val(); if(!d) {document.getElementById('offSub').innerText='HAKUNA VIDEO - WEKA ADMIN'; return;}
+ videos=Object.values(d).sort((a,b)=>a.createdAt-b.createdAt);
+ if(!started){
+  updateUI(videos[0]);
+  playVideo(videos[0].videoId);
+ }
 });
 
-onValue(ref(db,'live'),s=>{
- let v=s.val(); if(!v||!v.videoId) return;
- let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
+onValue(ref(db,'live'),snap=>{
+ let v=snap.val(); if(!v||!v.videoId) return;
  let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) curIdx=idx;
- setUI(v);
- makePlayer(v.videoId, v.isLiveNow?0:start);
+ updateUI(v);
+ let start=Math.floor((Date.now()-v.startAt)/1000); if(start<0) start=0;
+ playVideo(v.videoId, v.isLiveNow?0:start);
 });
+
 window.onYouTubeIframeAPIReady=()=>{};
-setTimeout(()=>{ if(!hasStarted && videos.length>0) makePlayer(videos[0].videoId); },1200);
-</script></body></html>
+</script>
+</body>
+              </html>
