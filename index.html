@@ -7,29 +7,56 @@
 <style>
 body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 .header{background:#111;padding:10px;text-align:center;color:#f59e0b;font-weight:bold}
-.player{width:100%;aspect-ratio:16/9;background:#000}
-.card{background:#1e293b;margin:8px;padding:10px;border-radius:10px}
-a{color:#f59e0b;text-decoration:none}
+.player{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+#main{width:100%;height:100%}
+/* TICKER KAMA CITIZEN TV */
+.ticker-bar{position:absolute;bottom:0;left:0;right:0;background:#d00000;height:32px;display:flex;align-items:center;overflow:hidden;z-index:10}
+.ticker-label{background:#fff;color:#d00000;padding:4px 10px;font-weight:bold;font-size:12px;margin-right:10px;white-space:nowrap}
+.ticker-text{white-space:nowrap;animation:scroll 25s linear infinite;font-size:14px;font-weight:bold;color:#fff}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.card{background:#1e293b;margin:8px;padding:12px;border-radius:10px;cursor:pointer}
+.card b{color:#fff}
+.desc{color:#94a3b8;font-size:12px;margin-top:4px}
 </style>
 </head>
 <body>
-<div class="header">🔥 ALE TV v7 - LIVE 🔥<br><a href="admin.html" style="font-size:12px;color:#888">Fungua FOLDER 1 (Wewe tu)</a></div>
-<div id="main" class="player"></div>
-<h3 style="padding:10px" id="title"></h3>
+<div class="header">🔥 ALE TV v7 - LIVE 🔥<br><a href="admin.html" style="font-size:11px;color:#666">Fungua FOLDER 1 (Wewe tu)</a></div>
+<div class="player">
+<div id="main"></div>
+<div class="ticker-bar">
+<span class="ticker-label">BREAKING NEWS</span>
+<span class="ticker-text" id="ticker">🔴 KARIBU ALE TV v7 - HABARI MOTOMOTO - VIDEO ZOTE KALI HAPA... 🔥</span>
+</div>
+</div>
+<h3 id="vTitle" style="padding:12px 12px 0 12px;margin:0"></h3>
+<p id="vDesc" style="padding:0 12px;color:#f59e0b;font-size:14px"></p>
 <div id="list"></div>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-let v=getV();
-if(v.length==0){v=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV - Weka video kwenye Folder 1'}];}
-let cur=v[v.length-1];
-document.getElementById('main').innerHTML='<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+cur.id+'?autoplay=1" frameborder="0" allowfullscreen></iframe>';
-document.getElementById('title').innerText=cur.title;
-let h='';
-for(let i=v.length-1;i>=0;i--){
-h+='<div class="card" onclick="play(\''+v[i].id+'\',\''+v[i].title+'\')"><b>'+v[i].title+'</b></div>';
+let videos=getV();
+if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',desc:'Weka video kwenye Folder 1 - description itascroll hapa kama Citizen TV!',cat:'Muziki'}]}
+
+function play(id,title,desc){
+ document.getElementById('main').innerHTML='<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+id+'?autoplay=1&mute=0" frameborder="0" allowfullscreen></iframe>';
+ document.getElementById('vTitle').innerText=title;
+ document.getElementById('vDesc').innerText=desc;
+ // SCROLL DESCRIPTION KAMA CITIZEN
+ document.getElementById('ticker').innerText='🔴 SASA INACHEZA: '+title+' | '+desc+' | 📺 ALE TV LIVE - USIKOSE! 🔥 | '+(localStorage.getItem('ale_ticker_custom')||'KARIBU SANA')+' *** ';
+ window.scrollTo(0,0);
 }
-document.getElementById('list').innerHTML=h;
-function play(id,t){document.getElementById('main').innerHTML='<iframe width="100%" height="100%" src="https://www.youtube.com/embed/'+id+'?autoplay=1" frameborder="0" allowfullscreen></iframe>';document.getElementById('title').innerText=t;window.scrollTo(0,0);}
+
+let last=videos[videos.length-1];
+play(last.id,last.title,last.desc);
+
+let html='';
+for(let i=videos.length-1;i>=0;i--){
+ html+='<div class="card" onclick="play(\''+videos[i].id+'\',\''+videos[i].title.replace(/'/g,'')+'\',\''+(videos[i].desc||'').replace(/'/g,'')+'\')"><b>'+videos[i].title+'</b><div class="desc">'+(videos[i].desc||'')+'</div></div>';
+}
+document.getElementById('list').innerHTML=html;
+
+// Custom ticker from admin
+let custom=localStorage.getItem('ale_ticker_custom');
+if(custom){document.getElementById('ticker').innerText+=' | '+custom}
 </script>
 </body>
 </html>
