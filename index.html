@@ -42,13 +42,16 @@ let defaultVideos=[
 function getV(){try{let s=localStorage.getItem('ale_videos'); let v=s?JSON.parse(s):[]; return v.length>0?v:defaultVideos;}catch(e){return defaultVideos;}}
 let videos=getV();
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+
+// TV YA KWELI - KILA MTU DUNIANI ANATAZAMA KIMOJA
 function getSynced(){
- let total=videos.length*240;
+ let total=videos.length*240; // kila video dakika 4
  let now=Math.floor(Date.now()/1000);
  let elapsed=now%total;
  return{idx:Math.floor(elapsed/240),seek:elapsed%240}
 }
 let current=getSynced(); let player; let ready=false;
+
 function updateInfo(v){
  document.getElementById('vTitle').innerText=v.title;
  document.getElementById('vCat').innerText=v.cat;
@@ -68,6 +71,7 @@ function onYouTubeIframeAPIReady(){
     let hint=document.getElementById('tapHint');
     if(e.data==1){hint.style.display='none';}
     if(e.data==2){hint.style.display='block';}
+    // IKIISHA - HAIENDI NEXT YA KAWAIDA, INARUDI KWENYE MUDA WA DUNIA
     if(e.data==0){
       let n=getSynced();
       current=n;
@@ -79,9 +83,10 @@ function onYouTubeIframeAPIReady(){
   }
  });
 }
+// UKIPLAY - HAIRUDI PALE ULIACHA, INASONGA MBELE KAMA WENGINE
 function playNow(){
  if(player && ready){
-  let n=getSynced();
+  let n=getSynced(); // PATA MUDA MPYA WA DUNIA
   current=n;
   let nv=videos[current.idx];
   updateInfo(nv);
@@ -96,8 +101,10 @@ document.getElementById('playerBox').addEventListener('click',()=>{
  if(s==1){player.pauseVideo();}
  else{playNow();}
 });
+// UKIRUDI ONLINE BAADA YA KUWA OFFLINE - JUMP MOJA KWA MOJA
 document.addEventListener('visibilitychange',()=>{
  if(document.visibilityState==='visible'){
+   console.log('Rudi online - syncing dunia...');
    playNow();
  }
 });
