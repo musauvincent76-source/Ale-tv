@@ -1,92 +1,120 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - WORLD LIVE</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.topbar{background:#111;padding:10px;border-bottom:2px solid #f59e0b;display:flex;justify-content:space-between;align-items:center}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
+.topbar{background:#111;padding:10px;display:flex;justify-content:space-between;border-bottom:2px solid #f59e0b}
 .logo{color:#f59e0b;font-weight:900}
-#player{width:100%;height:75vh;background:#000;position:relative}
-#main{width:100%;height:100%}
-#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:14px 22px;border-radius:30px;font-weight:900;display:block;z-index:10;cursor:pointer;font-size:16px}
-.vol-btn{position:absolute;top:10px;left:10px;background:rgba(0,0,0,.8);color:#fff;border:2px solid #f59e0b;padding:8px 12px;border-radius:30px;z-index:10;cursor:pointer;font-size:18px}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;line-height:30px;overflow:hidden;white-space:nowrap}
+#player{width:100%;height:78vh;background:#000;position:relative}
+#main{width:100%;height:100%;pointer-events:none} /* HII NDIO LOCK - HAKUNA KUGUSA VIDEO */
+#overlay{position:absolute;top:0;left:0;right:0;bottom:32px;z-index:5} /* INAZUIA KUSONGEZA */
+#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:14px 24px;border-radius:30px;font-weight:900;z-index:10;cursor:pointer;display:none}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:32px;line-height:32px;overflow:hidden;white-space:nowrap;z-index:10}
 .ticker span{animation:scroll 30s linear infinite;display:inline-block;padding-left:100%}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 </style></head><body>
-<div class="topbar"><div class="logo">🔥 ALE TV</div><div style="background:red;padding:4px 10px;border-radius:20px;font-size:12px">● LIVE</div></div>
+<div class="topbar"><div class="logo">🔥 ALE TV</div><div style="background:red;padding:4px 10px;border-radius:20px;font-size:12px">● LIVE DUNIANI</div></div>
 <div id="player">
 <div id="main"></div>
-<button class="vol-btn" id="volBtn" onclick="toggleSound()">🔇</button>
-<div id="hint" onclick="unmuteAll()">🔊 TAP KUWASHA SAUTI</div>
-<div class="ticker"><span id="tick">🔥 ALE TV LIVE - TAP KUWASHA SAUTI 🔥</span></div>
+<div id="overlay" onclick="handleTap()"></div>
+<div id="hint" onclick="playNow()">▶️ TAP KUENDELEA LIVE</div>
+<div class="ticker"><span id="tick">🔥 ALE TV - TV YA KWELI DUNIANI 🔥</span></div>
 </div>
-<div style="padding:10px;background:#111"><h3 id="title" style="margin:0">Inapakia...</h3></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let videos=JSON.parse(localStorage.getItem('ale_videos')||'[{"id":"jNQXAC9IVRw","title":"Me at the zoo"}]');
+let videos=JSON.parse(localStorage.getItem('ale_videos')||'[{"id":"jNQXAC9IVRw","title":"ALE TV LIVE"}]');
 let current={idx:0,seek:0};
-let player=null; let isMuted=true;
+let player=null; let isPausedByUser=false;
 
-function getSync(){
- let total=videos.length*240;
- let now=Math.floor(Date.now()/1000)%total;
- return {idx:Math.floor(now/240), seek:now%240};
+// TV YA KWELI DUNIANI - HESABU KUTOKA SAA YA DUNIA
+function getWorldSync(){
+  let VIDEO_LENGTH = 240; // kila video dakika 4
+  let total = videos.length * VIDEO_LENGTH;
+  let nowSec = Math.floor(Date.now()/1000);
+  let elapsed = nowSec % total;
+  return { idx: Math.floor(elapsed/VIDEO_LENGTH), seek: elapsed % VIDEO_LENGTH };
 }
-function showInfo(v){
- document.getElementById('title').innerText=v.title;
- document.getElementById('tick').innerText='🔥 '+v.title+' | TAP KUWASHA SAUTI 🔥';
-}
+
+function showInfo(v){ document.getElementById('tick').innerText='🔥 LIVE: '+v.title+' | KILA MTU DUNIANI ANAONA HII HII 🔥'; }
+
 function onYouTubeIframeAPIReady(){
- current=getSync();
- let v=videos[current.idx];
- showInfo(v);
- player=new YT.Player('main',{
-  videoId:v.id,
-  playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,origin:location.origin,start:current.seek},
-  events:{
-   onReady:e=>{e.target.playVideo();},
-   onStateChange:e=>{
-    if(e.data==1){
-      if(isMuted) document.getElementById('hint').style.display='block';
-      else document.getElementById('hint').style.display='none';
+  current=getWorldSync();
+  let v=videos[current.idx];
+  showInfo(v);
+  player=new YT.Player('main',{
+    videoId:v.id,
+    playerVars:{
+      autoplay:1,mute:1,controls:0, // HAKUNA CONTROLS - HAKUNA KUSONGEZA
+      disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,
+      iv_load_policy:3,origin:location.origin,
+      start:current.seek
+    },
+    events:{
+      onReady:e=>{ e.target.playVideo(); setTimeout(()=>{try{e.target.unMute()}catch{}},1200); },
+      onStateChange:e=>{
+        if(e.data==1){ // inacheza
+          document.getElementById('hint').style.display='none';
+          isPausedByUser=false;
+        }
+        if(e.data==2){ // mtu ame-pause
+          isPausedByUser=true;
+          document.getElementById('hint').style.display='block';
+          document.getElementById('hint').innerText='▶️ UME-PAUSE - TAP URUDI LIVE ('+new Date().toLocaleTimeString()+')';
+        }
+        if(e.data==0){ // ikiisha - RUKA KWA MUDA WA DUNIA, SIO NEXT
+          let n=getWorldSync();
+          current=n;
+          showInfo(videos[n.idx]);
+          player.loadVideoById({videoId:videos[n.idx].id,startSeconds:n.seek});
+        }
+      }
     }
-    if(e.data==0){
-      current=getSync();
-      showInfo(videos[current.idx]);
-      player.loadVideoById({videoId:videos[current.idx].id,startSeconds:current.seek});
-      isMuted=true; document.getElementById('volBtn').innerText='🔇';
-    }
-   }
-  }
- });
+  });
 }
-function unmuteAll(){
- if(!player) return;
- try{
-  player.unMute();
-  player.setVolume(100);
-  player.playVideo();
-  isMuted=false;
-  document.getElementById('volBtn').innerText='🔊';
-  document.getElementById('hint').style.display='none';
- }catch(e){}
-}
-function toggleSound(){
- if(isMuted) unmuteAll();
- else{
-  player.mute();
-  isMuted=true;
-  document.getElementById('volBtn').innerText='🔇';
-  document.getElementById('hint').style.display='block';
- }
-}
+
+// MTU AKIBONYEZA - HAIRUDI PALE ALIACHA, INARUKA MBELE KAMA TV YA KWELI
 function playNow(){
- let n=getSync();
- if(n.idx==current.idx){ player.seekTo(n.seek,true); player.playVideo(); }
- else{ current=n; showInfo(videos[n.idx]); player.loadVideoById({videoId:videos[n.idx].id,startSeconds:n.seek}); }
- if(!isMuted) unmuteAll();
+  let n=getWorldSync();
+  // HATA KAMA ALIACHA DAKIKA 10, ATAPATA IKO MBELE DAKIKA 10
+  current=n;
+  showInfo(videos[n.idx]);
+  if(player){
+    player.loadVideoById({videoId:videos[n.idx].id,startSeconds:n.seek});
+    setTimeout(()=>{try{player.playVideo(); player.unMute();}catch{}},400);
+  }
+  document.getElementById('hint').style.display='none';
+  isPausedByUser=false;
 }
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState=='visible') playNow(); });
+
+function handleTap(){
+  if(!player) return;
+  let s=player.getPlayerState();
+  if(s==1){ // inacheza - pause
+    player.pauseVideo();
+  } else { // ime-pause - rudi LIVE mbele
+    playNow();
+  }
+}
+
+// UKIFUNGA SIMU NA KURUDI - INAJI-SYNC MOJA KWA MOJA
+document.addEventListener('visibilitychange',()=>{
+  if(document.visibilityState=='visible'){
+    console.log('Rudi - sync dunia');
+    playNow();
+  }
+});
+window.addEventListener('focus',()=>{ playNow(); });
+
+// KILA SEKUNDE 30 JISYNC BILA KUULIZA - HATA KAMA UME-PAUSE
+setInterval(()=>{
+  if(isPausedByUser) return; // usisumbue kama mtu ka-pause
+  let n=getWorldSync();
+  if(n.idx!==current.idx){ // video mpya duniani
+    current=n;
+    showInfo(videos[n.idx]);
+    player.loadVideoById({videoId:videos[n.idx].id,startSeconds:n.seek});
+  }
+},30000);
 </script>
 </body></html>
