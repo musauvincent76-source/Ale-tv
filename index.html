@@ -11,6 +11,7 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 #main{width:100%;height:100%}
 .clock{position:absolute;top:8px;right:85px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5}
 .play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border:2px solid #f59e0b;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;z-index:10}
+.fs-btn{position:absolute;bottom:35px;right:8px;background:rgba(0,0,0,0.7);border:1px solid #fff;width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;z-index:10}
 .ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5}
 .ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
 .ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
@@ -26,6 +27,7 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 <div id="clock" class="clock">00:00:00</div>
 <div id="main"></div>
 <div class="play-btn" id="playBtn">⏸️</div>
+<div class="fs-btn" id="fsBtn" onclick="toggleFS()">⛶</div>
 <div class="ticker">
 <span class="ticker-cat" id="catLabel">BURUDANI</span>
 <span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span>
@@ -68,26 +70,19 @@ function togglePlay(){
  let state=player.getPlayerState();
  if(state==1){player.pauseVideo();}else{player.playVideo();}
 }
+function toggleFS(){
+ let box=document.getElementById('playerBox');
+ if(!document.fullscreenElement){box.requestFullscreen();}else{document.exitFullscreen();}
+}
 function onStateChange(e){
  let btn=document.getElementById('playBtn');
- if(e.data==1){
-  btn.style.display='none';
-  localStorage.setItem('ale_last_idx',current.idx);
-  localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
- }
- if(e.data==2){
-  btn.style.display='flex'; btn.innerText='▶️';
- }
- if(e.data==0){
-  current.idx=(current.idx+1)%videos.length;
-  localStorage.setItem('ale_last_idx',current.idx);
-  localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
-  let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);
- }
+ if(e.data==1){btn.style.display='none';localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
+ if(e.data==2){btn.style.display='flex'; btn.innerText='▶️';}
+ if(e.data==0){current.idx=(current.idx+1)%videos.length;localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);}
 }
 document.getElementById('playBtn').addEventListener('click',togglePlay);
 document.getElementById('playerBox').addEventListener('click',function(e){
- if(e.target.id!=='clock'){togglePlay();}
+ if(e.target.id!=='fsBtn' && e.target.id!=='clock'){togglePlay();}
 });
 </script>
 </body></html>
