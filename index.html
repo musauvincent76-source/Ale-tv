@@ -3,71 +3,40 @@
 <title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:1vh}
-#playerWrap{width:100%;max-width:500px;height:50vh;max-height:380px;background:#000;position:relative;border:2px solid #222;border-radius:0 0 12px 12px;overflow:hidden;margin-top:0}
-#playerWrap iframe,#player{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
-#liveBadge{position:absolute;top:8px;left:8px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:900;z-index:5;animation:blink 1s infinite}
-@keyframes blink{50%{opacity:0.5}}
-#soundBtn{position:absolute;bottom:8px;right:8px;z-index:10;background:#f59e0b;color:#000;border:none;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:900;cursor:pointer}
-#bottom{width:100%;max-width:500px;background:#111;padding:10px;border-top:2px solid #f59e0b;border-radius:0 0 12px 12px}
-#bottom b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#ticker{color:#f59e0b;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden}
-#ticker span{display:inline-block;animation:scroll 15s linear infinite}
-@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
+body{background:#000;color:#fff;font-family:sans-serif}
+#wrap{width:100%;background:#000;position:relative}
+#player{width:100%;aspect-ratio:16/9;background:#000}
+#player iframe{width:100%;height:100%}
+#tickerBar{position:absolute;bottom:0;left:0;right:0;background:#f59e0b;color:#000;font-weight:900;padding:5px 0;font-size:13px;white-space:nowrap;overflow:hidden;z-index:2}
+#tickerBar span{display:inline-block;padding-left:100%;animation:cross 25s linear infinite}
+@keyframes cross{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:3px 8px;border-radius:3px;font-size:11px;font-weight:900;z-index:2}
 </style></head><body>
-
-<div id="playerWrap">
+<div id="wrap">
 <div id="player"></div>
-<div id="liveBadge">🔴 LIVE - ONLINE</div>
-<button id="soundBtn" onclick="unmute()">🔊 SAUTI</button>
-</div>
-
-<div id="bottom">
-<b id="vTitle">ALE TV - ONLINE...</b>
-<div id="ticker"><span id="vDesc">Inapakia - WORLD SYNC</span></div>
+<div id="live">🔴 LIVE</div>
+<div id="tickerBar"><span id="tick">ALE TV - Karibu...</span></div>
 </div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 function getSeek(id){let k='ale_start_'+id;let s=localStorage.getItem(k);if(!s){s=Date.now();localStorage.setItem(k,s);}return Math.floor((Date.now()-parseInt(s))/1000);}
-let player, cur=null;
-function unmute(){if(player){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('soundBtn').style.display='none';}}
-function loadAPI(){if(!window.YT){let t=document.createElement('script');t.src="https://www.youtube.com/iframe_api";document.head.appendChild(t);}}
-
+let player;
+function load(){let s=document.createElement('script');s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s);}
 window.onYouTubeIframeAPIReady=()=>{
- let vids=getV(); if(!vids.length){document.getElementById('vTitle').innerText='Hakuna video - weka Admin';return;}
- cur=vids[vids.length-1]; let seek=getSeek(cur.id);
- document.getElementById('vTitle').innerText=cur.title;
- document.getElementById('vDesc').innerText=cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE');
-
+ let v=getV(); if(!v.length){document.getElementById('tick').innerText='Hakuna video - weka Admin'; return;}
+ let cur=v[v.length-1];
+ let seek=getSeek(cur.id);
+ document.getElementById('tick').innerText=cur.title+" | "+(localStorage.getItem('ale_ticker_custom')||"ALE TV LIVE - Exclusive")+" | "+cur.title;
  player=new YT.Player('player',{
   videoId:cur.id,
-  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,origin:window.location.origin},
+  playerVars:{autoplay:1,mute:0,controls:1,rel:0,modestbranding:1,playsinline:1,start:seek},
   events:{
-   onReady:(e)=>{
-    e.target.seekTo(seek,true);
-    e.target.mute();
-    e.target.playVideo();
-    // FORCE ONLINE - jaribu mara 20
-    let i=0;
-    let force=setInterval(()=>{
-     i++;
-     try{
-      if(player.getPlayerState()!=1){player.playVideo();}
-      else{clearInterval(force);}
-     }catch{}
-     if(i>20) clearInterval(force);
-    },400);
-   },
-   onStateChange:(e)=>{
-    if(e.data==2){ // paused -> rudi online
-     setTimeout(()=>{player.seekTo(getSeek(cur.id),true);player.playVideo();},300);
-    }
-   }
+   onReady:e=>{e.target.seekTo(seek,true); e.target.playVideo();},
+   onStateChange:e=>{if(e.data==2){setTimeout(()=>{player.seekTo(getSeek(cur.id),true);player.playVideo();},500);}}
   }
  });
 };
-loadAPI();
-setInterval(()=>{if(cur&&player&&player.getCurrentTime){try{let r=getSeek(cur.id);let n=player.getCurrentTime();if(Math.abs(r-n)>10)player.seekTo(r,true);}catch{}}},8000);
+load();
 </script>
 </body></html>
