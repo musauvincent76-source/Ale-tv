@@ -2,111 +2,87 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV - LIVE</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow-x:hidden}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 .topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #1a1a1a}
 .logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,#f59e0b,#ff006e,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
 .live-badge{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:12px;animation:zoom 1s infinite}
 @keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15);box-shadow:0 0 15px #ff0000}}
-.player{width:100%;aspect-ratio:16/9;background:#000;position:relative}
-#main{width:100%;height:100%;pointer-events:none}
-.clock{position:absolute;top:8px;right:80px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;font-family:monospace;color:#f59e0b;z-index:5}
+/* SCREEN IMENENEPESHWA */
+.player{width:100%;height:68vh;min-height:380px;background:#000;position:relative;overflow:hidden}
+#main{width:100%;height:100%}
+.clock{position:absolute;top:8px;right:85px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border:2px solid #f59e0b;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;z-index:6;backdrop-filter:blur(4px)}
 .ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5}
 .ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
 .ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
 @keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
 .info{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:#111}
 .info small{color:#f59e0b;font-size:11px;border:1px solid #f59e0b;padding:2px 8px;border-radius:10px}
-.block-msg{text-align:center;padding:15px;color:#666;font-size:12px;background:#0f172a;margin:10px;border-radius:10px}
-</style>
-</head><body>
+</style></head><body>
 <div class="topbar">
 <div class="logo">ALE TV</div>
 <div class="live-badge">● LIVE</div>
 </div>
-
-<div class="player">
+<div class="player" id="playerBox">
 <div id="clock" class="clock">00:00:00</div>
 <div id="main"></div>
+<div class="play-btn" id="playBtn" onclick="togglePlay()">⏸️</div>
 <div class="ticker">
 <span class="ticker-cat" id="catLabel">BURUDANI</span>
-<span class="ticker-text" id="ticker">🔥 KARIBU ALE TV - Dunia nzima inaona video moja kwa wakati mmoja! 🔥</span>
+<span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span>
 </div>
 </div>
-
 <div class="info">
 <div><h3 id="vTitle" style="margin:0;font-size:16px">Loading...</h3><small id="vCat">BURUDANI</small></div>
 <div style="text-align:right"><div id="timeNow" style="font-size:12px;color:#f59e0b"></div><div style="font-size:10px;color:#666">SYNCED WORLDWIDE</div></div>
 </div>
-
 <p id="vDesc" style="padding:0 12px;color:#aaa;font-size:13px"></p>
-<div class="block-msg">📺 Hii ni LIVE TV - Video inacheza kwa wote same time. Haiwezi kusongeshwa.</div>
 
-<div id="playerHidden"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-let videos=getV();
-if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',desc:'Weka video kwenye Folder 1',cat:'BURUDANI'}]}
-
-// SAA LIVE
+let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',desc:'Weka video Folder 1',cat:'BURUDANI'}]}
 setInterval(()=>{let d=new Date();let s=d.toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
-
-// SYNC WATU WOTE SAME VIDEO SAME TIME
-function getSyncedIndex(){
- // Kila video icue 4 dakika (240 sec) - dunia nzima same
- let totalDuration=videos.length*240;
- let now=Math.floor(Date.now()/1000);
- let elapsed=now % totalDuration;
- let idx=Math.floor(elapsed/240);
- let seek=elapsed%240;
- return {idx,seek}
-}
-
-let current = getSyncedIndex();
-let player;
-
+function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
+let current=getSyncedIndex(); let player; let isPaused=false;
 function onYouTubeIframeAPIReady(){
  let lastPos=parseInt(localStorage.getItem('ale_last_idx')||current.idx);
- // Resume palipoachia kama alitoka online (within 1 hour)
  let lastTime=parseInt(localStorage.getItem('ale_last_time')||0);
  let nowSec=Math.floor(Date.now()/1000);
- if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos;}
-
- let v=videos[current.idx];
+ if(nowSec-lastTime<3600 && lastPos>=0){current.idx=lastPos}
+ let v=videos[current.idx]; updateInfo(v);
+ player=new YT.Player('main',{
+  videoId:v.id,
+  playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:current.seek},
+  events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>e.target.unMute(),800);}}
+ });
+}
+function updateInfo(v){
  document.getElementById('vTitle').innerText=v.title;
  document.getElementById('vDesc').innerText=v.desc||'';
  document.getElementById('vCat').innerText=v.cat||'BURUDANI';
  document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('ticker').innerText=' '+ (v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE SYNC | 🔥 '+ (localStorage.getItem('ale_ticker_custom')||'Exclusive') +' *** ';
-
- player=new YT.Player('main',{
-  videoId:v.id,
-  playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,iv_load_policy:3,playsinline:1,start:current.seek},
-  events:{'onStateChange':onStateChange,'onReady':(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},1000);}}
- });
+ document.getElementById('ticker').innerText=' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE | '+ (localStorage.getItem('ale_ticker_custom')||'Exclusive')+' *** ';
 }
-
+function togglePlay(){
+ if(!player)return;
+ if(isPaused){player.playVideo();document.getElementById('playBtn').innerText='⏸️';isPaused=false;}
+ else{player.pauseVideo();document.getElementById('playBtn').innerText='▶️';isPaused=true;}
+}
 function onStateChange(e){
+ let btn=document.getElementById('playBtn');
+ if(e.data==YT.PlayerState.PLAYING){btn.style.opacity='0';isPaused=false;btn.innerText='⏸️';setTimeout(()=>{btn.style.display='none'},500);localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
+ if(e.data==YT.PlayerState.PAUSED){btn.style.display='flex';btn.style.opacity='1';btn.innerText='▶️';isPaused=true;}
  if(e.data==YT.PlayerState.ENDED){
-  // AUTO PLAY NEXT
   current.idx=(current.idx+1)%videos.length;
   localStorage.setItem('ale_last_idx',current.idx);
   localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
-  let v=videos[current.idx];
-  player.loadVideoById(v.id);
-  document.getElementById('vTitle').innerText=v.title;
-  document.getElementById('vDesc').innerText=v.desc;
-  document.getElementById('vCat').innerText=v.cat;
-  document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
-  document.getElementById('ticker').innerText=' '+ (v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV LIVE CONTINUES... *** ';
- }
- if(e.data==YT.PlayerState.PLAYING){
-  localStorage.setItem('ale_last_idx',current.idx);
-  localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
+  let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);
  }
 }
-
-// Zuia viewer kuguza video
-document.addEventListener('contextmenu',e=>e.preventDefault());
+// Bonyeza screen yote ku-pause/resume
+document.getElementById('playerBox').addEventListener('click',(e)=>{
+ if(e.target.id!=='clock'){togglePlay();}
+});
 </script>
 </body></html>
