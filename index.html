@@ -37,15 +37,16 @@
 </div>
 <div id="timeNow" style="color:#f59e0b;font-size:13px;margin-left:10px;font-weight:bold"></div>
 </div>
+
 <script>
-let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;
+let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;let videoStartedAt=0;let lastHiddenTime=0;
 function updateGreeting(){let h=new Date().getHours();let t=h>=5&&h<12?'☀️ Good Morning | Habari ya Asubuhi':h<16?'🌤️ Good Afternoon | Habari ya Mchana':h<19?'🌇 Good Evening | Habari ya Jioni':'🌙 Good Night | Habari ya Usiku';document.getElementById('greeting').innerText=t;}
 updateGreeting();setInterval(updateGreeting,60000);
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+
 function playVideo(v,offset=0,withSound=false){
  if(!v)return;
- if(lastId===v.id && currentOffset===offset &&!withSound) return;
- currentVideo=v;currentOffset=offset;lastId=v.id;
+ currentVideo=v;currentOffset=offset;lastId=v.id;videoStartedAt=v.createdAt||v.created||Date.now();
  document.getElementById('vTitle').innerText=v.title;
  document.getElementById('vCat').innerText=v.cat||'LIVE';
  document.getElementById('catLabel').innerText=v.cat||'LIVE';
@@ -58,7 +59,28 @@ function playVideo(v,offset=0,withSound=false){
 }
 function enableSound(){if(!currentVideo)return;playVideo(currentVideo,currentOffset,true);}
 document.getElementById('playerBox').addEventListener('click',()=>{if(isMuted)enableSound();});
+
+// FIX YA 1 MIN - UKIRUDI BAADA YA MUDA INASONGA MBELE
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden){ lastHiddenTime=Date.now(); }
+  else {
+    if(lastHiddenTime && currentVideo){
+      let gone=Math.floor((Date.now()-lastHiddenTime)/1000);
+      if(gone>=5){
+        let now=Date.now();
+        let newElapsed=Math.floor((now-videoStartedAt)/1000);
+        if(newElapsed<0) newElapsed=0;
+        if(currentVideo.isLive) newElapsed=0;
+        if(newElapsed>currentOffset+3){
+          playVideo(currentVideo,newElapsed,!isMuted);
+        }
+      }
+      lastHiddenTime=0;
+    }
+  }
+});
 </script>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -68,6 +90,8 @@ onValue(ref(db,'videos'),snap=>{
  let d=snap.val();if(!d)return;
  let all=Object.values(d).sort((a,b)=>(b.createdAt||b.created||0)-(a.createdAt||a.created||0));
  let v=all[0];if(!v)return;
+ // usirudie kama ni ile ile video
+ if(lastId===v.id) return;
  let now=Date.now();
  let started=v.createdAt||v.created||now;
  let elapsed=Math.floor((now-started)/1000);
