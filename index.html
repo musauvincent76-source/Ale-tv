@@ -7,11 +7,10 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 .logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,#f59e0b,#ff006e,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:1px}
 .live-badge{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:12px;animation:zoom 1s infinite}
 @keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15);box-shadow:0 0 15px #ff0000}}
-/* SCREEN IMENENEPESHWA */
 .player{width:100%;height:68vh;min-height:380px;background:#000;position:relative;overflow:hidden}
 #main{width:100%;height:100%}
 .clock{position:absolute;top:8px;right:85px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5}
-.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border:2px solid #f59e0b;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;z-index:6;backdrop-filter:blur(4px)}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.6);border:2px solid #f59e0b;width:70px;height:70px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:30px;cursor:pointer;z-index:10}
 .ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5}
 .ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
 .ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
@@ -26,7 +25,7 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 <div class="player" id="playerBox">
 <div id="clock" class="clock">00:00:00</div>
 <div id="main"></div>
-<div class="play-btn" id="playBtn" onclick="togglePlay()">⏸️</div>
+<div class="play-btn" id="playBtn">⏸️</div>
 <div class="ticker">
 <span class="ticker-cat" id="catLabel">BURUDANI</span>
 <span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span>
@@ -42,19 +41,19 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif}
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',desc:'Weka video Folder 1',cat:'BURUDANI'}]}
-setInterval(()=>{let d=new Date();let s=d.toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+setInterval(()=>{let d=new Date();let s=d.toLocaleTimeString('en-KE',{hour12:false});let c=document.getElementById('clock');if(c)c.innerText=s;let t=document.getElementById('timeNow');if(t)t.innerText=s;},1000);
 function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
-let current=getSyncedIndex(); let player; let isPaused=false;
+let current=getSyncedIndex(); let player;
 function onYouTubeIframeAPIReady(){
  let lastPos=parseInt(localStorage.getItem('ale_last_idx')||current.idx);
  let lastTime=parseInt(localStorage.getItem('ale_last_time')||0);
  let nowSec=Math.floor(Date.now()/1000);
- if(nowSec-lastTime<3600 && lastPos>=0){current.idx=lastPos}
+ if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos}
  let v=videos[current.idx]; updateInfo(v);
  player=new YT.Player('main',{
   videoId:v.id,
   playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:current.seek},
-  events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>e.target.unMute(),800);}}
+  events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}
  });
 }
 function updateInfo(v){
@@ -62,27 +61,39 @@ function updateInfo(v){
  document.getElementById('vDesc').innerText=v.desc||'';
  document.getElementById('vCat').innerText=v.cat||'BURUDANI';
  document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('ticker').innerText=' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE | '+ (localStorage.getItem('ale_ticker_custom')||'Exclusive')+' *** ';
+ document.getElementById('ticker').innerText=' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE | '+(localStorage.getItem('ale_ticker_custom')||'Exclusive')+' *** ';
 }
 function togglePlay(){
- if(!player)return;
- if(isPaused){player.playVideo();document.getElementById('playBtn').innerText='⏸️';isPaused=false;}
- else{player.pauseVideo();document.getElementById('playBtn').innerText='▶️';isPaused=true;}
+ if(!player) return;
+ let state=player.getPlayerState();
+ if(state==1){
+  player.pauseVideo();
+ }else{
+  player.playVideo();
+ }
 }
 function onStateChange(e){
  let btn=document.getElementById('playBtn');
- if(e.data==YT.PlayerState.PLAYING){btn.style.opacity='0';isPaused=false;btn.innerText='⏸️';setTimeout(()=>{btn.style.display='none'},500);localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
- if(e.data==YT.PlayerState.PAUSED){btn.style.display='flex';btn.style.opacity='1';btn.innerText='▶️';isPaused=true;}
- if(e.data==YT.PlayerState.ENDED){
+ if(e.data==1){
+  btn.innerText='⏸️'; btn.style.opacity='0.5';
+  localStorage.setItem('ale_last_idx',current.idx);
+  localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
+ }
+ if(e.data==2){
+  btn.innerText='▶️'; btn.style.opacity='1'; btn.style.display='flex';
+ }
+ if(e.data==0){
   current.idx=(current.idx+1)%videos.length;
   localStorage.setItem('ale_last_idx',current.idx);
   localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));
   let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);
  }
 }
-// Bonyeza screen yote ku-pause/resume
-document.getElementById('playerBox').addEventListener('click',(e)=>{
- if(e.target.id!=='clock'){togglePlay();}
+document.getElementById('playBtn').addEventListener('click',togglePlay);
+document.getElementById('playerBox').addEventListener('click',function(e){
+ if(e.target.id!=='clock' && e.target.id!=='playBtn'){
+  togglePlay();
+ }
 });
 </script>
 </body></html>
