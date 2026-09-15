@@ -2,24 +2,25 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV ADMIN</title>
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:15px}
-h2{color:#f59e0b;text-align:center}
-.card{background:#1a1a1a;padding:15px;border-radius:10px;margin-bottom:15px;border:1px solid #333}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px;box-sizing:border-box}
-button{width:100%;padding:12px;background:#f59e0b;color:#000;font-weight:900;border:0;border-radius:6px;cursor:pointer;margin-top:8px}
-button:hover{background:#ffb84d}
-.live-check{display:flex;align-items:center;gap:8px;background:#000;padding:8px;border-radius:6px;margin:6px 0;border:1px solid #444}
+body{margin:0;background:#0b1120;color:#fff;font-family:sans-serif;padding:15px}
+h2{color:#f59e0b;text-align:center;text-shadow:0 0 10px #f59e0b}
+.card{background:linear-gradient(145deg,#151e32,#1c2942);padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #2a3a5c;box-shadow:0 4px 15px rgba(0,0,0,0.4)}
+input,select,textarea{width:100%;padding:11px;margin:6px 0;background:#0b1120;color:#fff;border:1px solid #2a3a5c;border-radius:8px;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:#f59e0b;outline:none}
+button{width:100%;padding:12px;background:linear-gradient(90deg,#f59e0b,#ff8c00);color:#000;font-weight:900;border:0;border-radius:8px;cursor:pointer;margin-top:8px;transition:0.2s}
+button:hover{transform:scale(1.02);box-shadow:0 0 12px rgba(245,158,11,0.6)}
+.live-check{display:flex;align-items:center;gap:8px;background:#0b1120;padding:10px;border-radius:8px;margin:6px 0;border:1px solid #2a3a5c}
 .live-check input{width:auto}
-.video-item{background:#000;padding:10px;border-radius:6px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;border-left:3px solid #f59e0b}
-.del{width:auto;background:red;color:#fff;padding:6px 12px}
-.ticker-box{background:#1a1a1a;padding:12px;border-radius:8px;border:1px solid #b80000}
-.ona-btn{display:block;text-align:center;background:#00ff88;color:#000;padding:14px;border-radius:8px;font-weight:900;text-decoration:none;margin-bottom:15px;font-size:16px}
+.video-item{background:#0b1120;padding:12px;border-radius:8px;margin:8px 0;display:flex;justify-content:space-between;align-items:center;border-left:4px solid #f59e0b}
+.del{width:auto;background:linear-gradient(90deg,#ff3b3b,#b80000)!important;color:#fff!important;padding:6px 14px}
+.ticker-box{background:linear-gradient(145deg,#2a1212,#3d1a1a);padding:12px;border-radius:12px;border:1px solid #b80000}
+.ona-btn{display:block;text-align:center;background:linear-gradient(90deg,#00ff88,#00cc6a);color:#000;padding:14px;border-radius:10px;font-weight:900;text-decoration:none;margin-bottom:15px;font-size:16px;box-shadow:0 4px 12px rgba(0,255,136,0.3)}
 </style></head><body>
 <h2>🔥 ALE TV ADMIN 🔥</h2>
 <a href="index.html" target="_blank" class="ona-btn">📺 ONA TV LIVE - BONYEZA HAPA</a>
 
 <div class="card">
-<h3 style="margin-top:0">➕ Weka Video / Live</h3>
+<h3 style="margin-top:0;color:#f59e0b">➕ Weka Video / Live</h3>
 <input id="ytLink" placeholder="Weka YouTube Link au ID (hata Live link)">
 <input id="vTitle" placeholder="Title - mf: Habari za leo">
 <select id="vCat">
@@ -27,18 +28,18 @@ button:hover{background:#ffb84d}
 </select>
 <textarea id="vDesc" placeholder="Description - itaonekana auto chini ya title na kwenye ticker"></textarea>
 <div class="live-check"><input type="checkbox" id="isLive"><label for="isLive">🔴 Hii ni YouTube LIVE? (icheze mwanzo hadi mwisho, isiruke)</label></div>
-<button onclick="addVideo()">💾 HIFADHI VIDEO</button>
-<small style="color:#888">Tip: Kwa Live, weka link ya Live na check box ya LIVE</small>
+<button onclick="addVideo()">💾 HIFADHI - DUNIA NZIMA ITAONA SAME TIME</button>
+<small style="color:#888">Sasa dunia nzima itaona kitu kimoja na ikisonga mbele</small>
 </div>
 
 <div class="ticker-box">
 <h3 style="margin-top:0;color:#ff4444">📢 Ticker ya Chini</h3>
 <input id="tickerText" placeholder="Andika habari ya ticker...">
-<button onclick="updateTicker()" style="background:#b80000;color:#fff">🔄 BADILISHA TICKER</button>
+<button onclick="updateTicker()" style="background:linear-gradient(90deg,#b80000,#ff3b3b);color:#fff">🔄 BADILISHA TICKER</button>
 </div>
 
 <div class="card">
-<h3>📺 Video Zilizopo (<span id="count">0</span>)</h3>
+<h3 style="color:#00ff88">📺 Video Zilizopo (<span id="count">0</span>)</h3>
 <div id="list">Inapakia...</div>
 </div>
 
@@ -67,8 +68,10 @@ window.addVideo=async()=>{
  let cat=document.getElementById('vCat').value;
  let desc=document.getElementById('vDesc').value||'';
  let isLive=document.getElementById('isLive').checked;
- await push(ref(db,'videos'),{id,title,cat,desc,isLive,created:Date.now()});
- alert('✅ Imehifadhiwa!');
+ let now=Date.now();
+ // HAPA NIMEONGEZA SYNC
+ await push(ref(db,'videos'),{id,title,cat,desc,isLive,created:now,createdAt:now});
+ alert('✅ LIVE! Dunia nzima inaona sasa - same time!');
  document.getElementById('ytLink').value='';document.getElementById('vTitle').value='';document.getElementById('vDesc').value='';document.getElementById('isLive').checked=false;
 }
 window.updateTicker=async()=>{
@@ -91,7 +94,7 @@ onValue(ref(db,'videos'),snap=>{
  let html='';
  keys.forEach(k=>{
   let v=data[k];
-  html+=`<div class="video-item"><div><b>${v.title}</b><br><small style="color:#f59e0b">${v.cat} ${v.isLive?'🔴 LIVE':''}</small><br><small style="color:#ccc">${(v.desc||'').substring(0,60)}</small><br><small style="color:#888">${v.id}</small></div><button class="del" onclick="deleteVideo('${k}')">Futa</button></div>`;
+  html+=`<div class="video-item"><div><b>${v.title}</b><br><small style="color:#f59e0b">${v.cat} ${v.isLive?'🔴 LIVE':''}</small><br><small style="color:#ccc">${(v.desc||'').substring(0,60)}</small><br><small style="color:#888">${v.id} | ${v.createdAt?new Date(v.createdAt).toLocaleTimeString():''}</small></div><button class="del" onclick="deleteVideo('${k}')">Futa</button></div>`;
  });
  list.innerHTML=html;
 });
