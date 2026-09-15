@@ -1,47 +1,40 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV LIVE</title><style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Impact, sans-serif;overflow:hidden;height:100vh;width:100vw}
-#wrap{position:fixed;inset:0;background:#000}
-iframe{width:100%;height:100%;border:0}
-#overlay{position:fixed;inset:0;pointer-events:none;z-index:5}
-#topBar{position:fixed;top:0;left:0;right:0;height:38px;background:linear-gradient(90deg,#ff8c00,#ffb347);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:10}
-#logo{font-weight:900;font-size:18px;color:#000;letter-spacing:1px}
-#liveBadge{background:red;color:#fff;padding:3px 10px;border-radius:4px;font-size:11px;font-weight:900;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
-#bottom{position:fixed;bottom:0;left:0;right:0;height:32px;background:rgba(0,0,0,.85);border-top:2px solid #ff8c00;display:flex;align-items:center;z-index:10;overflow:hidden}
-#ticker{white-space:nowrap;animation:scroll 25s linear infinite;font-size:12px;color:#fff;letter-spacing:.5px}
-@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
-#count{position:fixed;bottom:36px;left:8px;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:10px;font-size:10px;z-index:10;color:#aaa}
-#black{position:fixed;inset:0;background:#000;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#black h1{color:#ff8c00;font-size:50px;text-shadow:0 0 20px #ff8c00}
-#spin{width:28px;height:28px;border:3px solid #222;border-top:3px solid #ff8c00;border-radius:50%;animation:spin 1s linear infinite;margin-top:12px}
-@keyframes spin{to{transform:rotate(360deg)}}
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:sans-serif;overflow:hidden;height:100vh;width:100vw}
+#top{position:fixed;top:0;left:0;right:0;height:40px;background:linear-gradient(90deg,#ff8c00,#ffb347);display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:10}
+#logo{font-weight:900;color:#000;font-size:17px}#live{background:red;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:900;animation:b 1s infinite}@keyframes b{50%{opacity:.4}}
+#wrap{position:fixed;top:40px;bottom:34px;left:0;right:0;background:#000}iframe{width:100%;height:100%;border:0}
+#bottom{position:fixed;bottom:0;left:0;right:0;height:34px;background:#000;border-top:2px solid #ff8c00;display:flex;align-items:center;z-index:10;overflow:hidden}
+#tick{white-space:nowrap;animation:scroll 18s linear infinite;font-size:12px;color:#fff}@keyframes scroll{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
+#tap{position:fixed;inset:0;top:40px;bottom:34px;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.7)}
+#tap button{background:#ff8c00;color:#000;border:0;padding:16px 28px;border-radius:50px;font-weight:900;font-size:18px;box-shadow:0 0 20px #ff8c00}
+#count{position:fixed;bottom:38px;left:8px;z-index:10;background:rgba(0,0,0,.6);padding:3px 8px;border-radius:10px;font-size:10px;color:#aaa}
 </style></head><body>
-<div id="topBar"><div id="logo">ALE TV HD</div><div style="display:flex;gap:8px;align-items:center"><div style="font-size:10px;color:#000;font-family:sans-serif" id="nowTitle">LIVE WORLD SYNC</div><div id="liveBadge">● LIVE</div></div></div>
-<div id="count"></div>
-<div id="bottom"><div id="ticker">★ ALE TV - BURUDANI 24/7 ★ HABARI ★ MUSIC ★ LIVE STREAM WORLDWIDE ★ INA-WORK HATA ADMIN OFFLINE ★ </div></div>
-<div id="wrap"></div>
-<div id="black"><h1>ALE TV</h1><p id="msg" style="color:#aaa;margin-top:8px;font-family:sans-serif;font-size:13px">Ina-connect...</p><div id="spin"></div><p style="color:#444;font-size:10px;margin-top:10px;font-family:sans-serif" id="debug"></p></div>
+<div id="top"><div id="logo">ALE TV HD</div><div style="display:flex;gap:8px;align-items:center"><span id="ttl" style="color:#000;font-size:11px;font-weight:800">ALE TV</span><div id="live">● LIVE</div></div></div>
+<div id="wrap"></div><div id="count"></div><div id="bottom"><div id="tick">★ ALE TV - BURUDANI 24/7 ★ BONYEZA KATI KUPATA SAUTI ★ </div></div>
+<div id="tap" onclick="unmute()"><button>▶ TAP KUSIKILIZA NA SAUTI</button><p style="color:#fff;font-size:11px;margin-top:10px">Bony eza hapa - TV itawaka na sauti</p></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-let queue=[],idx=0;
+let currentId="OST6tyIh11U",queue=[],idx=0;
 function play(v){
- if(!v||!v.id)return;
- let start=0;if(!v.isLive){start=Math.floor((Date.now()-(v.createdAt||Date.now()))/1000);if(start<0)start=0;if(start>8000)start=0;}
- let url=`https://www.youtube.com/embed/${v.id}?autoplay=1&mute=0&controls=0&rel=0&modestbranding=1&playsinline=1&start=${start}&enablejsapi=0`;
- document.getElementById('wrap').innerHTML=`<iframe src="${url}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
- document.getElementById('black').style.display='none';
- document.getElementById('nowTitle').innerText=v.title||'LIVE';
- document.getElementById('count').innerText=`${idx+1}/${queue.length} • ${v.cat||'LIVE'}`;
+ let id=v?.id||currentId; currentId=id;
+ let start=0; if(v&&!v.isLive){start=Math.floor((Date.now()-(v.createdAt||Date.now()))/1000); if(start<0||start>10000) start=0;}
+ // MUHIMU: mute=1 ndio maana inawaka kwenye simu
+ let src=`https://www.youtube.com/embed/${id}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&start=${start}`;
+ document.getElementById('wrap').innerHTML=`<iframe id="yt" src="${src}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;
+ document.getElementById('ttl').innerText=v?.title||'ALE TV HD';
+ document.getElementById('count').innerText=v?`${idx+1}/${queue.length} • ${v.cat||'Burudani'}`:'';
+ document.getElementById('tap').style.display='flex';
+}
+window.unmute=()=>{
+ let yt=document.getElementById('yt'); if(!yt)return;
+ // reload na sauti baada ya tap ya user - Google inaruhusu
+ let src=yt.src.replace('mute=1','mute=0'); yt.src=src;
+ document.getElementById('tap').style.display='none';
 }
 onValue(ref(db,'videos'),s=>{
- let d=s.val();
- if(!d){document.getElementById('msg').innerText='Hakuna video - Nenda admin';return;}
- queue=Object.entries(d).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)).map(x=>x[1]);
- document.getElementById('debug').innerText=`Found ${queue.length} videos | Last: ${queue[queue.length-1].id}`;
- if(queue.length>0){idx=queue.length-1;play(queue[idx]);}
+ let d=s.val(); if(!d){play({id:"OST6tyIh11U",title:"ALE TV"});return;}
+ queue=Object.entries(d).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0)).map(e=>e[1]);
+ idx=queue.length-1; play(queue[idx]);
 });
-// Auto repeat kila video ikidumu 15min (kwa sababu direct embed haijui imeisha) - TV ya kweli hurudia queue
-setInterval(()=>{if(queue.length>1){idx=idx<queue.length-1?idx+1:0;play(queue[idx]);}}, 1000*60*15);
-document.getElementById('wrap').addEventListener('click',()=>{let f=document.querySelector('iframe');if(f)f.requestFullscreen?.();});
 </script></body></html>
