@@ -1,35 +1,64 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#top{height:48px;background:#0f0f0f;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #222}
-#logo{font-weight:900;font-size:18px}#logo span{color:#ff7a00}
-#clock{font-size:11px;color:#999;background:#1c1c1c;padding:5px 10px;border-radius:20px}
-#video{flex:1;position:relative;background:#000}#video iframe{width:100%;height:100%;border:0}
-#load{position:absolute;inset:0;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:2}
-#info{background:#0f0f0f;padding:12px 14px;border-top:1px solid #222}
-#info h2{font-size:14px;line-height:1.3}#info #cat{font-size:10px;background:#222;padding:4px 8px;border-radius:4px;display:inline-block;margin-top:6px;color:#aaa}
-#info #desc{font-size:12px;color:#888;margin-top:8px;line-height:1.4}
-#red{height:32px;background:#ff7a00;color:#000;display:flex;align-items:center;padding:0 12px;font-size:11px;font-weight:900}
+*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial;height:100vh;display:flex;flex-direction:column}
+#top{height:44px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0}
+#logo{font-weight:900}#logo span{color:#ff7a00}
+#clock{font-size:10px;color:#888;background:#1a1a1a;padding:4px 10px;border-radius:20px}
+#vid{flex:1;background:#000;position:relative}
+#vid iframe{width:100%;height:100%;border:0;display:block}
+#thumb{position:absolute;inset:0;background-size:cover;background-position:center;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2}
+#playBtn{width:68px;height:48px;background:#ff0000;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 20px rgba(0,0,0,0.8)}
+#bottom{background:#111;padding:10px 12px;border-top:1px solid #222;flex-shrink:0}
+#bottom b{font-size:13px;display:block}#bottom small{font-size:10px;color:#ff7a00;text-transform:uppercase}#bottom p{font-size:11px;color:#888;margin-top:6px}
 </style></head><body>
-<div id="top"><div id="logo">🔥 ALE <span>TV</span></div><div id="clock">00:00:00</div></div>
-<div id="video"><div id="load"><div style="width:28px;height:28px;border:3px solid #222;border-top-color:#ff7a00;border-radius:50%;animation:s 0.8s linear infinite"></div><p id="lText" style="font-size:11px;color:#555;margin-top:8px">Inasubiri Admin...</p></div><iframe id="yt" allow="autoplay; fullscreen" allowfullscreen></iframe></div>
-<div id="red">ALE TV HD - LIVE 24/7</div>
-<div id="info"><h2 id="title">Hakuna video - weka Admin</h2><span id="cat">BURUDANI</span><div id="desc"></div></div>
-<style>@keyframes s{to{transform:rotate(360deg)}}</style>
+<div id="top"><div id="logo">ALE <span>TV</span></div><div id="clock">00:00:00</div></div>
+<div id="vid">
+<div id="thumb" onclick="startPlay()"><div id="playBtn">▶</div></div>
+<iframe id="yt" allow="autoplay; fullscreen" allowfullscreen></iframe>
+</div>
+<div id="bottom"><b id="t">Inapakia...</b><small id="c">LIVE</small><p id="d"></p></div>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-let vids=[],cur=0;const ok=id=>/^[a-zA-Z0-9_-]{11}$/.test(id);
+let vids=[], curId=null, curStart=0;
+const ok=id=>id&&/^[a-zA-Z0-9_-]{11}$/.test(id);
 setInterval(()=>document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{hour12:false}),1000);
-function play(id,s=0){if(!ok(id))return;document.getElementById('load').style.display='none';document.getElementById('yt').src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&playsinline=1&start=${s}`;}
-function ui(v){document.getElementById('title').innerText=v.title;document.getElementById('cat').innerText=v.cat;document.getElementById('desc').innerText=v.desc;document.getElementById('lText').innerText=v.title;}
-onValue(ref(db,'videos'),snap=>{
- let d=snap.val();if(!d)return;
- vids=Object.values(d).filter(x=>ok(x.videoId)).sort((a,b)=>a.createdAt-b.createdAt);
- if(vids.length&&!document.getElementById('yt').src){ui(vids[0]);play(vids[0].videoId);}
+
+window.startPlay=()=>{
+ if(!curId) return;
+ document.getElementById('thumb').style.display='none';
+ // FAST EMBED - sio nocookie, hii ndio haraka zaidi
+ document.getElementById('yt').src=`https://www.youtube.com/embed/${curId}?autoplay=1&mute=0&controls=1&rel=0&playsinline=1&start=${curStart}&iv_load_policy=3&modestbranding=1`;
+}
+
+function setData(v, start=0){
+ curId=v.videoId; curStart=start;
+ document.getElementById('t').innerText=v.title;
+ document.getElementById('c').innerText=v.cat;
+ document.getElementById('d').innerText=v.desc;
+ // Show thumbnail instantly - no waiting
+ document.getElementById('thumb').style.backgroundImage=`url(https://img.youtube.com/vi/${v.videoId}/hqdefault.jpg)`;
+ document.getElementById('thumb').style.display='flex';
+ // Auto play after 300ms
+ setTimeout(()=>startPlay(),300);
+ // Cache for next load
+ localStorage.setItem('ale_last', JSON.stringify(v));
+}
+
+// Load from cache instantly - hakuna kusubiri Firebase
+let cached=localStorage.getItem('ale_last');
+if(cached){ try{ let v=JSON.parse(cached); setData(v);}catch{} }
+
+onValue(ref(db,'live'),s=>{
+ let v=s.val(); if(!v||!ok(v.videoId)) return;
+ let st=Math.floor((Date.now()-v.startAt)/1000); if(st<0) st=0;
+ setData(v, v.isLiveNow?0:st);
 });
-onValue(ref(db,'live'),snap=>{
- let v=snap.val();if(!v||!ok(v.videoId))return;ui(v);let st=Math.floor((Date.now()-v.startAt)/1000);if(st<0)st=0;play(v.videoId,v.isLiveNow?0:st);
+
+onValue(ref(db,'videos'),s=>{
+ let d=s.val(); if(!d) return;
+ vids=Object.values(d).filter(x=>ok(x.videoId));
+ if(vids.length &&!curId){ setData(vids[0]); }
 });
 </script></body></html>
