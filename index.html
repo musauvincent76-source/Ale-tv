@@ -1,103 +1,113 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - LIVE WORLD</title>
+<title>ALE TV</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-#playerWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
-#playerWrap iframe{width:100%;height:100%;border:0}
-#overlay{position:absolute;top:0;left:0;right:0;bottom:0;z-index:5} /* mtu asiguse */
-#ticker{position:absolute;bottom:0;left:0;right:0;background:rgba(245,158,11,0.95);color:#000;font-weight:900;padding:6px;font-size:12px;white-space:nowrap;overflow:hidden;z-index:6}
-#liveBadge{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:900;z-index:6;animation:blink 1s infinite}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;color:#fff;font-family:sans-serif;overflow:hidden;height:100vh;display:flex;flex-direction:column}
+#playerWrap{flex:1;background:#000;position:relative;width:100%}
+#playerWrap iframe,#player{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
+#overlay{position:absolute;inset:0;z-index:4}
+#liveBadge{position:absolute;top:12px;left:12px;background:red;color:#fff;padding:5px 10px;border-radius:5px;font-size:11px;font-weight:900;z-index:5;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:0.5}}
+#playBig{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:10;background:rgba(0,0,0,0.6);cursor:pointer}
+#playBig div{width:80px;height:80px;background:#f59e0b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;color:#000;box-shadow:0 0 30px #f59e0b}
+#bottom{background:#111;padding:10px;border-top:2px solid #f59e0b}
+#bottom b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#ticker{color:#f59e0b;font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden}
+#ticker span{display:inline-block;animation:scroll 20s linear infinite}
+@keyframes scroll{from{transform:translateX(100%)}to{transform:translateX(-100%)}}
 </style></head><body>
 
 <div id="playerWrap">
 <div id="player"></div>
-<div id="overlay"></div>
-<div id="liveBadge">🔴 LIVE - WORLD SYNC</div>
-<div id="ticker"><span id="tickText">ALE TV LIVE - Kila mtu anaona kitu kimoja same time...</span></div>
+<div id="overlay" onclick="tryPlay()"></div>
+<div id="liveBadge">🔴 LIVE</div>
+<div id="playBig" onclick="tryPlay()"><div>▶</div></div>
 </div>
 
-<h3 style="padding:10px;color:#f59e0b">📺 Sasa Hivi - Kama Citizen TV</h3>
-<div id="info" style="padding:0 10px 10px;font-size:13px;color:#aaa"></div>
+<div id="bottom">
+<b id="vTitle">ALE TV - Inapakia...</b>
+<div id="ticker"><span id="vDesc">Karibu ALE TV - WORLD SYNC</span></div>
+</div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-let player, currentVideo=null;
+let player, cur=null;
 
-function getWorldSync(videoId){
-  // Hapa ndipo Siri iko: tuna-save wakati video ilianza kwa mara ya kwanza
-  let key = 'ale_start_'+videoId;
-  let start = localStorage.getItem(key);
-  if(!start){
-    start = Date.now();
-    localStorage.setItem(key, start);
-  }
-  start = parseInt(start);
-  let elapsed = Math.floor((Date.now() - start)/1000); // seconds zimepita tangu ianze
-  return elapsed;
+function getWorldSeek(id){
+ let k='ale_start_'+id;
+ let s=localStorage.getItem(k);
+ if(!s){s=Date.now(); localStorage.setItem(k,s);}
+ return Math.floor((Date.now()-parseInt(s))/1000);
 }
 
-function loadYT(){
-  if(!window.YT){
-    let s=document.createElement('script'); s.src='https://www.youtube.com/iframe_api';
-    document.head.appendChild(s);
-  }
+function tryPlay(){
+ let btn=document.getElementById('playBig');
+ if(player){
+  try{ player.unMute(); player.setVolume(100); player.playVideo(); }catch{}
+  btn.style.display='none';
+ }
+}
+
+function loadAPI(){
+ if(!window.YT){
+  let tag=document.createElement('script');
+  tag.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(tag);
+ }
 }
 
 window.onYouTubeIframeAPIReady=()=>{
-  let vids=getV();
-  if(vids.length==0){document.getElementById('info').innerText='Hakuna video admin'; return}
-  
-  currentVideo=vids[vids.length-1]; // ya mwisho ndio live
-  let seek = getWorldSync(currentVideo.id);
-  
-  // Kama video ni 10 min na elapsed ni 15 min, irudi mwanzo
-  // Kama ni LIVE stream, YouTube itajua
-  
-  document.getElementById('info').innerHTML=`<b>${currentVideo.title}</b><br>Imecheza kwa: ${Math.floor(seek/60)} min ${seek%60} sec - Kila mtu anaona hapa!`;
-  document.getElementById('tickText').innerText=`🔴 LIVE: ${currentVideo.title} - ${currentVideo.desc||''} | ALE TV - WORLD SYNC`;
+ let vids=getV();
+ if(!vids.length){ document.getElementById('vTitle').innerText='Hakuna video - weka Admin'; return; }
+ cur=vids[vids.length-1]; // ya mwisho
+ let seek=getWorldSeek(cur.id);
 
-  player=new YT.Player('player',{
-    videoId:currentVideo.id,
-    playerVars:{
-      autoplay:1, mute:1, controls:0, disablekb:1, fs:0, rel:0,
-      playsinline:1, origin:window.location.origin
-    },
-    events:{
-      onReady:(e)=>{
-        // Hii ndio dawa mkuu - inaenda mahali dunia iko, si mahali uliacha!
-        e.target.seekTo(seek, true);
-        e.target.playVideo();
-        // Baada ya 1 sec jaribu kutoa mute kama browser inaruhusu
-        setTimeout(()=>{try{e.target.unMute();}catch{}},1000);
-      },
-      onStateChange:(e)=>{
-        // Mtu akijaribu kupause, mrudishe play!
-        if(e.data==2){ // paused
-          setTimeout(()=>{ 
-            let newSeek=getWorldSync(currentVideo.id);
-            player.seekTo(newSeek, true);
-            player.playVideo();
-          },500);
-        }
-      }
+ document.getElementById('vTitle').innerText=cur.title;
+ document.getElementById('vDesc').innerText=cur.title+' | '+(cur.desc||'')+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE');
+
+ player=new YT.Player('player',{
+  videoId:cur.id,
+  playerVars:{
+   autoplay:1, mute:1, controls:0, disablekb:1, fs:0, rel:0, modestbranding:1, playsinline:1, origin:window.location.origin, start:seek
+  },
+  events:{
+   onReady:(e)=>{
+    e.target.seekTo(seek,true);
+    e.target.playVideo();
+    // jaribu ku-unmute automatic
+    setTimeout(()=>{ 
+     try{ e.target.unMute(); e.target.setVolume(100); document.getElementById('playBig').style.display='none'; }
+     catch{ document.getElementById('playBig').style.display='flex'; }
+    },800);
+    // kama bado muted after 2 sec, onyesha play
+    setTimeout(()=>{ if(player.isMuted && player.isMuted()){ document.getElementById('playBig').style.display='flex'; } },2000);
+   },
+   onStateChange:(e)=>{
+    if(e.data==1){ document.getElementById('playBig').style.display='none'; } // playing
+    if(e.data==2){ // paused - rudisha kama Citizen
+     setTimeout(()=>{ 
+      let ns=getWorldSeek(cur.id);
+      player.seekTo(ns,true);
+      player.playVideo();
+     },500);
     }
-  });
+   }
+  }
+ });
 };
 
-loadYT();
+loadAPI();
 
-// Kila 10 sec, songesha ticker kama TV ya kweli
+// Kila 10 sec sync kama uko nyuma
 setInterval(()=>{
-  if(currentVideo && player && player.getCurrentTime){
-    let realSeek=getWorldSync(currentVideo.id);
-    let playerTime=player.getCurrentTime();
-    // Kama player iko nyuma zaidi ya 15 sec, msongeze mbele!
-    if(Math.abs(realSeek-playerTime)>15){
-      player.seekTo(realSeek, true);
-    }
-  }
+ if(cur && player && player.getCurrentTime){
+  try{
+   let real=getWorldSeek(cur.id);
+   let now=player.getCurrentTime();
+   if(Math.abs(real-now)>12){ player.seekTo(real,true); }
+  }catch{}
+ }
 },10000);
 </script>
 </body></html>
