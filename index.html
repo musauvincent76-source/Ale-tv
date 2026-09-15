@@ -1,57 +1,92 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV HD</title><style>
-*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:sans-serif;height:100vh;width:100vw;overflow:hidden}
-#top{position:fixed;top:0;left:0;right:0;height:42px;background:linear-gradient(90deg,#ff8c00,#ffae42);display:flex;align-items:center;justify-content:space-between;padding:0 14px;z-index:10}
-#logo{color:#000;font-weight:900;font-size:18px}#badge{background:#000;color:#ff8c00;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:900}
-#stage{position:fixed;top:42px;bottom:38px;left:0;right:0;background:#000;display:flex;align-items:center;justify-content:center}
-video{width:100%;height:100%;object-fit:contain;background:#000}
-#footer{position:fixed;bottom:0;left:0;right:0;height:38px;background:#0f0f0f;border-top:3px solid #ff8c00;display:flex;align-items:center;overflow:hidden;z-index:10}
-#ticker{white-space:nowrap;animation:scroll 20s linear infinite;color:#fff;font-size:11px;letter-spacing:1px}@keyframes scroll{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
-#centerPlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.75);z-index:20;cursor:pointer}
-#btn{width:88px;height:88px;background:#ff8c00;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:36px;color:#000;box-shadow:0 0 25px #ff8c00;animation:pulse 1.2s infinite}@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
-#infoBox{position:fixed;bottom:42px;left:10px;background:rgba(0,0,0,.7);padding:5px 10px;border-radius:8px;font-size:10px;color:#aaa;z-index:10}
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE ADMIN - TV PREVIEW</title><style>
+*{margin:0;padding:0;box-sizing:border-box}body{background:#0a0a0a;color:#fff;font-family:sans-serif}
+#top{height:44px;background:#ff8c00;display:flex;align-items:center;justify-content:space-between;padding:0 12px;color:#000;font-weight:900}
+#tvBox{margin:10px;background:#000;border-radius:12px;overflow:hidden;border:2px solid #ff8c00;position:relative}
+#tvBox video,#tvBox iframe{width:100%;height:200px;background:#000;border:0}
+#liveDot{position:absolute;top:8px;left:8px;background:red;color:#fff;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:900;z-index:5}
+#info{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.7);padding:3px 8px;border-radius:6px;font-size:10px;z-index:5}
+#form{padding:10px}
+input,select{width:100%;padding:12px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#111;color:#fff;font-size:14px}
+button{width:100%;padding:14px;border-radius:12px;border:0;background:#ff8c00;color:#000;font-weight:900;font-size:15px;margin-top:8px}
+.card{background:#161616;border:1px solid #222;padding:10px;border-radius:10px;margin:8px 10px;display:flex;justify-content:space-between;align-items:center}
+#tabs{display:flex;gap:6px;padding:0 10px;margin-top:10px}
+.tab{flex:1;padding:8px;text-align:center;background:#222;border-radius:8px;font-size:12px;cursor:pointer}
+.tab.active{background:#ff8c00;color:#000;font-weight:900}
 </style></head><body>
-<div id="top"><div id="logo">ALE TV HD</div><div id="badge">● LIVE 24/7</div></div>
-<div id="stage">
-<video id="tv" playsinline webkit-playsinline preload="auto" poster="https://i.ytimg.com/vi/OST6tyIh11U/maxresdefault.jpg"></video>
-<div id="centerPlay" onclick="start()"><div id="btn">▶</div><div style="margin-top:14px;font-weight:900;color:#ff8c00">BONYEZA KUANZA TV</div><div style="font-size:11px;color:#aaa;margin-top:4px">Hakuna YouTube - Player yetu wenyewe</div></div>
+<div id="top"><span>ALE ADMIN</span><span style="font-size:11px;background:#000;color:#ff8c00;padding:4px 10px;border-radius:20px">TV PREVIEW</span></div>
+
+<!-- TV INAONEKANA HAPA -->
+<div id="tvBox">
+<div id="liveDot">● LIVE PREVIEW</div>
+<div id="info">Inapakia...</div>
+<video id="previewVideo" controls playsinline muted autoplay style="display:none"></video>
+<div id="previewYT" style="width:100%;height:200px;display:none"></div>
+<div id="noVideo" style="height:200px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#444">
+<span style="font-size:40px">📺</span><span style="font-size:12px;margin-top:8px">Hakuna video bado</span>
 </div>
-<div id="infoBox">1/1 • Burudani</div>
-<div id="footer"><div id="ticker">★ ALE TV HD ★ HAKUNA YOUTUBE PLAYER ★ PLAYER YETU WENYEWE ★ 24/7 ★ BONYEZA PLAY ★</div></div>
+</div>
+
+<div id="tabs">
+<div class="tab active" onclick="setMode('mp4',this)">MP4 LINK (Bila YT)</div>
+<div class="tab" onclick="setMode('youtube',this)">YOUTUBE LINK</div>
+</div>
+
+<div id="form">
+<input id="title" placeholder="Title - mfano: Burudani Kali">
+<input id="cat" placeholder="Category - Burudani / Habari / Muziki">
+<input id="link" placeholder="Weka MP4 link hapa...">
+<small id="hint" style="color:#888;font-size:11px;display:block;margin-top:4px">MP4: tumia catbox.moe upload video yako uchukue Direct Link</small>
+<button onclick="broadcast()">🚀 TUMA LIVE KWENYE TV</button>
+<button onclick="clearAll()" style="background:#222;color:#fff;margin-top:6px">Futa zote</button>
+</div>
+
+<div id="queue"></div>
+
 <script type="module">
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,push,set,onValue,remove}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-const video=document.getElementById('tv');
-let queue=[],idx=0;
-// VIDEO YAKO - TUMEWEKA DIRECT LINK (bila YouTube player)
-const DEFAULT_MP4=[
-  {id:"OST6tyIh11U",title:"ALE TV",cat:"Burudani",url:"https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",poster:"https://i.ytimg.com/vi/OST6tyIh11U/maxresdefault.jpg"}
-];
-function loadVideo(v){
-  if(!v)return;
-  video.poster=v.poster||"";
-  video.src=v.url||v.link||"";
-  video.load();
-  document.getElementById('infoBox').innerText=`${idx+1}/${queue.length} • ${v.cat||'Burudani'} • ${v.title||''}`;
+let mode='mp4';
+window.setMode=(m,el)=>{
+ mode=m;
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active')); el.classList.add('active');
+ if(m==='mp4'){document.getElementById('link').placeholder='https://...video.mp4'; document.getElementById('hint').innerText='MP4: upload catbox.moe -> Copy Direct Link';}
+ else{document.getElementById('link').placeholder='https://youtu.be/OST6tyIh11U'; document.getElementById('hint').innerText='YouTube: weka link yoyote ya YouTube';}
 }
-window.start=()=>{
-  document.getElementById('centerPlay').style.display='none';
-  video.muted=false; video.volume=1;
-  video.play().catch(()=>{video.muted=true; video.play();});
+function getYTId(url){
+ let m=url.match(/(?:youtu\.be\/|v=|embed\/)([a-zA-Z0-9_-]{11})/); return m?m[1]:null;
 }
-video.addEventListener('ended',()=>{
-  if(queue.length>1){idx=idx<queue.length-1?idx+1:0; loadVideo(queue[idx]); video.play();}
-  else{video.currentTime=0; video.play();}
-});
+function showPreview(v){
+ let pv=document.getElementById('previewVideo'); let py=document.getElementById('previewYT'); let noV=document.getElementById('noVideo');
+ if(!v){pv.style.display='none'; py.style.display='none'; noV.style.display='flex'; return;}
+ noV.style.display='none';
+ if(v.url && v.url.includes('.mp4')){
+   py.style.display='none'; pv.style.display='block'; pv.src=v.url; pv.play().catch(()=>{});
+ }else if(v.id){
+   pv.style.display='none'; py.style.display='block'; py.innerHTML=`<iframe src="https://www.youtube.com/embed/${v.id}?autoplay=1&mute=1&controls=0" style="width:100%;height:100%" allow="autoplay"></iframe>`;
+ }else{
+   pv.style.display='none'; py.style.display='none'; noV.style.display='flex';
+ }
+ document.getElementById('info').innerText=`${v.title||''} • ${v.cat||''}`;
+}
+window.broadcast=async()=>{
+ let link=document.getElementById('link').value.trim(); if(!link)return alert('Weka link');
+ let data={title:document.getElementById('title').value||'ALE TV',cat:document.getElementById('cat').value||'Burudani',createdAt:Date.now()};
+ if(mode==='mp4'){data.url=link; data.link=link;}
+ else{let id=getYTId(link); if(!id)return alert('YouTube link si sahihi'); data.id=id; data.link=link; data.url=`https://www.youtube.com/watch?v=${id}`;}
+ await set(push(ref(db,'videos')),data);
+ document.getElementById('link').value=''; alert('✅ Imetumwa LIVE kwenye TV!');
+}
+window.clearAll=async()=>{if(confirm('Futa videos zote?')){let s=await new Promise(r=>onValue(ref(db,'videos'),snap=>r(snap.val()),{onlyOnce:true})); if(s)for(let k in s) await remove(ref(db,'videos/'+k));}}
 onValue(ref(db,'videos'),snap=>{
-  let d=snap.val();
-  if(!d){queue=DEFAULT_MP4; idx=0; loadVideo(queue[0]); return;}
-  // Admin akituma YouTube link, tunai-convert kuwa mp4 placeholder - wewe utaweka link yako ya mp4 baadaye
-  queue=Object.values(d).map(v=>{
-    if(v.url||v.link) return v;
-    // Kama bado ni YouTube ID - tunatumia poster yake lakini video ni default mpaka u-upload mp4
-    return {id:v.id,title:v.title,cat:v.cat||"Burudani",url:v.mp4||DEFAULT_MP4[0].url,poster:`https://i.ytimg.com/vi/${v.id}/maxresdefault.jpg`}
-  });
-  idx=queue.length-1; loadVideo(queue[idx]);
+ let d=snap.val(); let html='';
+ if(!d){showPreview(null); document.getElementById('queue').innerHTML='<p style="text-align:center;color:#444;padding:20px">Queue tupu - Weka video ya kwanza</p>'; return;}
+ let arr=Object.entries(d).sort((a,b)=>(a[1].createdAt||0)-(b[1].createdAt||0));
+ let latest=arr[arr.length-1][1]; showPreview(latest);
+ arr.reverse().forEach(([k,v])=>{
+   html+=`<div class="card"><div><b>${v.title}</b><br><small style="color:#888">${v.cat} • ${(v.id||'MP4').toString().substring(0,20)}</small></div><button onclick="del('${k}')" style="width:auto;padding:6px 12px;background:red;color:#fff">X</button></div>`;
+ });
+ document.getElementById('queue').innerHTML=html;
 });
-video.addEventListener('click',()=>{if(video.paused)video.play();else video.pause();});
+window.del=async(k)=>{await remove(ref(db,'videos/'+k));}
 </script></body></html>
