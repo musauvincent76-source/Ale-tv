@@ -42,14 +42,25 @@
 </div>
 
 <script>
-let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;let videoStartedAt=0;let lastHiddenTime=0;
+let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;let videoStartedAt=0;
+
+function getRealElapsed(){
+  if(!videoStartedAt) return currentOffset;
+  let now=Date.now();
+  let el=Math.floor((now-videoStartedAt)/1000);
+  if(el<0) el=0;
+  if(el>7200) el=0;
+  return el;
+}
+
 function updateGreeting(){let h=new Date().getHours();let t=h>=5&&h<12?'☀️ Good Morning | Habari ya Asubuhi':h<16?'🌤️ Good Afternoon | Habari ya Mchana':h<19?'🌇 Good Evening | Habari ya Jioni':'🌙 Good Night | Habari ya Usiku';document.getElementById('greeting').innerText=t;}
 updateGreeting();setInterval(updateGreeting,60000);
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 
 function playVideo(v,offset=0,withSound=false,force=false){
  if(!v)return;
- if(!force && lastId===v.id && Math.abs(currentOffset-offset)<5 &&!withSound) return;
+ // kama ni video ile ile na offset karibu, usireload
+ if(!force && lastId===v.id && Math.abs(currentOffset-offset)<3 &&!withSound) return;
  currentVideo=v;currentOffset=offset;lastId=v.id;videoStartedAt=v.createdAt||v.created||Date.now();
  try{ localStorage.setItem('ale_last_v',JSON.stringify(v)); localStorage.setItem('ale_last_start',videoStartedAt); }catch(e){}
  document.getElementById('vTitle').innerText=v.title;
@@ -59,44 +70,62 @@ function playVideo(v,offset=0,withSound=false,force=false){
  document.getElementById('ticker').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV LIVE')+' 🔥';
  let mute=withSound?0:1;
  document.getElementById('loader').style.display='none';
- // FAST EMBED - nocookie + autoplay instant
  document.getElementById('main').src='https://www.youtube-nocookie.com/embed/'+v.id+'?autoplay=1&mute='+mute+'&controls=0&start='+offset+'&modestbranding=1&rel=0&playsinline=1&enablejsapi=1';
  isMuted=!withSound;
  document.getElementById('soundBtn').style.display=withSound?'none':'block';
 }
-function enableSound(){if(!currentVideo)return;playVideo(currentVideo,currentOffset,true,true);}
+function enableSound(){
+  if(!currentVideo) return;
+  let real = getRealElapsed();
+  playVideo(currentVideo,real,true,true);
+}
 
-// INSTANT LOAD - usisubiri Firebase
+// INSTANT LOAD
 try{
  let cached=JSON.parse(localStorage.getItem('ale_last_v')||'null');
  let cachedStart=parseInt(localStorage.getItem('ale_last_start')||'0');
- if(cached){
+ if(cached && cachedStart){
    let elapsed=Math.floor((Date.now()-cachedStart)/1000);
    if(elapsed<0) elapsed=0;
-   if(cached.isLive) elapsed=0;
    playVideo(cached,elapsed,false,true);
  }
 }catch(e){}
 
-document.getElementById('playerBox').addEventListener('click',()=>{if(isMuted)enableSound();});
+document.getElementById('playerBox').addEventListener('click',()=>{
+  // ukibonyeza popote, sio tu pale pale, songa mbele kama TV
+  if(isMuted){
+    enableSound();
+  } else {
+    let real = getRealElapsed();
+    if(Math.abs(real-currentOffset)>3) playVideo(currentVideo,real,false,true);
+  }
+});
+
 document.getElementById('main').addEventListener('load',()=>{document.getElementById('loader').style.display='none';});
 
-// FIX 1 MIN DELAY
+// DUNIA NZIMA SYNC - UKISIMAMISHA UKIPLAY INARUKA MBELE
 document.addEventListener('visibilitychange',()=>{
-  if(document.hidden){ lastHiddenTime=Date.now(); }
-  else {
-    if(lastHiddenTime && currentVideo){
-      let gone=Math.floor((Date.now()-lastHiddenTime)/1000);
-      if(gone>=5){
-        let newElapsed=Math.floor((Date.now()-videoStartedAt)/1000);
-        if(newElapsed<0) newElapsed=0;
-        if(currentVideo.isLive) newElapsed=0;
-        if(newElapsed>currentOffset+3) playVideo(currentVideo,newElapsed,!isMuted,true);
-      }
-      lastHiddenTime=0;
+  if(!document.hidden && currentVideo){
+    let real = getRealElapsed();
+    if(real > currentOffset+2){
+      playVideo(currentVideo,real,!isMuted,true);
     }
   }
 });
+
+// KILA SEKUNDE 30 HAKIKISHA WOTE WAKO SEHEMU MOJA KAMA TV YA KWELI
+setInterval(()=>{
+  if(currentVideo &&!document.hidden){
+    let real = getRealElapsed();
+    // kama imetofautiana zaidi ya sec 10, isync
+    if(Math.abs(real-currentOffset)>10){
+      playVideo(currentVideo,real,!isMuted,true);
+    } else {
+      currentOffset = real; // sasisha kimoyomoyo
+    }
+  }
+},10000);
+
 </script>
 
 <script type="module">
@@ -108,14 +137,13 @@ onValue(ref(db,'videos'),snap=>{
  let d=snap.val();if(!d)return;
  let all=Object.values(d).sort((a,b)=>(b.createdAt||b.created||0)-(a.createdAt||a.created||0));
  let v=all[0];if(!v)return;
- if(lastId===v.id) return; // usicheze upya kama ni ile ile
+ if(lastId===v.id) return;
  let now=Date.now();
  let started=v.createdAt||v.created||now;
  let elapsed=Math.floor((now-started)/1000);
  if(elapsed<0) elapsed=0;
- if(v.isLive) elapsed=0;
  if(elapsed>7200) elapsed=0;
- playVideo(v,elapsed,false);
+ playVideo(v,elapsed,false,true);
 });
 onValue(ref(db,'ticker'),snap=>{let d=snap.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' 🔥';});
 </script>
