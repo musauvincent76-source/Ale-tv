@@ -18,7 +18,7 @@ button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:p
 .stats b{color:#f59e0b;font-size:18px;display:block}
 </style></head><body>
 <h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
-<button class="btn-tv" onclick="openTV()">📺 FUNGUA TV - ANGALIA LIVE</button>
+<button class="btn-tv" id="openTvBtn">📺 FUNGUA TV - ANGALIA LIVE</button>
 <div class="stats">
 <div><b id="totalV">0</b>Videos</div>
 <div><b id="liveV">LIVE</b>Status</div>
@@ -33,8 +33,8 @@ button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:p
 <option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option>
 </select>
 <label style="display:flex;align-items:center;gap:8px;margin:8px 0;color:#ff4444;font-size:13px"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAM (Mechi/Live News)</label>
-<button class="btn-add" id="saveBtn">💾 SAVE VIDEO KWENYE TV</button>
-<p id="msg" style="text-align:center;font-weight:bold"></p>
+<button class="btn-add" id="saveBtn">💾 SAVE VIDEO</button>
+<p id="msg" style="text-align:center;color:#f59e0b;font-weight:bold"></p>
 </div>
 <div class="card">
 <h3>📢 Ticker Custom</h3>
@@ -47,7 +47,85 @@ button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:p
 <div id="list"></div>
 <button id="clearBtn" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
 </div>
+
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getDatabase,ref,push,onValue,remove,set} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-const firebaseConfig={api
+const firebaseConfig={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv",storageBucket:"ale-tv.firebasestorage.app",messagingSenderId:"548271956392",appId:"1:548271956392:web:6993343a96da96f7757d9d"};
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+
+function extractId(url){
+ if(!url) return '';
+ url=url.trim();
+ if(url.length==11 &&!url.includes('/')) return url;
+ let m=url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
+ if(m) return m[1];
+ return url;
+}
+
+document.getElementById('openTvBtn').onclick=()=>{
+  window.open('index.html','_blank');
+};
+
+document.getElementById('saveBtn').onclick=()=>{
+ let link=document.getElementById('ytLink').value.trim();
+ if(!link){alert('Weka link mkuu!');return}
+ let id=extractId(link);
+ if(id.length!=11){alert('Link mbaya! Jaribu link kama https://www.youtube.com/watch?v=dQw4w9WgXcQ');return}
+ let data={
+   id:id,
+   url:link,
+   title:document.getElementById('vTitle').value||'ALE TV Video',
+   desc:document.getElementById('vDesc').value||'',
+   cat:document.getElementById('vCat').value,
+   isLive:document.getElementById('isLive').checked,
+   createdAt:Date.now()
+ };
+ document.getElementById('msg').innerText='⏳ Inatuma kwenye TV...';
+ push(ref(db,'videos'),data).then(()=>{
+   document.getElementById('msg').innerText='✅ IMEINGIA LIVE!';
+   document.getElementById('ytLink').value='';
+   document.getElementById('vTitle').value='';
+   document.getElementById('vDesc').value='';
+   setTimeout(()=>document.getElementById('msg').innerText='',3000);
+ }).catch(e=>{
+   document.getElementById('msg').innerText='❌ Error: '+e.message;
+ });
+};
+
+document.getElementById('tickerBtn').onclick=()=>{
+ let t=document.getElementById('tickerCustom').value;
+ if(!t) return alert('Andika ticker');
+ set(ref(db,'ticker'),{text:t}).then(()=>{alert('Ticker imesasa!');});
+};
+
+onValue(ref(db,'ticker'),(snap)=>{
+ let d=snap.val();
+ if(d) document.getElementById('curTicker').innerText=d.text;
+});
+
+onValue(ref(db,'videos'),(snap)=>{
+ let data=snap.val();
+ if(!data){
+   document.getElementById('list').innerHTML='Hakuna video';
+   document.getElementById('count').innerText='0';
+   document.getElementById('totalV').innerText='0';
+   return
+ }
+ let entries=Object.entries(data).reverse();
+ document.getElementById('count').innerText=entries.length;
+ document.getElementById('totalV').innerText=entries.length;
+ let html='';
+ entries.forEach(([key,x])=>{
+   let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:2px 6px;border-radius:3px;font-size:10px">LIVE</span>':'';
+   html+=`<div class="list-item"><div><b>${x.title}</b>${liveTag}<br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="window.delV('${key}')">X</button></div></div>`;
+ });
+ document.getElementById('list').innerHTML=html;
+});
+
+window.delV=(key)=>{if(confirm('Futa hii?')) remove(ref(db,'videos/'+key));}
+document.getElementById('clearBtn').onclick=()=>{if(confirm('Futa zote kweli?')) remove(ref(db,'videos'));}
+setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
+</script>
+</body></html>
