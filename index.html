@@ -6,6 +6,7 @@
 body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
 .topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #f59e0b}
 .logo{font-weight:900;font-size:22px;color:#f59e0b}
+.greeting{background:#1a1a1a;color:#f59e0b;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;border:1px solid #f59e0b}
 .live-badge{background:#ff0000;color:#fff;padding:5px 14px;border-radius:20px;font-weight:bold;font-size:13px}
 .player{width:100%;height:70vh;background:#000;position:relative}
 #main{width:100%;height:100%}
@@ -18,7 +19,7 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
 .info{padding:12px;background:#111;display:flex;justify-content:space-between;align-items:flex-start}
 .desc-box{margin:8px 0 0 0;color:#ccc;font-size:14px;line-height:1.4;background:#1a1a1a;padding:8px 10px;border-radius:6px;border-left:3px solid #f59e0b}
 </style></head><body>
-<div class="topbar"><div class="logo">🔥 ALE TV</div><div class="live-badge">● LIVE TV DUNIANI</div></div>
+<div class="topbar"><div class="logo">🔥 ALE TV</div><div class="greeting" id="greeting">☀️ Habari ya Asubuhi</div><div class="live-badge">● LIVE</div></div>
 <div class="player" id="playerBox">
 <div class="clock" id="clock">00:00:00</div>
 <div id="main"></div>
@@ -37,6 +38,20 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
 <script>
 let videos=[{id:'jNQXAC9IVRw',title:'ALE TV - Karibu',cat:'LIVE',desc:'Karibu ALE TV - TV ya kweli duniani',isLive:false},{id:'dQw4w9WgXcQ',title:'ALE TV Official',cat:'BURUDANI',desc:'Burudani nonstop',isLive:false}];
 let current=null;let player=null;let ready=false;
+
+function updateGreeting(){
+ let h=new Date().getHours();
+ let el=document.getElementById('greeting');
+ let text='';
+ if(h>=5&&h<12)text='☀️ Good Morning | Habari ya Asubuhi';
+ else if(h>=12&&h<16)text='🌤️ Good Afternoon | Habari ya Mchana';
+ else if(h>=16&&h<19)text='🌇 Good Evening | Habari ya Jioni';
+ else text='🌙 Good Night | Habari ya Usiku';
+ if(el)el.innerText=text;
+}
+updateGreeting();
+setInterval(updateGreeting,60000);
+
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 function getSynced(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let elapsed=now%total;return{idx:Math.floor(elapsed/240)%videos.length,seek:elapsed%240}}
 function updateInfo(v){if(!v)return;document.getElementById('vTitle').innerText=v.title;document.getElementById('vCat').innerText=v.cat;document.getElementById('catLabel').innerText=v.cat;document.getElementById('vDesc').innerText=v.desc||'';document.getElementById('ticker').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV LIVE')+' | ALE TV LIVE WORLDWIDE 🔥';}
@@ -53,7 +68,6 @@ window.playNow=function(){if(player){let n=getSynced();current=n;let nv=videos[c
 document.getElementById('playerBox').addEventListener('click',()=>{if(!player)return;let s=player.getPlayerState();if(s==1)player.pauseVideo();else playNow();});
 </script>
 <script src="https://www.youtube.com/iframe_api"></script>
-
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
