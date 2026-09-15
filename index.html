@@ -1,74 +1,69 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV ADMIN</title>
+<title>ALE TV - LIVE</title>
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
-h2{color:#f59e0b;text-align:center}
-.card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
-button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
-.btn-add{background:#f59e0b;color:#000;width:100%}
-.btn-del{background:#ff0000;color:#fff}
-.btn-ticker{background:#00ff88;color:#000;width:100%}
-.list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
-.stats{display:flex;gap:10px;text-align:center}
-.stats div{background:#222;flex:1;padding:10px;border-radius:8px}
-.stats b{color:#f59e0b;font-size:18px;display:block}
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+.topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #1a1a1a}
+.logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,#f59e0b,#ff006e,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.live-badge{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:12px;animation:zoom 1s infinite}
+@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.player{width:100%;height:70vh;min-height:400px;background:#000;position:relative;overflow:hidden}
+#main{width:100%;height:100%}
+.clock{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5;pointer-events:none}
+.tap-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);border:1px solid #f59e0b;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:bold;z-index:10;pointer-events:none;display:none;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.7;transform:translate(-50%,-50%) scale(1.05)}}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5;pointer-events:none}
+.ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
+.ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.info{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:#111}
+.info small{color:#f59e0b;font-size:11px;border:1px solid #f59e0b;padding:2px 8px;border-radius:10px}
 </style></head><body>
-<h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
-<div style="display:flex;gap:10px;margin-bottom:15px">
-<a href="index.html" target="_blank" style="flex:1;text-decoration:none"><button style="width:100%;background:#00ff88;color:#000;padding:12px;font-size:15px">📺 FUNGUA TV - LIVE</button></a>
+<div class="topbar"><div class="logo">ALE TV</div><div class="live-badge">● LIVE</div></div>
+<div class="player" id="playerBox">
+<div id="clock" class="clock">00:00:00</div>
+<div id="main"></div>
+<div class="tap-hint" id="tapHint">👆 TAP SCREEN TO PLAY</div>
+<div class="ticker"><span class="ticker-cat" id="catLabel">BURUDANI</span><span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span></div>
 </div>
-<div class="stats">
-<div><b id="totalV">0</b>Videos</div>
-<div><b id="liveV">LIVE</b>Status</div>
-<div><b id="time">00:00</b>Time</div>
+<div class="info">
+<div><h3 id="vTitle" style="margin:0;font-size:16px">Loading...</h3><small id="vCat">BURUDANI</small></div>
+<div style="text-align:right"><div id="timeNow" style="font-size:12px;color:#f59e0b"></div><div style="font-size:10px;color:#666">SYNCED WORLDWIDE</div></div>
 </div>
-<div class="card">
-<h3>➕ Weka Video Mpya</h3>
-<input id="ytLink" placeholder="Weka YouTube Link au ID">
-<input id="vTitle" placeholder="Title ya video">
-<textarea id="vDesc" placeholder="Description"></textarea>
-<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option></select>
-<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#ff4444"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAMING</label>
-<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
-</div>
-<div class="card">
-<h3>📢 Ticker Custom</h3>
-<input id="tickerCustom" placeholder="Andika habari ya chini...">
-<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER</button>
-<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
-</div>
-<div class="card">
-<h3>📋 Videos Zote (<span id="count">0</span>)</h3>
-<div id="list"></div>
-<button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
-</div>
+<p id="vDesc" style="padding:0 12px;color:#aaa;font-size:13px"></p>
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
-function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/); return m?m[1]:url;}
-function addVideo(){
- let link=document.getElementById('ytLink').value.trim();
- let id=extractId(link);
- if(id.length!=11){alert('Link mbaya mkuu!');return}
- let v=getV();
- v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV Video',desc:document.getElementById('vDesc').value||'',cat:document.getElementById('vCat').value,isLive:document.getElementById('isLive').checked});
- saveV(v); alert('Imewekwa!'); location.reload();
+let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',cat:'BURUDANI',isLive:false}]}
+setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
+let current=getSyncedIndex(); let player;
+function onYouTubeIframeAPIReady(){
+ let lastPos=parseInt(localStorage.getItem('ale_last_idx')||current.idx);
+ let lastTime=parseInt(localStorage.getItem('ale_last_time')||0);
+ let nowSec=Math.floor(Date.now()/1000);
+ if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos}
+ let v=videos[current.idx]; updateInfo(v);
+ let startAt=v.isLive?0:current.seek;
+ player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:startAt},events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}});
 }
-function saveTicker(){let t=document.getElementById('tickerCustom').value; localStorage.setItem('ale_ticker_custom',t); alert('Ticker updated!'); document.getElementById('curTicker').innerText=t;}
-function render(){
- let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
- document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
- let html=''; v.forEach((x,i)=>{
-  let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px">LIVE</span>':'';
-  html+=`<div class="list-item"><div><b>${x.title}</b>${liveTag}<br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
- });
- document.getElementById('list').innerHTML=html||'Hakuna video';
+function updateInfo(v){
+ document.getElementById('vTitle').innerText=v.title;
+ document.getElementById('vDesc').innerText=v.desc||'';
+ document.getElementById('vCat').innerText=v.cat||'BURUDANI';
+ document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
+ let custom=localStorage.getItem('ale_ticker_custom');
+ document.getElementById('ticker').innerText=custom||' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE *** ';
 }
-function delV(i){if(confirm('Futa hii?')){let v=getV(); v.splice(i,1); saveV(v); render();}}
-function clearAll(){if(confirm('Futa zote kweli?')){localStorage.removeItem('ale_videos'); render();}}
-setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
-render();
+function onStateChange(e){
+ let hint=document.getElementById('tapHint');
+ if(e.data==1){hint.style.display='none';localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
+ if(e.data==2){hint.style.display='block';}
+ if(e.data==0){current.idx=(current.idx+1)%videos.length;localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);}
+}
+document.getElementById('playerBox').addEventListener('click',()=>{
+ if(!player) return;
+ if(player.getPlayerState()==1){player.pauseVideo();}else{player.playVideo();}
+});
 </script>
 </body></html>
