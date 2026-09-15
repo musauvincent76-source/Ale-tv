@@ -33,29 +33,55 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
 </div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
-<script>
-// 👇👇👇 HAPA NDIPO UNAWEKA VIDEOS ZAKO - BADILISHA HIZI 3 TU - DUNIA ITAONA HIZI! 👇👇👇
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv",storageBucket:"ale-tv.firebasestorage.app",messagingSenderId:"548271956392",appId:"1:548271956392:web:6993343a96da96f7757d9d"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);
+
+function getYouTubeId(url){
+  try{
+    if(url.length===11 &&!url.includes('/') ) return url;
+    let u=new URL(url);
+    if(u.searchParams.get('v')) return u.searchParams.get('v');
+    if(u.pathname.includes('/shorts/')) return u.pathname.split('/shorts/')[1].split('/')[0];
+    return u.pathname.split('/').pop().substring(0,11);
+  }catch(e){ return url.slice(-11); }
+}
+
 let defaultVideos=[
 {id:'jNQXAC9IVRw',title:'Me at the zoo',cat:'BURUDANI',isLive:false},
 {id:'dQw4w9WgXcQ',title:'ALE TV Official',cat:'HABARI',isLive:false},
 {id:'9bZkp7q19f0',title:'ALE TV Music',cat:'MZIKI',isLive:false}
 ];
-// 👆👆👆 BADILISHA HIZI TU KISHA WEKA GITI 👆👆👆
+window.videos=defaultVideos;
 
-let videos=defaultVideos;
+onValue(ref(db,'videos'),(snap)=>{
+  const data=snap.val();
+  if(data){
+    const arr=Object.values(data).reverse().map(v=>({id:getYouTubeId(v.url),title:v.title,cat:'LIVE',isLive:false}));
+    if(arr.length>0) window.videos=arr;
+    if(window.playerReady) location.reload();
+  }
+});
+</script>
+<script>
+let videos=window.videos;
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 function getSynced(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let elapsed=now%total;return{idx:Math.floor(elapsed/240),seek:elapsed%240}}
 let current=getSynced();let player;let ready=false;
 function updateInfo(v){document.getElementById('vTitle').innerText=v.title;document.getElementById('vCat').innerText=v.cat;document.getElementById('catLabel').innerText=v.cat;document.getElementById('ticker').innerText='🔥 '+v.title+' | ALE TV LIVE WORLDWIDE 🔥';}
 window.onYouTubeIframeAPIReady=function(){
+ if(window.videos) videos=window.videos;
  let v=videos[current.idx];updateInfo(v);document.getElementById('loading').style.display='none';
  player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,iv_load_policy:3,start:v.isLive?0:current.seek},
-  events:{onReady:(e)=>{ready=true;e.target.playVideo();setTimeout(()=>{try{e.target.unMute()}catch(err){}},1000);},
+  events:{onReady:(e)=>{ready=true;window.playerReady=true;e.target.playVideo();setTimeout(()=>{try{e.target.unMute()}catch(err){}},1000);},
    onStateChange:(e)=>{let hint=document.getElementById('tapHint');if(e.data==1){hint.style.display='none';}if(e.data==2){hint.style.display='block';}if(e.data==0){let n=getSynced();current=n;let nv=videos[current.idx];updateInfo(nv);player.loadVideoById({videoId:nv.id,startSeconds:nv.isLive?0:n.seek});}}}});
 }
 window.playNow=function(){if(player&&ready){let n=getSynced();current=n;let nv=videos[current.idx];updateInfo(nv);player.loadVideoById({videoId:nv.id,startSeconds:nv.isLive?0:n.seek});setTimeout(()=>{try{player.playVideo();player.unMute();}catch(e){}},300);document.getElementById('tapHint').style.display='none';}}
 document.getElementById('playerBox').addEventListener('click',()=>{if(!player)return;let s=player.getPlayerState();if(s==1){player.pauseVideo();}else{playNow();}});
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){playNow();}});
 setTimeout(()=>{if(!ready && typeof YT!=='undefined' && YT.Player){onYouTubeIframeAPIReady();}},3000);
+setTimeout(()=>{videos=window.videos;},1000);
 </script>
 </body></html>
