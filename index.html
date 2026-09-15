@@ -6,24 +6,29 @@
 body{background:#000;color:#fff;font-family:sans-serif}
 #wrap{position:relative;width:100%;background:#000}
 #player{width:100%;aspect-ratio:16/9;background:#000}
+#player iframe{width:100%;height:100%;pointer-events:none!important}
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
-#overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
+#overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900;animation:pulse 1s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
 
-/* ALE TV RIGHT JUU NA KALONGO */
+/* ALE TV NA KALONGO KUBWA RIGHT JUU */
 #aleLogo{
- position:absolute;top:10px;right:10px;z-index:12;
- background:linear-gradient(135deg,#ff0000,#ff6a00);
- color:#fff; padding:6px 14px; border-radius:20px;
- font-weight:900; font-size:13px; letter-spacing:1px;
- border:2px solid #fff; box-shadow:0 0 10px rgba(255,0,0,0.8);
- display:flex; align-items:center; gap:6px;
+ position:absolute;top:10px;right:10px;z-index:15;
+ background:linear-gradient(135deg,#ff0000,#ffae00,#ff0000);
+ color:#fff; padding:7px 16px; border-radius:25px;
+ font-weight:900; font-size:14px; letter-spacing:2px;
+ border:2px solid #fff;
+ box-shadow:0 0 15px #ff0000, 0 0 25px #ffae00;
+ text-shadow:0 0 8px #fff;
+ display:flex; align-items:center; gap:7px;
 }
-#aleLogo span.dot{width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+#aleLogo.dot{width:10px;height:10px;background:#fff;border-radius:50%;box-shadow:0 0 10px #fff;animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.7)}}
 
+/* TICKER RED NA SPEED HARAKA */
 #tickerWrap{position:absolute;bottom:0;left:0;right:0;height:34px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
-#ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 35s linear infinite}
+#ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 15s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 #clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-size:13px;font-weight:900}
 #nextBox{position:absolute;bottom:34px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
@@ -35,13 +40,13 @@ body{background:#000;color:#fff;font-family:sans-serif}
 <div id="aleLogo"><span class="dot"></span> ALE TV</div>
 <div id="clockBox">00:00:00</div>
 <div id="nextBox"></div>
-<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE - WORLD SYNC</span></div></div>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV WORLD LIVE</span></div></div>
 </div>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 const BIRTH = new Date('2025-01-01T00:00:00Z').getTime();
 const SLOT = 240;
-let player, videos=[], curIdx=0;
+let player, videos=[], curIdx=0, isCatching=false;
 
 function findNow(){
  let v=getV(); if(!v.length) return null;
@@ -65,16 +70,19 @@ function createPlayer(vId, seek){
    playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
    events:{
     onReady: e=>{
-     e.target.setPlaybackRate(1); // SPEED NORMAL 1x
+     e.target.setPlaybackRate(1);
      e.target.playVideo();
     },
     onStateChange: e=>{
-     try{ player.setPlaybackRate(1); }catch{} // hakikisha ni 1x kila wakati
      if(e.data==0){
        curIdx = (curIdx+1)%videos.length;
        e.target.loadVideoById(videos[curIdx].id);
        e.target.setPlaybackRate(1);
+       isCatching=false;
        document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title;
+     }
+     if(e.data==1){ // inacheza
+       try{ if(!isCatching) player.setPlaybackRate(1); }catch{}
      }
     }
    }
@@ -88,30 +96,49 @@ function startTV(){
  if(!player) createPlayer(videos[curIdx].id, w.seek);
  else {
    try{
-     player.setPlaybackRate(1); // NORMAL SPEED
+     player.setPlaybackRate(1);
      player.seekTo(w.seek,true);
      player.unMute(); player.setVolume(100);
      player.playVideo();
    }catch{}
  }
  document.getElementById('overlay').style.display='none';
- setTimeout(()=>{ try{ player.unMute(); player.setPlaybackRate(1); }catch{} },500);
+ setTimeout(()=>{ try{ player.unMute(); player.setPlaybackRate(1);}catch{} },500);
 }
 
-// ukirudi online - iruke LIVE lakini speed 1x tu, si 2x
-function resumeLive(){
+// HII NDIO ULISEMA PUNGUZA 92% - SASA NI 1.08x TU
+function resumeLiveGentle(){
  if(!player) return;
  let w=findNow(); if(!w) return;
  try{
-   player.setPlaybackRate(1); // NORMAL
-   player.seekTo(w.seek,true);
+   let curr = player.getCurrentTime();
+   let diff = w.seek - curr;
+   if(Math.abs(diff) > 12){
+     // usiruke ghafla, kimbia pole 1.08x tu - 92% reduction from 2x
+     isCatching=true;
+     player.setPlaybackRate(1.08);
+     // baada ya 15 sec rudi normal na u-seek kama bado mbali
+     setTimeout(()=>{
+       try{
+         let w2=findNow();
+         if(Math.abs(w2.seek - player.getCurrentTime()) > 8){
+           player.seekTo(w2.seek,true);
+         }
+         player.setPlaybackRate(1);
+         isCatching=false;
+       }catch{}
+     },15000);
+   }else{
+     player.setPlaybackRate(1);
+     if(Math.abs(diff) > 4) player.seekTo(w.seek,true);
+   }
    player.playVideo();
  }catch{}
 }
 
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) resumeLive(); });
-window.addEventListener('online', resumeLive);
-window.addEventListener('focus', resumeLive);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) resumeLiveGentle(); });
+window.addEventListener('online', resumeLiveGentle);
+window.addEventListener('focus', resumeLiveGentle);
 
 setInterval(()=>{
  document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
@@ -120,11 +147,13 @@ setInterval(()=>{
   let d=player.getDuration(), c=player.getCurrentTime(), rem=d-c;
   if(rem<=60 && rem>0){
    let next = videos[(curIdx+1)%videos.length];
-   let nb=document.getElementById('nextBox');
-   nb.style.display='block'; nb.innerText='NEXT: '+next.title;
+   if(next){
+     let nb=document.getElementById('nextBox');
+     nb.style.display='block'; nb.innerText='NEXT: '+next.title;
+   }
   }else{ document.getElementById('nextBox').style.display='none'; }
-  // hakikisha speed ibaki 1x
-  if(player.getPlaybackRate()!==1) player.setPlaybackRate(1);
+  // hakikisha kama sio catching, ibaki 1x
+  if(!isCatching && player.getPlaybackRate()!==1) player.setPlaybackRate(1);
  }catch{}
 },1000);
 
