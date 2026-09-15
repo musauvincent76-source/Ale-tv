@@ -1,77 +1,29 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV ADMIN</title>
-<style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
-h2{color:#f59e0b;text-align:center}
-.card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
-button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
-.btn-add{background:#f59e0b;color:#000;width:100%}
-.btn-del{background:#ff0000;color:#fff}
-.btn-edit{background:#00f5ff;color:#000}
-.btn-ticker{background:#00ff88;color:#000;width:100%}
-.btn-tv{background:#00ff88;color:#000;width:100%;padding:14px;font-size:16px;margin-bottom:12px}
-.list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
-.stats{display:flex;gap:10px;text-align:center}
-.stats div{background:#222;flex:1;padding:10px;border-radius:8px}
-.stats b{color:#f59e0b;font-size:18px;display:block}
-</style></head><body>
-<h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
-<button class="btn-tv" onclick="openTV()">📺 FUNGUA TV - ANGALIA LIVE</button>
-<div class="stats">
-<div><b id="totalV">0</b>Videos</div>
-<div><b id="liveV">LIVE</b>Status</div>
-<div><b id="time">00:00</b>Time</div>
-</div>
-<div class="card">
-<h3>➕ Weka Video Mpya</h3>
-<input id="ytLink" placeholder="Weka YouTube Link au ID (https://youtube.com/watch?v=...)">
-<input id="vTitle" placeholder="Title ya video">
-<textarea id="vDesc" placeholder="Description"></textarea>
-<select id="vCat">
-<option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option>
-</select>
-<label style="display:flex;align-items:center;gap:8px;margin:8px 0;color:#ff4444;font-size:13px"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAM (Mechi/Live News)</label>
-<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
-</div>
-<div class="card">
-<h3>📢 Ticker Custom</h3>
-<input id="tickerCustom" placeholder="Andika habari ya chini...">
-<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER</button>
-<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
-</div>
-<div class="card">
-<h3>📋 Videos Zote (<span id="count">0</span>)</h3>
-<div id="list"></div>
-<button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
-</div>
-<script>
-function openTV(){window.open('index.html','_blank'); setTimeout(()=>{window.location.href='index.html';},300);}
-function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
-function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/|live\/)([A-Za-z0-9_-]{11})/); return m?m[1]:url;}
-function addVideo(){
- let link=document.getElementById('ytLink').value.trim();
- let id=extractId(link);
- if(id.length!=11){alert('Link mbaya mkuu! Weka link ya YouTube');return}
- let v=getV();
- v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV Video',desc:document.getElementById('vDesc').value||'',cat:document.getElementById('vCat').value,isLive:document.getElementById('isLive').checked});
- saveV(v); alert('Imewekwa!'); location.reload();
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Ale TV Admin</title>
+<style>body{background:#111;color:#fff;font-family:sans-serif;padding:20px;max-width:600px;margin:auto}input,button{width:100%;padding:14px;margin:8px 0;border-radius:8px;border:0;font-size:16px}input{background:#222;color:#fff}button{background:#ff0033;color:#fff;font-weight:bold}</style>
+</head><body>
+<h2>ALE TV - Weka Video 🔴</h2>
+<input id="t" placeholder="Jina la video">
+<input id="u" placeholder="Link YouTube - https://youtu.be/...">
+<button id="b">SAVE KWENYE TV</button>
+<p id="s"></p>
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,push} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",
+  authDomain: "ale-tv.firebaseapp.com",
+  databaseURL: "https://ale-tv-default-rtdb.firebaseio.com",
+  projectId: "ale-tv",
+  storageBucket: "ale-tv.firebasestorage.app",
+  messagingSenderId: "548271956392",
+  appId: "1:548271956392:web:6993343a96da96f7757d9d"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+document.getElementById('b').onclick = () => {
+  const title=document.getElementById('t').value, url=document.getElementById('u').value;
+  if(!title||!url){alert('Jaza zote');return}
+  push(ref(db,'videos'),{title,url,createdAt:Date.now()}).then(()=>{document.getElementById('s').innerText='✅ IMEINGIA LIVE!';document.getElementById('t').value='';document.getElementById('u').value='' })
 }
-function saveTicker(){let t=document.getElementById('tickerCustom').value; localStorage.setItem('ale_ticker_custom',t); alert('Ticker updated!'); document.getElementById('curTicker').innerText=t;}
-function render(){
- let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
- document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
- let html=''; v.forEach((x,i)=>{
-  let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:2px 6px;border-radius:3px;font-size:10px">LIVE</span>':'';
-  html+=`<div class="list-item"><div><b>${x.title}</b>${liveTag}<br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
- });
- document.getElementById('list').innerHTML=html||'Hakuna video';
-}
-function delV(i){if(confirm('Futa hii?')){let v=getV(); v.splice(i,1); saveV(v); render();}}
-function clearAll(){if(confirm('Futa zote kweli?')){localStorage.removeItem('ale_videos'); render();}}
-setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
-render();
-</script>
-</body></html>
+</script></body></html>
