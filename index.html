@@ -3,13 +3,12 @@
 <title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;color:#fff;font-family:sans-serif;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6vh}
-#playerWrap{width:100%;max-width:500px;height:50vh;max-height:380px;background:#000;position:relative;border:2px solid #222;border-radius:12px;overflow:hidden}
+body{background:#000;color:#fff;font-family:sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:1vh}
+#playerWrap{width:100%;max-width:500px;height:50vh;max-height:380px;background:#000;position:relative;border:2px solid #222;border-radius:0 0 12px 12px;overflow:hidden;margin-top:0}
 #playerWrap iframe,#player{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
-#overlay{position:absolute;inset:0;z-index:4;background:transparent}
-#liveBadge{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:900;z-index:5;animation:blink 1s infinite}
+#liveBadge{position:absolute;top:8px;left:8px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:10px;font-weight:900;z-index:5;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:0.5}}
-#soundBtn{position:absolute;bottom:10px;right:10px;z-index:6;background:rgba(245,158,11,0.9);color:#000;border:none;padding:6px 10px;border-radius:20px;font-size:11px;font-weight:900;cursor:pointer;display:none}
+#soundBtn{position:absolute;bottom:8px;right:8px;z-index:10;background:#f59e0b;color:#000;border:none;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:900;cursor:pointer}
 #bottom{width:100%;max-width:500px;background:#111;padding:10px;border-top:2px solid #f59e0b;border-radius:0 0 12px 12px}
 #bottom b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #ticker{color:#f59e0b;font-size:11px;margin-top:3px;white-space:nowrap;overflow:hidden}
@@ -19,57 +18,56 @@ body{background:#000;color:#fff;font-family:sans-serif;height:100vh;display:flex
 
 <div id="playerWrap">
 <div id="player"></div>
-<div id="overlay" onclick="enableSound()"></div>
-<div id="liveBadge">🔴 LIVE</div>
-<button id="soundBtn" onclick="enableSound()">🔊 WASHA SAUTI</button>
+<div id="liveBadge">🔴 LIVE - ONLINE</div>
+<button id="soundBtn" onclick="unmute()">🔊 SAUTI</button>
 </div>
 
 <div id="bottom">
-<b id="vTitle">ALE TV - Inapakia...</b>
-<div id="ticker"><span id="vDesc">Karibu ALE TV</span></div>
+<b id="vTitle">ALE TV - ONLINE...</b>
+<div id="ticker"><span id="vDesc">Inapakia - WORLD SYNC</span></div>
 </div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-let player, cur=null, tried=0;
-function getWorldSeek(id){let k='ale_start_'+id;let s=localStorage.getItem(k);if(!s){s=Date.now();localStorage.setItem(k,s);}return Math.floor((Date.now()-parseInt(s))/1000);}
-function enableSound(){if(player){try{player.unMute();player.setVolume(100);player.playVideo();}catch{}document.getElementById('soundBtn').style.display='none';}}
-
-function loadAPI(){if(!window.YT){let tag=document.createElement('script');tag.src="https://www.youtube.com/iframe_api";document.head.appendChild(tag);}}
+function getSeek(id){let k='ale_start_'+id;let s=localStorage.getItem(k);if(!s){s=Date.now();localStorage.setItem(k,s);}return Math.floor((Date.now()-parseInt(s))/1000);}
+let player, cur=null;
+function unmute(){if(player){player.unMute();player.setVolume(100);player.playVideo();document.getElementById('soundBtn').style.display='none';}}
+function loadAPI(){if(!window.YT){let t=document.createElement('script');t.src="https://www.youtube.com/iframe_api";document.head.appendChild(t);}}
 
 window.onYouTubeIframeAPIReady=()=>{
- let vids=getV(); if(!vids.length){document.getElementById('vTitle').innerText='Hakuna video';return;}
- cur=vids[vids.length-1]; let seek=getWorldSeek(cur.id);
+ let vids=getV(); if(!vids.length){document.getElementById('vTitle').innerText='Hakuna video - weka Admin';return;}
+ cur=vids[vids.length-1]; let seek=getSeek(cur.id);
  document.getElementById('vTitle').innerText=cur.title;
  document.getElementById('vDesc').innerText=cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE');
+
  player=new YT.Player('player',{
   videoId:cur.id,
-  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,origin:window.location.origin,enablejsapi:1},
+  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,origin:window.location.origin},
   events:{
    onReady:(e)=>{
-    e.target.mute();
     e.target.seekTo(seek,true);
+    e.target.mute();
     e.target.playVideo();
-    // jaribu kucheza mara 5
-    let forcePlay=setInterval(()=>{
-      tried++;
-      if(player.getPlayerState()!==1){ player.playVideo(); }
-      else{ clearInterval(forcePlay); document.getElementById('soundBtn').style.display='block'; }
-      if(tried>10) clearInterval(forcePlay);
-    },800);
+    // FORCE ONLINE - jaribu mara 20
+    let i=0;
+    let force=setInterval(()=>{
+     i++;
+     try{
+      if(player.getPlayerState()!=1){player.playVideo();}
+      else{clearInterval(force);}
+     }catch{}
+     if(i>20) clearInterval(force);
+    },400);
    },
    onStateChange:(e)=>{
-    if(e.data==1){ // inacheza - onyesha button ya sauti
-      document.getElementById('soundBtn').style.display='block';
-    }
-    if(e.data==2){ // kama imepause yenyewe, irudishe
-      setTimeout(()=>{let ns=getWorldSeek(cur.id); player.seekTo(ns,true); player.playVideo();},500);
+    if(e.data==2){ // paused -> rudi online
+     setTimeout(()=>{player.seekTo(getSeek(cur.id),true);player.playVideo();},300);
     }
    }
   }
  });
 };
 loadAPI();
-setInterval(()=>{if(cur&&player&&player.getCurrentTime){try{let real=getWorldSeek(cur.id);let now=player.getCurrentTime();if(Math.abs(real-now)>15){player.seekTo(real,true);}}catch{}}},10000);
+setInterval(()=>{if(cur&&player&&player.getCurrentTime){try{let r=getSeek(cur.id);let n=player.getCurrentTime();if(Math.abs(r-n)>10)player.seekTo(r,true);}catch{}}},8000);
 </script>
 </body></html>
