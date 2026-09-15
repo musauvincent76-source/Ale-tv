@@ -37,25 +37,21 @@
 </div>
 <div id="timeNow" style="color:#f59e0b;font-size:13px;margin-left:10px;font-weight:bold"></div>
 </div>
-
 <script>
-let currentVideo=null;let isMuted=true;let currentOffset=0;let lastVideoId=null;
+let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;
 function updateGreeting(){let h=new Date().getHours();let t=h>=5&&h<12?'☀️ Good Morning | Habari ya Asubuhi':h<16?'🌤️ Good Afternoon | Habari ya Mchana':h<19?'🌇 Good Evening | Habari ya Jioni':'🌙 Good Night | Habari ya Usiku';document.getElementById('greeting').innerText=t;}
 updateGreeting();setInterval(updateGreeting,60000);
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
-
 function playVideo(v,offset=0,withSound=false){
  if(!v)return;
- // usirudie kama ni ile ile video na offset sawa
- if(lastVideoId===v.id && currentOffset===offset &&!withSound) return;
- currentVideo=v;currentOffset=offset;lastVideoId=v.id;
+ if(lastId===v.id && currentOffset===offset &&!withSound) return;
+ currentVideo=v;currentOffset=offset;lastId=v.id;
  document.getElementById('vTitle').innerText=v.title;
  document.getElementById('vCat').innerText=v.cat||'LIVE';
  document.getElementById('catLabel').innerText=v.cat||'LIVE';
  document.getElementById('vDesc').innerText=v.desc||'ALE TV LIVE';
  document.getElementById('ticker').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV LIVE')+' 🔥';
  let mute=withSound?0:1;
- // HAPA NDIO SYNC - start=offset
  document.getElementById('main').src='https://www.youtube.com/embed/'+v.id+'?autoplay=1&mute='+mute+'&controls=0&start='+offset+'&modestbranding=1&rel=0&playsinline=1&iv_load_policy=3';
  isMuted=!withSound;
  document.getElementById('soundBtn').style.display=withSound?'none':'block';
@@ -63,7 +59,6 @@ function playVideo(v,offset=0,withSound=false){
 function enableSound(){if(!currentVideo)return;playVideo(currentVideo,currentOffset,true);}
 document.getElementById('playerBox').addEventListener('click',()=>{if(isMuted)enableSound();});
 </script>
-
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -77,9 +72,8 @@ onValue(ref(db,'videos'),snap=>{
  let started=v.createdAt||v.created||now;
  let elapsed=Math.floor((now-started)/1000);
  if(elapsed<0) elapsed=0;
- if(elapsed>7200) elapsed=0; // kama zaidi ya masaa 2 anza mwanzo
- // kama ni LIVE ya YouTube, isiruke
  if(v.isLive) elapsed=0;
+ if(elapsed>7200) elapsed=0;
  playVideo(v,elapsed,false);
 });
 onValue(ref(db,'ticker'),snap=>{let d=snap.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' 🔥';});
