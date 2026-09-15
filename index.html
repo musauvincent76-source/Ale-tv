@@ -1,154 +1,93 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - FINAL</title>
+<title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:sans-serif}
 #wrap{position:relative;width:100%;background:#000}
 #player{width:100%;aspect-ratio:16/9;background:#000}
-#player iframe{width:100%;height:100%;pointer-events:none!important}
-#overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.55);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;gap:10px}
-#overlay b{font-size:17px;font-weight:900;color:#fff;background:#ff0000;padding:10px 18px;border-radius:30px;animation:pulse 1.2s infinite}
-@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+#overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
+#overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
 #tickerWrap{position:absolute;bottom:0;left:0;right:0;height:34px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
-#ticker{flex:1;white-space:nowrap;overflow:hidden;color:#fff;font-weight:900;font-size:13px}
-#ticker span{display:inline-block;padding-left:100%;animation:scroll 35s linear infinite}
+#ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 35s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-weight:900;font-size:13px}
-#nextBox{position:absolute;bottom:34px;left:110px;z-index:11;background:#ff0000;color:#fff;border:2px solid #ff0000;border-bottom:0;padding:5px 12px;border-radius:10px 10px 0 0;font-weight:900;font-size:12px;display:none;max-width:70%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-size:13px;font-weight:900}
+#nextBox{position:absolute;bottom:34px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:65%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 </style></head><body>
-
 <div id="wrap">
 <div id="player"></div>
 <div id="overlay" onclick="startTV()"><b>▶ TAP SCREEN TO PLAY</b></div>
 <div id="live">🔴 LIVE</div>
 <div id="clockBox">00:00:00</div>
-<div id="nextBox">NEXT:...</div>
-<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE...</span></div></div>
+<div id="nextBox"></div>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE</span></div></div>
 </div>
-
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-const CHANNEL_BIRTH = new Date('2025-01-01T00:00:00Z').getTime();
-const SLOT = 240; // 4 min per song - dunia mzima same video
-let player, cur=null, videos=[], currentIdx=0, started=false, playerReady=false;
+const BIRTH = new Date('2025-01-01T00:00:00Z').getTime();
+const SLOT = 240; // 4 min
+let player, videos=[], curIdx=0, started=false;
 
 function findNow(){
- videos=getV(); if(!videos.length) return null;
- let elapsed = Math.floor((Date.now()-CHANNEL_BIRTH)/1000);
- let totalVideos = videos.length;
- let idx = Math.floor(elapsed / SLOT) % totalVideos;
+ let v=getV(); if(!v.length) return null;
+ let elapsed = Math.floor((Date.now()-BIRTH)/1000);
+ let idx = Math.floor(elapsed / SLOT) % v.length;
  let seek = elapsed % SLOT;
- // usiweke seek karibu na mwisho sana - ruka 30 sec za mwisho
- if(seek > 210) seek = seek;
- return {idx:idx, seek:seek};
+ return {idx, seek: seek>230?0:seek}; // kama karibu iishe anza 0
 }
 
-function createPlayer(vId,seek){
- if(!window.YT){
-  let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; s.async=true;
-  document.head.appendChild(s);
-  window.onYouTubeIframeAPIReady=()=>{doCreate(vId,seek)}
- }else{doCreate(vId,seek)}
+function loadYT(cb){
+ if(window.YT && window.YT.Player){ cb(); return; }
+ let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; s.async=true;
+ window.onYouTubeIframeAPIReady=cb;
+ document.head.appendChild(s);
 }
 
-function doCreate(vId,seek){
- player=new YT.Player('player',{
-  videoId:vId,
-  playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
-  events:{
-   onReady:e=>{
-    playerReady=true;
-    e.target.seekTo(seek,true);
-    e.target.playVideo();
-    document.getElementById('overlay').innerHTML='<b>▶ TAP FOR SOUND</b>';
-   },
-   onStateChange:e=>{
-    // 0 pekee ndio inaenda next - wimbo ukiisha kweli
-    if(e.data==0){
-      let w=findNow();
-      if(w) playWorld(w);
-      else {
-        // kama bado uko kwa same slot, enda next tu
-        let nextIdx = (currentIdx+1)%videos.length;
-        playWorld({idx:nextIdx, seek:0});
-      }
+function createPlayer(vId, seek){
+ loadYT(()=>{
+  player = new YT.Player('player',{
+   videoId: vId,
+   playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
+   events:{
+    onReady: e=>{ e.target.playVideo(); },
+    onStateChange: e=>{
+     if(e.data==0){ // wimbo umeisha kweli
+       curIdx = (curIdx+1)%videos.length;
+       e.target.loadVideoById(videos[curIdx].id);
+       document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title;
+     }
     }
    }
-  }
+  });
  });
 }
 
-function playWorld(w){
- if(!w) w=findNow(); if(!w) return;
- currentIdx=w.idx; cur=videos[w.idx];
- document.getElementById('tick').innerText='🔴 NOW: '+cur.title+' | ALE TV WORLD LIVE';
- if(player && player.loadVideoById){
-   player.loadVideoById({videoId:cur.id, startSeconds:w.seek});
- }else{ createPlayer(cur.id, w.seek); }
-}
-
 function startTV(){
- started=true;
- let w=findNow();
- if(player && playerReady){
-  try{
-   player.unMute(); player.setVolume(100);
-   player.seekTo(w.seek,true);
-   player.playVideo();
-  }catch{}
-  document.getElementById('overlay').style.display='none';
- }else{
-  playWorld(w);
-  setTimeout(()=>{
-   try{ player.unMute(); player.setVolume(100);}catch{}
-   document.getElementById('overlay').style.display='none';
-  },800);
- }
-}
-
-function resumeLive(){
- if(!started) return;
  let w=findNow(); if(!w) return;
- try{ player.seekTo(w.seek,true); player.playVideo(); player.unMute(); }catch{}
+ videos=getV(); curIdx=w.idx;
+ if(!player) createPlayer(videos[curIdx].id, w.seek);
+ else { try{ player.seekTo(w.seek,true); player.unMute(); player.setVolume(100); player.playVideo(); }catch{} }
  document.getElementById('overlay').style.display='none';
+ started=true;
+ setTimeout(()=>{ try{ player.unMute(); player.setVolume(100);}catch{} },500);
 }
 
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) resumeLive(); });
-window.addEventListener('online', resumeLive);
-window.addEventListener('focus', resumeLive);
-
-// saa
+// clock + next song tu, hakuna sync ya kurudisha nyuma
 setInterval(()=>{
  document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
-},1000);
-
-// NEXT SONG - dakika 1 kabla iishe
-setInterval(()=>{
- if(!player ||!player.getDuration ||!player.getCurrentTime) return;
+ if(!player||!player.getDuration) return;
  try{
-  let dur = player.getDuration();
-  let curr = player.getCurrentTime();
-  if(!dur) return;
-  let remaining = dur - curr;
-  let nextIdx = (currentIdx+1)%videos.length;
-  let nextTitle = videos[nextIdx]? videos[nextIdx].title : '';
-
-  if(remaining <= 60 && remaining > 2){
-    document.getElementById('nextBox').style.display='block';
-    document.getElementById('nextBox').innerText='NEXT: '+nextTitle;
-    document.getElementById('tick').innerText='🔴 NOW: '+cur.title+' | NEXT: '+nextTitle+' in '+Math.floor(remaining)+'s';
-  }else{
-    document.getElementById('nextBox').style.display='none';
-  }
+  let d=player.getDuration(), c=player.getCurrentTime(), rem=d-c;
+  if(rem<=60 && rem>0){
+   let next = videos[(curIdx+1)%videos.length];
+   let nb=document.getElementById('nextBox');
+   nb.style.display='block'; nb.innerText='NEXT: '+next.title;
+  }else{ document.getElementById('nextBox').style.display='none'; }
  }catch{}
 },1000);
 
 let v=getV(); videos=v;
-if(v.length){
- let w=findNow();
- createPlayer(videos[w.idx].id, w.seek);
-}
+if(v.length){ let w=findNow(); createPlayer(v[w.idx].id, w.seek); document.getElementById('tick').innerText='NOW: '+v[w.idx].title+' | ALE TV LIVE'; }
 </script>
 </body></html>
