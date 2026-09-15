@@ -1,68 +1,69 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="preconnect" href="https://www.youtube.com"><link rel="preconnect" href="https://i.ytimg.com">
-<title>ALE TV ROCKET</title>
+<title>ALE TV - LIVE</title>
 <style>
 body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.top{padding:8px 10px;display:flex;justify-content:space-between;background:#111;border-bottom:2px solid #f59e0b}
-.logo{color:#f59e0b;font-weight:900}
-#box{width:100%;height:80vh;background:#000;position:relative}
-iframe{width:100%;height:100%;border:0}
-#over{position:absolute;top:0;left:0;right:0;bottom:0;z-index:5}
-#hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:12px 22px;border-radius:30px;font-weight:900;z-index:6;display:none}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:28px;line-height:28px;white-space:nowrap;overflow:hidden;z-index:6}
-.ticker span{display:inline-block;animation:sc 25s linear infinite;padding-left:100%}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+.topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #1a1a1a}
+.logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,#f59e0b,#ff006e,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.live-badge{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:12px;animation:zoom 1s infinite}
+@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.player{width:100%;height:70vh;min-height:400px;background:#000;position:relative;overflow:hidden}
+#main{width:100%;height:100%}
+.clock{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5;pointer-events:none}
+.tap-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);border:1px solid #f59e0b;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:bold;z-index:10;pointer-events:none;display:none;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.7;transform:translate(-50%,-50%) scale(1.05)}}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5;pointer-events:none}
+.ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
+.ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.info{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:#111}
+.info small{color:#f59e0b;font-size:11px;border:1px solid #f59e0b;padding:2px 8px;border-radius:10px}
 </style></head><body>
-<div class="top"><div class="logo">🚀 ALE TV ROCKET</div><div style="background:red;padding:3px 8px;border-radius:20px;font-size:11px">● LIVE</div></div>
-<div id="box">
-<iframe id="fr" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-<div id="over" onclick="tap()"></div>
-<div id="hint" onclick="goLive()">▶️ RUDI LIVE</div>
-<div class="ticker"><span id="tk">🚀 ALE TV ROCKET - HARAKA KULIKO BOMBA 🔥</span></div>
+<div class="topbar"><div class="logo">ALE TV</div><div class="live-badge">● LIVE</div></div>
+<div class="player" id="playerBox">
+<div id="clock" class="clock">00:00:00</div>
+<div id="main"></div>
+<div class="tap-hint" id="tapHint">👆 TAP SCREEN TO PLAY</div>
+<div class="ticker"><span class="ticker-cat" id="catLabel">BURUDANI</span><span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span></div>
 </div>
-
+<div class="info">
+<div><h3 id="vTitle" style="margin:0;font-size:16px">Loading...</h3><small id="vCat">BURUDANI</small></div>
+<div style="text-align:right"><div id="timeNow" style="font-size:12px;color:#f59e0b"></div><div style="font-size:10px;color:#666">SYNCED WORLDWIDE</div></div>
+</div>
+<p id="vDesc" style="padding:0 12px;color:#aaa;font-size:13px"></p>
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let vids=JSON.parse(localStorage.getItem('ale_videos')||'[{"id":"jNQXAC9IVRw","title":"ALE TV"}]');
-let cur={idx:0,seek:0}; let paused=false;
-
-function sync(){
- let total=vids.length*240;
- let now=Math.floor(Date.now()/1000)%total;
- return{idx:Math.floor(now/240),seek:now%240};
+function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',cat:'BURUDANI',isLive:false}]}
+setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
+let current=getSyncedIndex(); let player;
+function onYouTubeIframeAPIReady(){
+ let lastPos=parseInt(localStorage.getItem('ale_last_idx')||current.idx);
+ let lastTime=parseInt(localStorage.getItem('ale_last_time')||0);
+ let nowSec=Math.floor(Date.now()/1000);
+ if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos}
+ let v=videos[current.idx]; updateInfo(v);
+ let startAt=v.isLive?0:current.seek;
+ player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:startAt},events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}});
 }
-function loadRocket(n){
- cur=n;
- let v=vids[n.idx];
- document.getElementById('tk').innerText='🚀 LIVE: '+v.title+' - ROCKET MODE';
- // ROCKET LINK - hakuna API, direct iframe = 10x faster
- let url=`https://www.youtube-nocookie.com/embed/${v.id}?autoplay=1&mute=1&controls=0&disablekb=1&fs=0&rel=0&playsinline=1&start=${n.seek}&origin=${location.origin}`;
- document.getElementById('fr').src=url;
+function updateInfo(v){
+ document.getElementById('vTitle').innerText=v.title;
+ document.getElementById('vDesc').innerText=v.desc||'';
+ document.getElementById('vCat').innerText=v.cat||'BURUDANI';
+ document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
+ let custom=localStorage.getItem('ale_ticker_custom');
+ document.getElementById('ticker').innerText=custom||' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE *** ';
 }
-function goLive(){
- let n=sync();
- loadRocket(n);
- document.getElementById('hint').style.display='none';
- paused=false;
- // jaribu kuwasha sauti baada ya sec 1
- setTimeout(()=>{try{document.getElementById('fr').contentWindow.postMessage('{"event":"command","func":"unMute","args":""}','*')}catch{}},1000);
+function onStateChange(e){
+ let hint=document.getElementById('tapHint');
+ if(e.data==1){hint.style.display='none';localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
+ if(e.data==2){hint.style.display='block';}
+ if(e.data==0){current.idx=(current.idx+1)%videos.length;localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);}
 }
-function tap(){
- if(!paused){
-  document.getElementById('hint').style.display='block';
-  document.getElementById('hint').innerText='⏸️ PAUSED - TAP RUDI LIVE';
-  paused=true;
-  // pause kwa kuficha iframe (haraka kuliko API)
-  document.getElementById('fr').src='';
- }else{
-  goLive();
- }
-}
-// LOAD PAPO HAPO - HAKUNA KUSUBIRI API
-goLive();
-
-// Auto-sync kila 25 sec kama TV ya kweli
-setInterval(()=>{ if(!paused){ let n=sync(); if(n.idx!==cur.idx) loadRocket(n); }},25000);
-document.addEventListener('visibilitychange',()=>{ if(document.visibilityState=='visible'&&!paused) goLive(); });
+document.getElementById('playerBox').addEventListener('click',()=>{
+ if(!player) return;
+ if(player.getPlayerState()==1){player.pauseVideo();}else{player.playVideo();}
+});
 </script>
 </body></html>
