@@ -6,107 +6,137 @@
 body{background:#000;color:#fff;font-family:sans-serif}
 #wrap{position:relative;width:100%;background:#000}
 #player{width:100%;aspect-ratio:16/9;background:#000}
-#player iframe{width:100%;height:100%;pointer-events:none}
-#overlay{position:absolute;inset:0;z-index:5;background:transparent;touch-action:none}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:6;animation:blink 1s infinite}
+#player iframe{width:100%;height:100%;pointer-events:none!important}
+#overlay{position:absolute;inset:0;z-index:9;background:transparent}
+#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.5}}
-#tickerWrap{position:absolute;bottom:0;left:0;right:0;height:32px;background:#f59e0b;z-index:6;overflow:hidden;display:flex;align-items:center}
+#tickerWrap{position:absolute;bottom:0;left:0;right:0;height:34px;background:#f59e0b;z-index:8;overflow:hidden;display:flex;align-items:center}
 #ticker{flex:1;white-space:nowrap;overflow:hidden;color:#000;font-weight:900;font-size:13px}
 #ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#clockBox{position:absolute;left:50%;transform:translateX(-50%);bottom:0;z-index:10;background:#000;color:#f59e0b;border:2px solid #f59e0b;padding:4px 14px;border-radius:8px 8px 0 0;font-weight:900;font-size:14px;letter-spacing:1px;box-shadow:0 -2px 10px rgba(0,0,0,.8)}
+/* SAA KWA KONA - kama ulivyosema */
+#clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#f59e0b;border:2px solid #f59e0b;border-bottom:0;border-left:0;padding:5px 12px;border-radius:0 10px 0 0;font-weight:900;font-size:15px;letter-spacing:1px;box-shadow:2px -2px 10px rgba(0,0,0,.9)}
 </style></head><body>
 
 <div id="wrap">
 <div id="player"></div>
-<div id="overlay"></div>
+<div id="overlay" onclick="return false;"></div>
 <div id="live">🔴 LIVE</div>
 
-<div id="tickerWrap">
-<div id="ticker"><span id="tick">ALE TV LIVE...</span></div>
-</div>
-
 <div id="clockBox">00:00:00</div>
+
+<div id="tickerWrap">
+<div id="ticker"><span id="tick">ALE TV LIVE - Karibu...</span></div>
+</div>
 </div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+
+// WORLD TIME - video inaenda na saa ya ukweli
 function getWorldSeek(id){
  let k='ale_start_'+id;
  let s=localStorage.getItem(k);
  if(!s){ s=Date.now(); localStorage.setItem(k,s); }
- return Math.floor((Date.now()-parseInt(s))/1000);
+ let elapsed = Math.floor((Date.now() - parseInt(s))/1000);
+ return elapsed;
 }
-let player,cur=null,videos=[];
 
-function playCur(i){
+let player,cur=null,videos=[],currentIdx=0;
+
+function playIndex(idx){
  videos=getV(); if(!videos.length) return;
- if(i>=videos.length) i=0;
- cur=videos[i];
+ if(idx>=videos.length) idx=0;
+ currentIdx=idx;
+ cur=videos[currentIdx];
  let seek=getWorldSeek(cur.id);
- document.getElementById('tick').innerText='🔴 '+cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE')+' | '+cur.title;
- if(player && player.loadVideoById){ player.loadVideoById({videoId:cur.id,startSeconds:seek}); }
- else{ createPlayer(cur.id,seek); }
+ document.getElementById('tick').innerText='🔴 '+cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE Exclusive')+' | '+cur.title;
+ if(player && player.loadVideoById){
+   player.loadVideoById({videoId:cur.id,startSeconds:seek});
+   player.playVideo();
+ }else{
+   createPlayer(cur.id,seek);
+ }
 }
+
 function createPlayer(vId,seek){
- if(!window.YT){ let t=document.createElement('script'); t.src="https://www.youtube.com/iframe_api"; document.head.appendChild(t); window.onYouTubeIframeAPIReady=()=>{ doCreate(vId,seek); }; }
- else{ doCreate(vId,seek); }
+ if(!window.YT){
+   let t=document.createElement('script');
+   t.src="https://www.youtube.com/iframe_api";
+   document.head.appendChild(t);
+   window.onYouTubeIframeAPIReady=()=>{ doCreate(vId,seek); };
+ }else{ doCreate(vId,seek); }
 }
+
 function doCreate(vId,seek){
  player=new YT.Player('player',{
   videoId:vId,
   playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,origin:window.location.origin},
   events:{
    onReady:e=>{
-     e.target.seekTo(seek,true); e.target.playVideo();
-     // jaribu kuwasha sauti
-     setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},900);
-     // force autoplay isikwame kwa picha
-     let c=0; let f=setInterval(()=>{c++; if(player.getPlayerState()!=1){player.playVideo();} else{clearInterval(f);} if(c>15)clearInterval(f);},500);
+     e.target.seekTo(seek,true);
+     e.target.playVideo();
+     setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},800);
+     // force isicheze picha tu
+     let c=0; let f=setInterval(()=>{c++; try{if(player.getPlayerState()!=1)player.playVideo(); else clearInterval(f);}catch{} if(c>20)clearInterval(f);},400);
    },
    onStateChange:e=>{
-     // 0 = imeisha -> next, lakini bado na world sync
+     // 0 = video imeisha - enda mbele, USIRUDIE
      if(e.data==0){
-       let idx=videos.findIndex(x=>x.id==cur.id);
-       playCur(idx+1);
+       playIndex(currentIdx+1);
      }
-     // 2 = mtu amejaribu kupause - tunamrudisha MBELE, si nyuma
+     // 2 = mtu amejaribu kupause / kubonyeza - mrudishe MBELE na saa
      if(e.data==2){
        setTimeout(()=>{
          let real=getWorldSeek(cur.id);
          player.seekTo(real,true);
          player.playVideo();
-       },400);
+       },300);
      }
    }
   }
  });
 }
-// saa ya EA
+
+// saa ya Nairobi kwa kona
 setInterval(()=>{
  let now=new Date();
  document.getElementById('clockBox').innerText=now.toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
 },1000);
 
-// WORLD SYNC - kila mtu anaona kitu kimoja, hata akipause inasonga mbele na time
+// WORLD SYNC KILA SEKUNDE - ukitoka online ukirudi unapata mbele
 setInterval(()=>{
  if(cur && player && player.getCurrentTime){
   try{
    let real=getWorldSeek(cur.id);
-   let curT=player.getCurrentTime();
-   // kama yuko nyuma zaidi ya 8 sec, msukume MBELE
-   if(real - curT > 8){
+   let nowT=player.getCurrentTime();
+   // kama yuko nyuma zaidi ya 3 sec, msukume MBELE na saa
+   if(real - nowT > 3){
      player.seekTo(real,true);
+   }
+   // kama video imezidi duration yake, enda next automatically
+   if(player.getDuration && real > player.getDuration() - 2){
+     playIndex(currentIdx+1);
    }
   }catch{}
  }
-},5000);
+},2000);
 
-// block kila kitu cha kusongeza
+// mtu akitoka tab akirudi - sync mara moja
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden && cur && player){
+   let real=getWorldSeek(cur.id);
+   player.seekTo(real,true);
+   player.playVideo();
+ }
+});
+
+// zuia kusongeza kabisa
 document.getElementById('overlay').addEventListener('touchmove',e=>e.preventDefault(),{passive:false});
 document.getElementById('overlay').addEventListener('dblclick',e=>e.preventDefault());
 
-// start
-playCur((getV().length-1));
+// anza na video ya mwisho
+let v=getV();
+if(v.length) playIndex(v.length-1);
 </script>
 </body></html>
