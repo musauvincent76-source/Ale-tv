@@ -1,74 +1,60 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV WORLD FIX</title><style>*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:sans-serif}.top{background:#0a0a0a;display:flex;justify-content:space-between;padding:8px 12px;border-bottom:2px solid #f59e0b}.logo{color:#f59e0b;font-weight:900}.live{background:red;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900}.player{width:100%;height:70vh;background:#000;position:relative;display:flex;align-items:center;justify-content:center}#main{width:100%;height:100%}.clock{position:absolute;top:8px;right:10px;background:rgba(0,0,0,.8);padding:4px 8px;border-radius:5px;color:#f59e0b;font-size:12px;z-index:10}.btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:12px 20px;border-radius:25px;font-weight:900;border:0;z-index:20;display:none}.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden}.tt{white-space:nowrap;animation:s 35s linear infinite;font-size:13px;font-weight:bold;margin-left:10px}@keyframes s{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}.info{padding:10px;background:#111}.black{position:absolute;top:0;left:0;right:0;bottom:30px;background:#000;display:none;align-items:center;justify-content:center;z-index:15;color:#f59e0b;font-weight:900;flex-direction:column}.sync{position:absolute;top:8px;left:10px;background:#111;color:#f59e0b;padding:4px 8px;border-radius:5px;font-size:10px;z-index:10;border:1px solid #333}</style></head><body>
-<div class="top"><div class="logo">🔥 ALE TV</div><div class="live" id="liveText">● WORLD FIXED</div></div>
-<div class="player" id="box"><div class="sync" id="sync">SYNCING...</div><div class="clock" id="clock">00:00:00</div><div id="loader" style="position:absolute;color:#f59e0b;font-weight:900">⏳ SYNCING SERVER...</div><div id="black" class="black"><div>📺 ALE TV</div><small id="blackMsg" style="color:#666;margin-top:5px">Waiting broadcast</small></div><div id="main"></div><button class="btn" id="sound">🔊 WASHA SAUTI</button><div class="ticker"><span id="ticker" class="tt">🔥 ALE TV - SAME TIME WORLDWIDE 🔥</span></div></div>
-<div class="info"><h3 id="t" style="margin:0">ALE TV WORLD</h3><small id="c" style="color:#f59e0b">FIXED WORLD SYNC</small><div id="d" style="color:#aaa;font-size:13px;margin-top:5px;background:#1a1a1a;padding:6px;border-radius:5px;border-left:3px solid #f59e0b">Karibu...</div></div>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"><title>ALE TV - WORLD SYNC 24/7</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:sans-serif;overflow:hidden;height:100vh;width:100vw}#playerWrap{position:fixed;top:0;left:0;width:100vw;height:100vh}#player{width:100%;height:100%}#black{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:50;display:none;align-items:center;justify-content:center;flex-direction:column}#info{position:fixed;top:10px;left:10px;background:rgba(0,0,0,.8);padding:6px 10px;border-radius:20px;font-size:11px;z-index:10;border:1px solid #f59e0b;color:#f59e0b}#live{position:fixed;top:10px;right:10px;background:red;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:900;z-index:10;animation:blink 1s infinite}@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}</style></head><body>
+<div id="info">ALE TV • WORLD SYNC</div><div id="live">● LIVE</div><div id="playerWrap"><div id="player"></div></div>
+<div id="black"><h1 style="color:#f59e0b">ALE TV</h1><p style="margin-top:10px;color:#aaa">Inarudia queue... 24/7</p></div>
 <script src="https://www.youtube.com/iframe_api"></script>
-<script>
-let player=null,cur=null,lastId=null,startedAt=0,queue=[],qIndex=0,serverOffset=0;
-function fix(t){let n=Number(t);if(n<1e12)n*=1000;return n;}
-function serverNow(){return Date.now()+serverOffset;}
-function getWorld(){if(!startedAt)return 0;let e=Math.floor((serverNow()-startedAt)/1000);return e<0?0:e;}
-setInterval(()=>{document.getElementById('clock').innerText=new Date(serverNow()).toLocaleTimeString('en-KE',{hour12:false});if(cur&&!cur.isLive){let el=getWorld();document.getElementById('sync').innerText='🌍 WORLD '+Math.floor(el/60)+':'+String(el%60).padStart(2,'0');}},1000);
-function onYouTubeIframeAPIReady(){
-player=new YT.Player('main',{playerVars:{autoplay:1,mute:1,controls:0,modestbranding:1,rel:0,playsinline:1,enablejsapi:1,origin:location.origin},
-events:{onReady:()=>{document.getElementById('loader').style.display='none';},
-onStateChange:(e)=>{
-if(e.data===0){
-// AUTOPLAY NEXT - usirudie same video
-if(queue.length>0 && qIndex < queue.length-1){
-qIndex++; playWorld(queue[qIndex],false);
-}else{
-document.getElementById('black').style.display='flex';
-document.getElementById('blackMsg').innerText='Imeisha - subiri mpya';
-}
-}
-if(e.data===1){document.getElementById('black').style.display='none';}
-}}});
-}
-function playWorld(v,sound){
-if(!v||!player||!player.loadVideoById)return;
-// ZUIA KUJIRUDIA - same ID usicheze tena
-if(v.id===lastId)return;
-let st=fix(v.createdAt||v.created);
-let el=v.isLive?0:Math.floor((serverNow()-st)/1000);if(el<0)el=0;
-cur=v;lastId=v.id;startedAt=st;
-document.getElementById('t').innerText=v.title;document.getElementById('c').innerText=(v.cat||'LIVE');document.getElementById('d').innerText=v.desc||'';document.getElementById('ticker').innerText='🔥 '+v.title+' 🔥';document.getElementById('black').style.display='none';
-if(v.isLive){player.loadVideoById({videoId:v.id});}
-else{player.loadVideoById({videoId:v.id,startSeconds:el});}
-if(sound){player.unMute();document.getElementById('sound').style.display='none';}else{player.mute();document.getElementById('sound').style.display='block';}
-}
-document.getElementById('box').addEventListener('click',()=>{if(!player||!cur)return;if(!cur.isLive){player.seekTo(getWorld(),true);}player.unMute();document.getElementById('sound').style.display='none';});
-document.getElementById('sound').addEventListener('click',(e)=>{e.stopPropagation();player.unMute();document.getElementById('sound').style.display='none';});
-// FIX 3 - Ukitoka na kurudi - rudi live edge, si mwanzo
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&cur&&player&&!cur.isLive){let el=getWorld();player.seekTo(el,true);player.playVideo();}});
-</script>
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"};const app=initializeApp(cfg);const db=getDatabase(app);
-// FIX 5 - SERVER TIME OFFSET - kila mtu same time
-onValue(ref(db,'.info/serverTimeOffset'),s=>{serverOffset=s.val()||0;});
-onValue(ref(db,'videos'),s=>{
-let d=s.val();if(!d)return;
-let all=Object.values(d).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)); // mpya kwanza
-queue=all.slice().reverse(); // queue zamani -> mpya
-let latest=all[0];
-if(!latest)return;
-if(!lastId){
-let w=setInterval(()=>{if(player&&player.loadVideoById){clearInterval(w);
-let st=fix(latest.createdAt);let el=latest.isLive?0:Math.floor((serverNow()-st)/1000);
-qIndex=queue.findIndex(x=>x.id===latest.id);
-if(qIndex<0)qIndex=queue.length-1;
-playWorld(latest,false);
-}},300);
-return;
+
+let player,queue=[],qIndex=0,currentId=null,ytReady=false;
+
+function playWorld(video,force=false){
+ if(!ytReady||!video)return;
+ if(!force && currentId===video.id)return;
+ currentId=video.id;
+ let startSec=0;
+ if(!video.isLive){
+   let created=video.createdAt||video.created||Date.now();
+   let elapsed=Math.floor((Date.now()-created)/1000);
+   startSec=Math.max(0,elapsed);
+   document.getElementById('info').innerText=`${video.title||'ALE TV'} • ${Math.floor(elapsed/60)}min elapsed`;
+ }else{
+   document.getElementById('info').innerText=`🔴 ${video.title||'LIVE'} • LIVE NOW`;
+ }
+ document.getElementById('black').style.display='none';
+ if(player && player.loadVideoById){
+   player.loadVideoById({videoId:video.id,startSeconds:startSec});
+   player.playVideo();
+ }else{
+   player=new YT.Player('player',{videoId:video.id,playerVars:{autoplay:1,controls:0,rel:0,modestbranding:1,start:startSec},events:{onReady:e=>{e.target.seekTo(startSec,true);e.target.playVideo();},onStateChange:(e)=>{
+     if(e.data===0){
+       if(queue.length>0){
+         if(qIndex < queue.length-1){qIndex++;playWorld(queue[qIndex],true);}
+         else{
+           // 🔁 AUTO-REPEAT - RUDIA MWANZO
+           qIndex=0;
+           playWorld(queue[0],true);
+         }
+       }else{document.getElementById('black').style.display='flex';}
+     }
+   }}});
+ }
 }
-if(latest.id===lastId)return;
-// Video mpya - ongeza queue
-queue=all.slice().reverse();
+window.onYouTubeIframeAPIReady=()=>{ytReady=true;if(queue.length>0)playWorld(queue[qIndex],true);};
+onValue(ref(db,'videos'),snap=>{
+ let data=snap.val();
+ if(!data){queue=[];document.getElementById('black').style.display='flex';return;}
+ let newQueue=Object.entries(data).sort((a,b)=>(a[1].createdAt||a[1].created||0)-(b[1].createdAt||b[1].created||0)).map(e=>e[1]);
+ // Angalia kama kuna mpya iliyoongezwa - ndio true TV
+ if(newQueue.length>queue.length){
+   let latest=newQueue[newQueue.length-1];
+   queue=newQueue;
+   qIndex=newQueue.length-1;
+   playWorld(latest,true);
+ }else{
+   // kama ni delete tu, update queue bila kuruka
+   if(queue.length===0){queue=newQueue;playWorld(queue[qIndex],true);}
+   else{queue=newQueue;if(qIndex>=queue.length)qIndex=0;}
+ }
 });
-onValue(ref(db,'ticker'),s=>{let d=s.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' 🔥';});
-onValue(ref(db,'control'),s=>{let c=s.val();if(!c||!player)return;if(c.action=='play'){player.playVideo();document.getElementById('black').style.display='none';}if(c.action=='pause'){player.pauseVideo();}if(c.action=='stop'||c.action=='black'){player.stopVideo();document.getElementById('black').style.display='flex';}if(c.action=='live'){document.getElementById('black').style.display='none';if(cur){let el=cur.isLive?0:getWorld();if(!cur.isLive)player.seekTo(el,true);player.playVideo();}}});
-function fix(t){let n=Number(t);if(n<1e12)n*=1000;return n;}
-function serverNow(){return Date.now()+serverOffset;}
-function getWorld(){if(!startedAt)return 0;let e=Math.floor((serverNow()-startedAt)/1000);return e<0?0:e;}
 </script></body></html>
