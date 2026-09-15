@@ -1,53 +1,38 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AZAM ALE TV v7</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV KE LIVE - Azam Style</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.top{background:#0f172a;padding:10px 12px;display:flex;justify-content:space-between;align-items:center}
-.live{background:red;padding:5px 12px;border-radius:20px;font-size:11px}
-#clock{font-weight:900}
-.wrap{position:relative;background:#000;overflow:hidden}
-#player{width:100%;aspect-ratio:16/9;background:#000}
-#player iframe{width:100%;height:100%;border:0}
-/* HII INAFICHA PICHA NA JINA LA YOUTUBE JUU */
-.yt-mask-top{position:absolute;top:0;left:0;right:0;height:62px;background:#000;z-index:4}
-.yt-mask-top::after{content:'AZAM ALE TV v7 GLOBAL';position:absolute;left:12px;top:18px;font-weight:900;font-size:12px;letter-spacing:1px;color:#fff}
-.blocker{position:absolute;left:0;right:0;top:62px;bottom:32px;z-index:5}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(90deg,#b91c1c,#e11d48);height:32px;display:flex;align-items:center;overflow:hidden;z-index:6}
-.ticker span{white-space:nowrap;animation:scroll 45s linear infinite;padding-left:100%;font-weight:bold;font-size:13px}
-@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-.meta{padding:12px;background:#0a0a1a}
-.meta h2{margin:0;font-size:17px}
-.controls{display:flex;gap:10px;padding:10px}
-.controls button{flex:1;padding:12px;border:none;border-radius:10px;font-weight:bold;background:#1e293b;color:#fff}
-.zoomed{position:fixed!important;top:0!important;left:0!important;width:100vw!important;height:100vh!important;z-index:9999!important}
-.zoomed #player{height:100vh!important}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050a14;color:#fff;font-family:'Segoe UI',sans-serif}
+header{background:linear-gradient(90deg,#001a4d,#002a7a);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600;position:sticky;top:0;z-index:99}
+header b{letter-spacing:1px}
+header b span{color:#ff6600}
+.badge{background:#ff0033;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:900;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
+#playerWrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+#playerWrap iframe{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
+#msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#888}
+.info{padding:16px;background:linear-gradient(180deg,#0a1430,#050a14)}
+.title{font-size:18px;font-weight:900}
+.meta{font-size:11px;opacity:.6;margin-top:4px}
+.btn-join{background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;border:0;padding:14px;width:100%;border-radius:30px;font-weight:900;margin-top:14px}
 </style></head><body>
-<div class="top"><b>AZAM ALE TV v7</b><div style="display:flex;gap:10px"><div id="clock">00:00:00</div><div class="live">● LIVE</div></div></div>
-<div class="wrap" id="wrap">
-<div class="yt-mask-top"></div>
-<div id="player"></div>
-<div class="blocker" onclick="togglePlay()"></div>
-<div class="ticker"><span id="ticker">AZAM ALE TV LIVE</span></div>
-</div>
-<div class="meta"><h2 id="t">Inapakia...</h2><small id="c" style="color:#94a3b8"></small><div id="d" style="font-size:12px;color:#cbd5e1;margin-top:4px"></div></div>
-<div class="controls">
-<button onclick="togglePlay()" id="pp">⏸ Pause</button>
-<button onclick="zoom()">⛶ Zoom Full</button>
-</div>
-
-<script src="https://www.youtube.com/iframe_api"></script>
+<header><b>AZAM <span>ALE TV</span></b><span class="badge">● LIVE</span></header>
+<div id="playerWrap"><div id="msg">📺 Hakuna matangazo<br><span style="font-size:11px">Subiri Admin awek e video</span></div><iframe id="yt" style="display:none" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>
+<div class="info"><div class="title" id="vTitle">Karibu ALE TV KE LIVE</div><div class="meta" id="vMeta">Azam TV Experience • Fresh System - Hakuna kujificha</div><button class="btn-join" onclick="location.reload()">🔄 Refresh TV</button></div>
 <script>
-function getV(){try{return JSON.parse(localStorage.getItem('ale_videos')||'[]')}catch(e){return []}}
-let defaults=[{id:'L49A0bQkf_I',title:'Zipporah - Worship',desc:'Wimbo mzuri wa kumwabudu Mungu',cat:'Muziki'}];
-let all=getV().length>0?getV():defaults;
-function getGlobalIdx(){let sec=240; return Math.floor(Date.now()/1000/sec)%all.length;}
-let curIdx=getGlobalIdx(); let yt=null, isPlaying=true;
-function onYouTubeIframeAPIReady(){yt=new YT.Player('player',{videoId:all[curIdx].id,playerVars:{controls:0,modestbranding:1,rel:0,disablekb:1,fs:0,playsinline:1,iv_load_policy:3,showinfo:0},events:{onReady:e=>{e.target.playVideo(); updateMeta()},onStateChange:e=>{if(e.data==0){autoNext()} if(e.data==1){isPlaying=true; pp.innerText='⏸ Pause'} if(e.data==2){isPlaying=false; pp.innerText='▶ Play'}}}});}
-function updateMeta(){let v=all[curIdx]; t.innerText=v.title; c.innerText=v.cat+' • LIVE NOW • Global'; d.innerText=v.desc||''; ticker.innerText='♪ '+all.map(x=>x.title.toUpperCase()).join(' ♪ ')+' ♪ LIVE ON AZAM ALE TV v7 ♪ ';}
-function autoNext(){curIdx=getGlobalIdx(); if(yt) yt.loadVideoById(all[curIdx].id); updateMeta();}
-function togglePlay(){if(!yt) return; isPlaying?yt.pauseVideo():yt.playVideo();}
-function zoom(){wrap.classList.toggle('zoomed');}
-setInterval(()=>{clock.innerText=new Date().toLocaleTimeString('sw-KE',{hour12:false,timeZone:'Africa/Nairobi'})},1000);
-setInterval(()=>{let g=getGlobalIdx(); if(g!==curIdx){curIdx=g; if(yt) yt.loadVideoById(all[curIdx].id); updateMeta();}},30000);
-let last=JSON.stringify(getV()); setInterval(()=>{let cur=JSON.stringify(getV()); if(cur!==last){last=cur; all=getV().length>0?getV():defaults; curIdx=getGlobalIdx(); if(yt) yt.loadVideoById(all[curIdx].id); updateMeta();}},2000);
+const KEY='azamtv_ale_final_2026';
+function getYtId(u){if(!u)return'';if(u.includes('youtu.be/'))return u.split('youtu.be/')[1].split('?')[0];try{return new URL(u).searchParams.get('v')||'';}catch{let m=u.match(/v=([^&]+)/);return m?m[1]:'';}}
+function loadTV(){
+ let cur=null; try{cur=JSON.parse(localStorage.getItem('aletv_live_now')||'null');}catch{}
+ let st=null; try{st=JSON.parse(localStorage.getItem(KEY)||'null');}catch{}
+ if(!cur && st && st.playlist) cur=st.playlist.find(p=>p.status==='now')||st.playlist[0];
+ let msg=document.getElementById('msg'), yt=document.getElementById('yt');
+ if(!cur ||!cur.url){ msg.style.display='block'; yt.style.display='none'; return; }
+ let id=cur.ytid||getYtId(cur.url);
+ document.getElementById('vTitle').innerText=cur.title;
+ document.getElementById('vMeta').innerText='● LIVE NOW: '+cur.title+' • '+(cur.cat||'Live')+' • Quality: Data Saver (haikatiki)';
+ msg.style.display='none'; yt.style.display='block';
+ // Azam stable player - tiny quality + nocookie
+ yt.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0&modestbranding=1&vq=tiny&enablejsapi=1';
+}
+loadTV(); setInterval(loadTV,4000);
 </script></body></html>
