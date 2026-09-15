@@ -8,11 +8,10 @@ body{background:#000;color:#fff;font-family:sans-serif}
 #player{width:100%;aspect-ratio:16/9;background:#000}
 #player iframe{width:100%;height:100%;pointer-events:none!important}
 #overlay{position:absolute;inset:0;z-index:9;background:transparent}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10;animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.5}}
+#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
 #tickerWrap{position:absolute;bottom:0;left:0;right:0;height:34px;background:#f59e0b;z-index:8;overflow:hidden;display:flex;align-items:center}
 #ticker{flex:1;white-space:nowrap;overflow:hidden;color:#000;font-weight:900;font-size:13px}
-#ticker span{display:inline-block;padding-left:100%;animation:scroll 25s linear infinite}
+#ticker span{display:inline-block;padding-left:100%;animation:scroll 35s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 #clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#f59e0b;border:2px solid #f59e0b;border-bottom:0;border-left:0;padding:5px 12px;border-radius:0 10px 0 0;font-weight:900;font-size:15px}
 </style></head><body>
@@ -28,81 +27,90 @@ body{background:#000;color:#fff;font-family:sans-serif}
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 
-// BIRTH YA CHANNEL - ndio TV iende kama Citizen, hata ukizima simu
-function getChannelBirth(){
- let b=localStorage.getItem('ale_channel_birth');
- if(!b){ b=Date.now(); localStorage.setItem('ale_channel_birth',b); }
- return parseInt(b);
-}
-
 let player, cur=null, videos=[], currentIdx=0;
-const SLOT = 600; // kila video inapewa dakika 10 kwa TV, ndio kila mtu apate tofauti
 
-function findWhatIsOnNow(){
- videos=getV(); if(!videos.length) return {idx:0, seek:0};
- let birth=getChannelBirth();
- let now=Date.now();
- let elapsedSec=Math.floor((now-birth)/1000);
- let idx=Math.floor(elapsedSec/SLOT) % videos.length;
- let seekInSlot=elapsedSec % SLOT;
- // na pia seek ya ndani ya video yenyewe
- let k='ale_start_'+videos[idx].id;
+function getWorldSeek(id){
+ let k='ale_start_'+id;
  let s=localStorage.getItem(k);
- if(!s){ localStorage.setItem(k, now - (seekInSlot*1000)); }
- let realSeek = seekInSlot;
- return {idx, seek: realSeek};
+ if(!s){ s=Date.now(); localStorage.setItem(k,s); }
+ return Math.floor((Date.now()-parseInt(s))/1000);
 }
 
-function playNow(){
- let what=findWhatIsOnNow();
- currentIdx=what.idx;
+function playIndex(idx){
+ videos=getV(); if(!videos.length) return;
+ if(idx>=videos.length) idx=0;
+ if(idx<0) idx=videos.length-1;
+ currentIdx=idx;
  cur=videos[currentIdx];
- if(!cur) return;
+ let seek=getWorldSeek(cur.id);
+ // reset start time ya next video ikiwa hii ndio mpya
  document.getElementById('tick').innerText='🔴 '+cur.title+' | '+(localStorage.getItem('ale_ticker_custom')||'ALE TV LIVE')+' | '+cur.title;
  if(player && player.loadVideoById){
-   player.loadVideoById({videoId:cur.id,startSeconds:what.seek});
- }else{ createPlayer(cur.id, what.seek); }
+   player.loadVideoById({videoId:cur.id,startSeconds:seek});
+ }else{ createPlayer(cur.id,seek); }
 }
 
 function createPlayer(vId,seek){
  if(!window.YT){ let t=document.createElement('script'); t.src="https://www.youtube.com/iframe_api"; document.head.appendChild(t); window.onYouTubeIframeAPIReady=()=>{ doCreate(vId,seek); }; }
  else{ doCreate(vId,seek); }
 }
+
 function doCreate(vId,seek){
  player=new YT.Player('player',{
   videoId:vId,
   playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,origin:window.location.origin},
   events:{
    onReady:e=>{
-     e.target.seekTo(seek,true); e.target.playVideo();
-     setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},800);
-     let c=0; let f=setInterval(()=>{c++; try{if(player.getPlayerState()!=1)player.playVideo(); else clearInterval(f);}catch{} if(c>20)clearInterval(f);},400);
+     e.target.seekTo(seek,true);
+     e.target.playVideo();
+     setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},1000);
    },
    onStateChange:e=>{
-     if(e.data==0){ playNow(); } // imeisha enda kwa ile iko ON sasa, si next ya list
-     if(e.data==2){ setTimeout(()=>{ let w=findWhatIsOnNow(); player.seekTo(w.seek,true); player.playVideo(); },300); }
+     // 0 = video imeisha kweli ndio enda next - pole pole
+     if(e.data==0){
+       // weka start time mpya ya next video
+       let nextIdx=currentIdx+1;
+       if(nextIdx>=videos.length) nextIdx=0;
+       localStorage.setItem('ale_start_'+videos[nextIdx].id, Date.now());
+       playIndex(nextIdx);
+     }
+     // 2 = mtu amejaribu kupause - mrudishe pole pole mbele
+     if(e.data==2){
+       setTimeout(()=>{
+         let real=getWorldSeek(cur.id);
+         player.seekTo(real,true);
+         player.playVideo();
+       },500);
+     }
    }
   }
  });
 }
 
+// saa
 setInterval(()=>{ document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'}); },1000);
 
-// kila sec 5 angalia kama TV imehamia video nyingine dunia mzima
+// SYNC pole pole - kila sekunde 15 tu, sio haraka
 setInterval(()=>{
- if(!videos.length) return;
- let w=findWhatIsOnNow();
- if(w.idx!==currentIdx){ playNow(); }
- else{
+ if(cur && player && player.getCurrentTime){
   try{
-   let diff=Math.abs(player.getCurrentTime()-w.seek);
-   if(diff>8){ player.seekTo(w.seek,true); }
+   let real=getWorldSeek(cur.id);
+   let now=player.getCurrentTime();
+   if(real - now > 10){ // kama yuko nyuma 10 sec ndio msongeze
+     player.seekTo(real,true);
+   }
   }catch{}
  }
-},3000);
+},15000);
 
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) playNow(); });
+// ukirudi tab - sync
+document.addEventListener('visibilitychange',()=>{
+ if(!document.hidden && cur && player){
+   let real=getWorldSeek(cur.id);
+   try{ player.seekTo(real,true); player.playVideo(); }catch{}
+ }
+});
 
-let v=getV(); if(v.length) playNow();
+let v=getV(); if(v.length) playIndex(v.length-1);
 </script>
 </body></html>
