@@ -9,32 +9,46 @@ body{background:#000;color:#fff;font-family:sans-serif}
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
 #overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
+
+/* ALE TV RIGHT JUU NA KALONGO */
+#aleLogo{
+ position:absolute;top:10px;right:10px;z-index:12;
+ background:linear-gradient(135deg,#ff0000,#ff6a00);
+ color:#fff; padding:6px 14px; border-radius:20px;
+ font-weight:900; font-size:13px; letter-spacing:1px;
+ border:2px solid #fff; box-shadow:0 0 10px rgba(255,0,0,0.8);
+ display:flex; align-items:center; gap:6px;
+}
+#aleLogo span.dot{width:8px;height:8px;background:#fff;border-radius:50%;display:inline-block;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
 #tickerWrap{position:absolute;bottom:0;left:0;right:0;height:34px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
 #ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 35s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 #clockBox{position:absolute;bottom:34px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-size:13px;font-weight:900}
-#nextBox{position:absolute;bottom:34px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:65%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#nextBox{position:absolute;bottom:34px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
 <div id="overlay" onclick="startTV()"><b>▶ TAP SCREEN TO PLAY</b></div>
 <div id="live">🔴 LIVE</div>
+<div id="aleLogo"><span class="dot"></span> ALE TV</div>
 <div id="clockBox">00:00:00</div>
 <div id="nextBox"></div>
-<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE</span></div></div>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE - WORLD SYNC</span></div></div>
 </div>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
 const BIRTH = new Date('2025-01-01T00:00:00Z').getTime();
-const SLOT = 240; // 4 min
-let player, videos=[], curIdx=0, started=false;
+const SLOT = 240;
+let player, videos=[], curIdx=0;
 
 function findNow(){
  let v=getV(); if(!v.length) return null;
  let elapsed = Math.floor((Date.now()-BIRTH)/1000);
  let idx = Math.floor(elapsed / SLOT) % v.length;
  let seek = elapsed % SLOT;
- return {idx, seek: seek>230?0:seek}; // kama karibu iishe anza 0
+ return {idx, seek: seek>230?0:seek};
 }
 
 function loadYT(cb){
@@ -50,11 +64,16 @@ function createPlayer(vId, seek){
    videoId: vId,
    playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
    events:{
-    onReady: e=>{ e.target.playVideo(); },
+    onReady: e=>{
+     e.target.setPlaybackRate(1); // SPEED NORMAL 1x
+     e.target.playVideo();
+    },
     onStateChange: e=>{
-     if(e.data==0){ // wimbo umeisha kweli
+     try{ player.setPlaybackRate(1); }catch{} // hakikisha ni 1x kila wakati
+     if(e.data==0){
        curIdx = (curIdx+1)%videos.length;
        e.target.loadVideoById(videos[curIdx].id);
+       e.target.setPlaybackRate(1);
        document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title;
      }
     }
@@ -67,13 +86,33 @@ function startTV(){
  let w=findNow(); if(!w) return;
  videos=getV(); curIdx=w.idx;
  if(!player) createPlayer(videos[curIdx].id, w.seek);
- else { try{ player.seekTo(w.seek,true); player.unMute(); player.setVolume(100); player.playVideo(); }catch{} }
+ else {
+   try{
+     player.setPlaybackRate(1); // NORMAL SPEED
+     player.seekTo(w.seek,true);
+     player.unMute(); player.setVolume(100);
+     player.playVideo();
+   }catch{}
+ }
  document.getElementById('overlay').style.display='none';
- started=true;
- setTimeout(()=>{ try{ player.unMute(); player.setVolume(100);}catch{} },500);
+ setTimeout(()=>{ try{ player.unMute(); player.setPlaybackRate(1); }catch{} },500);
 }
 
-// clock + next song tu, hakuna sync ya kurudisha nyuma
+// ukirudi online - iruke LIVE lakini speed 1x tu, si 2x
+function resumeLive(){
+ if(!player) return;
+ let w=findNow(); if(!w) return;
+ try{
+   player.setPlaybackRate(1); // NORMAL
+   player.seekTo(w.seek,true);
+   player.playVideo();
+ }catch{}
+}
+
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) resumeLive(); });
+window.addEventListener('online', resumeLive);
+window.addEventListener('focus', resumeLive);
+
 setInterval(()=>{
  document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
  if(!player||!player.getDuration) return;
@@ -84,6 +123,8 @@ setInterval(()=>{
    let nb=document.getElementById('nextBox');
    nb.style.display='block'; nb.innerText='NEXT: '+next.title;
   }else{ document.getElementById('nextBox').style.display='none'; }
+  // hakikisha speed ibaki 1x
+  if(player.getPlaybackRate()!==1) player.setPlaybackRate(1);
  }catch{}
 },1000);
 
