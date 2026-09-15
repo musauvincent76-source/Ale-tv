@@ -1,167 +1,79 @@
-<!DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="preconnect" href="https://www.youtube-nocookie.com">
-<link rel="preconnect" href="https://www.gstatic.com">
-<link rel="preconnect" href="https://ale-tv-default-rtdb.firebaseio.com">
-<title>ALE TV - LIVE WORLD TV</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:sans-serif}
-.topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #f59e0b;position:sticky;top:0;z-index:99}
-.logo{font-weight:900;font-size:22px;color:#f59e0b}
-.greeting{background:#1a1a1a;color:#f59e0b;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:bold;border:1px solid #f59e0b}
-.live-badge{background:#ff0000;color:#fff;padding:5px 14px;border-radius:20px;font-weight:bold;font-size:13px;animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
-.player{width:100%;height:70vh;background:#000;position:relative;display:flex;align-items:center;justify-content:center}
-#main{width:100%;height:100%;border:0;background:#000}
-.clock{position:absolute;top:10px;right:12px;background:rgba(0,0,0,0.8);padding:5px 10px;border-radius:6px;font-size:13px;color:#f59e0b;z-index:10}
-.sound-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:14px 28px;border-radius:30px;font-weight:900;z-index:20;cursor:pointer;border:0;font-size:16px;display:none;box-shadow:0 4px 15px rgba(0,0,0,0.5)}
-.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:32px;display:flex;align-items:center;overflow:hidden;z-index:10}
-.ticker-cat{background:#fff;color:#b80000;padding:4px 12px;font-weight:900;font-size:12px;margin-left:5px;border-radius:4px}
-.ticker-text{white-space:nowrap;animation:scroll 40s linear infinite;font-size:14px;margin-left:15px;font-weight:bold}
-@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
-.info{padding:12px;background:#111;display:flex;justify-content:space-between;align-items:flex-start}
-.desc-box{margin:8px 0 0 0;color:#ccc;font-size:14px;line-height:1.4;background:#1a1a1a;padding:8px 10px;border-radius:6px;border-left:3px solid #f59e0b}
-#loader{position:absolute;color:#f59e0b;font-weight:bold;z-index:5}
-.next-notif{position:absolute;top:50px;left:12px;background:rgba(245,158,11,0.9);color:#000;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:bold;display:none;z-index:10}
-</style></head><body>
-<div class="topbar"><div class="logo">🔥 ALE TV</div><div class="greeting" id="greeting">☀️ Habari ya Asubuhi</div><div class="live-badge">● LIVE</div></div>
-<div class="player" id="playerBox">
-<div class="clock" id="clock">00:00:00</div>
-<div class="next-notif" id="nextNotif">⏭️ Video mpya inangoja...</div>
-<div id="loader">⏳ INAPAKIA...</div>
-<div id="main" style="width:100%;height:100%"></div>
-<button class="sound-btn" id="soundBtn">🔊 WASHA SAUTI</button>
-<div class="ticker"><span class="ticker-cat" id="catLabel">LIVE</span><span class="ticker-text" id="ticker">🔥 ALE TV - TV YA KWELI DUNIANI 🔥</span></div>
-</div>
-<div class="info">
-<div style="flex:1">
-<h3 id="vTitle" style="margin:0">ALE TV LIVE</h3>
-<small id="vCat" style="color:#f59e0b">LIVE</small>
-<div id="vDesc" class="desc-box">Karibu ALE TV - TV ya kweli duniani...</div>
-</div>
-<div id="timeNow" style="color:#f59e0b;font-size:13px;margin-left:10px;font-weight:bold"></div>
-</div>
-
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV WORLD</title><style>*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:sans-serif}.top{background:#0a0a0a;display:flex;justify-content:space-between;padding:8px 12px;border-bottom:2px solid #f59e0b}.logo{color:#f59e0b;font-weight:900;font-size:20px}.live{background:red;color:#fff;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900}.player{width:100%;height:70vh;background:#000;position:relative;display:flex;align-items:center;justify-content:center}#main{width:100%;height:100%}.clock{position:absolute;top:8px;right:10px;background:rgba(0,0,0,.8);padding:4px 8px;border-radius:5px;color:#f59e0b;font-size:12px;z-index:10}.btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#f59e0b;color:#000;padding:12px 20px;border-radius:25px;font-weight:900;border:0;z-index:20;display:none}.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden}.tt{white-space:nowrap;animation:s 35s linear infinite;font-size:13px;font-weight:bold;margin-left:10px}@keyframes s{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}.info{padding:10px;background:#111}.black{position:absolute;top:0;left:0;right:0;bottom:30px;background:#000;display:none;align-items:center;justify-content:center;z-index:15;color:#f59e0b;font-weight:900;flex-direction:column}.sync{position:absolute;top:8px;left:10px;background:#111;color:#f59e0b;padding:4px 8px;border-radius:5px;font-size:10px;z-index:10;border:1px solid #333}</style></head><body>
+<div class="top"><div class="logo">🔥 ALE TV</div><div class="live">● WORLD QUEUE</div></div>
+<div class="player" id="box"><div class="sync" id="sync">SYNCING WORLD...</div><div class="clock" id="clock">00:00:00</div><div id="loader" style="position:absolute;color:#f59e0b;font-weight:900">⏳ SYNCING...</div><div id="black" class="black"><div>📺 ALE TV</div><small id="blackMsg" style="color:#666;margin-top:5px">Waiting</small></div><div id="main"></div><button class="btn" id="sound">🔊 WASHA SAUTI</button><div class="ticker"><span id="ticker" class="tt">🔥 ALE TV - WORLD TV QUEUE 🔥</span></div></div>
+<div class="info"><h3 id="t" style="margin:0">ALE TV</h3><small id="c" style="color:#f59e0b">WORLD</small><div id="d" style="color:#aaa;font-size:13px;margin-top:5px;background:#1a1a1a;padding:6px;border-radius:5px;border-left:3px solid #f59e0b">Karibu...</div><div id="view" style="font-size:10px;color:#666;margin-top:4px"></div></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player=null;let currentVideo=null;let isMuted=true;let currentOffset=0;let lastId=null;let videoStartedAt=0;
-let pendingVideo=null;let videoQueue=[];
-
-function fixTime(t){if(!t) return Date.now(); let n=Number(t); if(n<1e12) n=n*1000; return n;}
-function getLiveTime(){if(!videoStartedAt) return currentOffset; let el=Math.floor((Date.now()-videoStartedAt)/1000); if(el<0) el=0; return el;}
-function updateGreeting(){let h=new Date().getHours();let t=h>=5&&h<12?'☀️ Good Morning | Habari ya Asubuhi':h<16?'🌤️ Good Afternoon | Habari ya Mchana':h<19?'🌇 Good Evening | Habari ya Jioni':'🌙 Good Night | Habari ya Usiku';document.getElementById('greeting').innerText=t;}
-updateGreeting();setInterval(updateGreeting,60000);
-setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
-
+let player=null,cur=null,lastId=null,startedAt=0,queue=[],qIndex=0,hasPlayed=false;
+function fix(t){let n=Number(t);if(n<1e12)n*=1000;return n;}
+function getWorld(){if(!startedAt)return 0;let e=Math.floor((Date.now()-startedAt)/1000);return e<0?0:e;}
+function showSync(e){document.getElementById('sync').innerText='🌍 '+Math.floor(e/60)+':'+String(e%60).padStart(2,'0')+' WORLD';}
+setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false});if(cur&&!cur.isLive){let el=getWorld();showSync(el);}},1000);
 function onYouTubeIframeAPIReady(){
-  player = new YT.Player('main',{
-    playerVars:{autoplay:1,mute:1,controls:0,modestbranding:1,rel:0,playsinline:1,enablejsapi:1,origin:window.location.origin},
-    events:{
-      'onReady':(e)=>{
-        document.getElementById('loader').style.display='none';
-        // load cached haraka
-        try{
-          let cached=JSON.parse(localStorage.getItem('ale_last_v')||'null');
-          let cachedStart=parseInt(localStorage.getItem('ale_last_start')||'0');
-          if(cached && cachedStart){
-            videoStartedAt=cachedStart;
-            let elapsed=Math.floor((Date.now()-cachedStart)/1000);
-            if(elapsed<0) elapsed=0;
-            playLiveYT(cached,elapsed,false);
-          }
-        }catch(err){}
-      },
-      'onStateChange':(e)=>{
-        // 0 = video imeisha
-        if(e.data===0){
-          if(pendingVideo){
-            playLiveYT(pendingVideo,0,false);
-            pendingVideo=null;
-            document.getElementById('nextNotif').style.display='none';
-          }else if(videoQueue.length>0){
-            let next=videoQueue.shift();
-            playLiveYT(next,0,false);
-          }
-        }
-      }
-    }
-  });
+player=new YT.Player('main',{playerVars:{autoplay:1,mute:1,controls:0,modestbranding:1,rel:0,playsinline:1,enablejsapi:1,origin:location.origin},
+events:{onReady:()=>{document.getElementById('loader').style.display='none';},
+onStateChange:(e)=>{
+// AUTOPLAY NEXT VIDEO
+if(e.data===0){
+if(queue.length>0 && qIndex < queue.length-1){
+qIndex++; playWorld(queue[qIndex],false);
+}else if(queue.length>0 && qIndex===queue.length-1){
+// Mwisho wa queue - subiri mpya
+document.getElementById('black').style.display='flex';
+document.getElementById('blackMsg').innerText='Playlist imeisha - inasubiri video mpya';
+hasPlayed=false;
+}else{
+// Live au single - usirudie
+if(cur&&!cur.isLive){
+document.getElementById('black').style.display='flex';
+document.getElementById('blackMsg').innerText='Video imeisha';
 }
-
-function playLiveYT(v,offset=0,withSound=false){
-  if(!v||!player||!player.loadVideoById) return;
-  currentVideo=v; currentOffset=offset; lastId=v.id;
-  if(!videoStartedAt || lastId!==v.id) videoStartedAt=fixTime(v.createdAt||v.created);
-  if(offset===0) videoStartedAt=Date.now(); // video mpya inaanza sasa
-  try{ localStorage.setItem('ale_last_v',JSON.stringify(v)); localStorage.setItem('ale_last_start',videoStartedAt); }catch(e){}
-  document.getElementById('vTitle').innerText=v.title;
-  document.getElementById('vCat').innerText=v.cat||'LIVE';
-  document.getElementById('catLabel').innerText=v.cat||'LIVE';
-  document.getElementById('vDesc').innerText=v.desc||'ALE TV LIVE';
-  document.getElementById('ticker').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV LIVE')+' 🔥';
-  document.getElementById('loader').style.display='none';
-  player.loadVideoById({videoId:v.id,startSeconds:offset});
-  if(withSound){ player.unMute(); isMuted=false; document.getElementById('soundBtn').style.display='none'; }
-  else { player.mute(); isMuted=true; document.getElementById('soundBtn').style.display='block'; }
 }
-
-function goLiveResume(){
-  if(!currentVideo||!player) return;
-  let live=getLiveTime();
-  player.seekTo(live,true);
-  if(!isMuted) player.unMute();
 }
-
-document.getElementById('playerBox').addEventListener('click',()=>{
-  if(!player||!currentVideo) return;
-  goLiveResume();
-  player.unMute(); isMuted=false;
-  document.getElementById('soundBtn').style.display='none';
-});
-document.getElementById('soundBtn').addEventListener('click',(e)=>{
-  e.stopPropagation();
-  if(player){ player.unMute(); isMuted=false; document.getElementById('soundBtn').style.display='none'; goLiveResume(); }
-});
-document.addEventListener('visibilitychange',()=>{
-  if(!document.hidden && currentVideo && player){
-    let live=getLiveTime();
-    if(Math.abs(live-currentOffset)>2){ player.seekTo(live,true); currentOffset=live; }
-  }
-});
-window.addEventListener('online',()=>{ if(currentVideo) goLiveResume(); });
-setInterval(()=>{ if(currentVideo) currentOffset=getLiveTime(); },1000);
+if(e.data===1){document.getElementById('black').style.display='none';}
+}}});
+}
+function playWorld(v,sound){
+if(!v||!player||!player.loadVideoById)return;
+if(v.id===lastId&&hasPlayed)return;
+let st=fix(v.createdAt||v.created);
+let el=v.isLive?0:Math.floor((Date.now()-st)/1000);if(el<0)el=0;
+cur=v;lastId=v.id;startedAt=st;hasPlayed=true;
+document.getElementById('t').innerText=v.title;document.getElementById('c').innerText=(v.cat||'LIVE')+' • Q '+(qIndex+1)+'/'+queue.length;document.getElementById('d').innerText=v.desc||'';document.getElementById('ticker').innerText='🔥 '+(v.title||'')+' 🔥';document.getElementById('black').style.display='none';
+if(v.isLive){player.loadVideoById({videoId:v.id});}
+else{player.loadVideoById({videoId:v.id,startSeconds:el});showSync(el);}
+if(sound){player.unMute();document.getElementById('sound').style.display='none';}else{player.mute();document.getElementById('sound').style.display='block';}
+}
+document.getElementById('box').addEventListener('click',()=>{if(!player||!cur)return;if(!cur.isLive){player.seekTo(getWorld(),true);}player.unMute();document.getElementById('sound').style.display='none';});
+document.getElementById('sound').addEventListener('click',(e)=>{e.stopPropagation();player.unMute();document.getElementById('sound').style.display='none';});
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&cur&&player){if(!cur.isLive){let el=getWorld();if(Math.abs(el-player.getCurrentTime())>4)player.seekTo(el,true);}player.playVideo();}});
 </script>
-
 <script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"};
-const app=initializeApp(cfg);const db=getDatabase(app);
-onValue(ref(db,'videos'),snap=>{
- let d=snap.val();if(!d)return;
- let all=Object.values(d).sort((a,b)=>(b.createdAt||b.created||0)-(a.createdAt||a.created||0));
- let newest=all[0];if(!newest)return;
- // kama hakuna video inacheza, cheza newest
- if(!lastId){
-   let wait = setInterval(()=>{
-     if(typeof player!=='undefined' && player && player.loadVideoById){
-       clearInterval(wait);
-       let started = (Number(newest.createdAt||newest.created) < 1e12)? Number(newest.createdAt||newest.created)*1000 : Number(newest.createdAt||newest.created);
-       let elapsed=Math.floor((Date.now()-started)/1000);
-       if(elapsed<0) elapsed=0;
-       playLiveYT(newest,elapsed,false);
-     }
-   },300);
-   return;
- }
- // kama ni ile ile, usifanye kitu
- if(newest.id===lastId) return;
- // VIDEO MPYA IMEKUJA - USIKATIZE, NGOJA IISHE
- pendingVideo=newest;
- document.getElementById('nextNotif').innerText='⏭️ Mpya: '+newest.title+' (itaanza baada ya hii)';
- document.getElementById('nextNotif').style.display='block';
- console.log('Video mpya imewekwa queue:',newest.title);
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const cfg={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"};const app=initializeApp(cfg);const db=getDatabase(app);
+onValue(ref(db,'videos'),s=>{
+let d=s.val();if(!d)return;
+let all=Object.values(d).sort((a,b)=>(a.createdAt||0)-(b.createdAt||0)); // zamani -> mpya kwa queue
+queue=all; // save queue dunia nzima
+let newest=all[all.length-1];
+if(!lastId){
+let w=setInterval(()=>{if(player&&player.loadVideoById){clearInterval(w);
+// Tafuta video ya kwanza ambayo bado haijaisha
+for(let i=0;i<all.length;i++){
+let v=all[i];let st=fix(v.createdAt||v.created);let el=v.isLive?0:Math.floor((Date.now()-st)/1000);
+if(v.isLive){qIndex=i;playWorld(v,false);break;}
+if(el < 20000){qIndex=i;playWorld(v,false);break;}
+if(i===all.length-1){qIndex=i;playWorld(v,false);}
+}
+}},300);
+return;
+}
+if(newest.id===lastId)return;
+// Kuna video mpya - ongeza queue, autoplay itaichukua ikiisha ya sasa
+queue=all;
 });
-onValue(ref(db,'ticker'),snap=>{let d=snap.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' 🔥';});
-</script>
-</body></html>
+onValue(ref(db,'ticker'),s=>{let d=s.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' 🔥';});
+onValue(ref(db,'control'),s=>{let c=s.val();if(!c||!player)return;if(c.action=='play'){player.playVideo();document.getElementById('black').style.display='none';}if(c.action=='pause'){player.pauseVideo();}if(c.action=='stop'||c.action=='black'){player.stopVideo();document.getElementById('black').style.display='flex';}if(c.action=='live'){document.getElementById('black').style.display='none';if(cur){let el=cur.isLive?0:getWorld();if(!cur.isLive)player.seekTo(el,true);player.playVideo();}}});
+function fix(t){let n=Number(t);if(n<1e12)n*=1000;return n;}
+function getWorld(){if(!startedAt)return 0;let e=Math.floor((Date.now()-startedAt)/1000);return e<0?0:e;}
+</script></body></html>
