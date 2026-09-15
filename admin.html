@@ -2,117 +2,62 @@
 *{box-sizing:border-box;margin:0;padding:0}body{background:#0a0a0a;color:#fff;font-family:Arial}
 .header{background:linear-gradient(90deg,#ff8c00,#ffae42);color:#000;padding:14px;font-weight:900;display:flex;justify-content:space-between;align-items:center}
 .tabs{display:flex;gap:6px;padding:8px;background:#111;position:sticky;top:0;z-index:10}
-.tab{flex:1;padding:12px;text-align:center;background:#222;border-radius:10px;font-size:13px;font-weight:900;cursor:pointer;border:1px solid #333}
-.tab.active{background:#ff8c00;color:#000;border-color:#ff8c00}
+.tab{flex:1;padding:12px;text-align:center;background:#222;border-radius:10px;font-size:13px;font-weight:900;cursor:pointer}
+.tab.active{background:#ff8c00;color:#000}
 .panel{display:none;padding:10px}.panel.active{display:block}
 .tvPreview{border:4px solid #ff8c00;border-radius:14px;overflow:hidden;height:300px;background:#000;position:relative}
 .tvPreview iframe,.tvPreview img{width:100%;height:100%;border:0;object-fit:cover}
 input,textarea,select{width:100%;padding:13px;margin:6px 0;border-radius:10px;border:1px solid #333;background:#161616;color:#fff}
-.btnBig{width:100%;padding:16px;border-radius:12px;border:0;font-weight:900;font-size:16px;margin-top:8px;cursor:pointer}
-.card{background:#161616;padding:10px;border-radius:10px;margin:8px 0;display:flex;gap:10px;align-items:center;border:1px solid #222}
+.btn{width:100%;padding:16px;border-radius:12px;border:0;font-weight:900;font-size:16px;margin-top:8px;cursor:pointer}
 </style></head><body>
-<div class="header"><span>ALE ADMIN DASHBOARD</span><span id="status" style="background:#000;color:#ff8c00;padding:5px 12px;border-radius:20px;font-size:11px">OFFLINE</span></div>
+<div class="header"><span>ALE ADMIN</span><span id="status" style="background:#000;color:#ff8c00;padding:5px 12px;border-radius:20px;font-size:11px">OFFLINE</span></div>
 
 <div class="tabs">
-<div class="tab active" onclick="openTab('dash',this)">📺 DASHBOARD + TV</div>
-<div class="tab" onclick="openTab('playlist',this)">🎬 PLAYLIST</div>
-<div class="tab" onclick="openTab('settings',this)">⚙️ SETTINGS</div>
+<div class="tab active" onclick="openTab('dash',this)">DASHBOARD</div>
+<div class="tab" onclick="openTab('playlist',this)">PLAYLIST</div>
+<div class="tab" onclick="openTab('settings',this)">SETTINGS</div>
 </div>
 
 <div id="dash" class="panel active">
-<div class="tvPreview"><div style="position:absolute;top:8px;left:8px;background:red;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:900;z-index:2">● TV PREVIEW LIVE</div><div id="preview" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;background:#000">Weka YouTube link chini TV itaonekana hapa</div></div>
 
-<button class="btnBig" style="background:#ff8c00;color:#000" onclick="window.open('/','_blank')">📺 FUNGUA TV KUBWA KAMA VIEWER</button>
-<button class="btnBig" style="background:#222;color:#fff;border:1px solid #ff8c00" onclick="document.getElementById('preview').scrollIntoView({behavior:'smooth'})">👁 ONA TV PREVIEW JUU</button>
+<!-- BUTTON YA ONA TV IKO HAPA - KWA ADMIN PEKEE -->
+<button class="btn" style="background:#ff8c00;color:#000;font-size:18px;padding:18px" onclick="window.open('/','_blank')">📺 ONA TV - PUBLIC VIEW</button>
+
+<div class="tvPreview" style="margin-top:10px"><div style="position:absolute;top:8px;left:8px;background:red;color:#fff;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:900;z-index:2">● PREVIEW</div><div id="preview" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#555;background:#000">Preview ya TV</div></div>
 
 <div style="margin-top:10px;background:#111;padding:12px;border-radius:12px">
-<input id="link" placeholder="Weka YouTube au Facebook link hapa" oninput="autoFetch()">
+<input id="link" placeholder="Weka YouTube au Facebook link" oninput="autoFetch()">
 <div id="autoInfo" style="font-size:11px;color:#0f0;margin:4px 0"></div>
-<input id="title" placeholder="Title - itajazwa auto">
-<textarea id="desc" placeholder="Description - ita-scroll chini kwenye TV" rows="2"></textarea>
-<select id="cat"><option>Burudani</option><option>Habari</option><option>Muziki</option><option>Live</option><option>Michezo</option></select>
+<input id="title" placeholder="Title - auto">
+<textarea id="desc" placeholder="Description - ita-scroll kwa TV" rows="2"></textarea>
+<select id="cat"><option>Burudani</option><option>Habari</option><option>Muziki</option><option>Live</option></select>
 <div style="display:flex;gap:8px">
-<button class="btnBig" style="background:#ff8c00;color:#000;flex:1" onclick="goLive(false)">▶ PLAY VIDEO</button>
-<button class="btnBig" style="background:red;color:#fff;flex:1" onclick="goLive(true)">● GO LIVE</button>
+<button class="btn" style="background:#ff8c00;color:#000;flex:1" onclick="goLive(false)">▶ PLAY VIDEO</button>
+<button class="btn" style="background:red;color:#fff;flex:1" onclick="goLive(true)">● GO LIVE</button>
 </div>
-<button class="btnBig" style="background:#222;color:#fff" onclick="stopLive()">⏹ STOP TV</button>
+<button class="btn" style="background:#222;color:#fff" onclick="stopLive()">⏹ STOP</button>
 </div>
-<div id="nowPlaying" style="margin-top:10px"></div>
 </div>
 
 <div id="playlist" class="panel"><div id="list"></div></div>
-
-<div id="settings" class="panel">
-<div style="background:#111;padding:12px;border-radius:12px">
-<label style="font-size:11px;color:#888">TV Name</label><input id="sName" value="ALE TV HD">
-<label style="font-size:11px;color:#888">Ticker Text (ina-scroll chini)</label><textarea id="sTicker" rows="3">ALE TV HD - BURUDANI 24/7</textarea>
-<button class="btnBig" style="background:#ff8c00;color:#000" onclick="saveSettings()">SAVE SETTINGS</button>
-</div>
-</div>
+<div id="settings" class="panel"><div style="background:#111;padding:12px;border-radius:12px"><input id="sName" value="ALE TV HD"><textarea id="sTicker" rows="3">ALE TV HD - BURUDANI 24/7</textarea><button class="btn" style="background:#ff8c00;color:#000" onclick="saveSettings()">SAVE</button></div></div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,push,set,onValue,remove}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-
-window.openTab=(id,el)=>{
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  el.classList.add('active');
-}
+window.openTab=(id,el)=>{document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.getElementById(id).classList.add('active');el.classList.add('active');}
 function getYTId(u){let m=u.match(/(?:youtu\.be\/|v=|embed\/|watch\?v=|shorts\/)([a-zA-Z0-9_-]{11})/);return m?m[1]:null;}
 function isFb(u){return u.includes('facebook.com')||u.includes('fb.watch');}
-
 window.autoFetch=async()=>{
  let url=document.getElementById('link').value.trim(); if(url.length<8) return;
- let id=getYTId(url); let info=document.getElementById('autoInfo');
- if(id){
-   info.innerText='⏳ Inatafuta title...';
-   try{
-     let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
-     let d=await r.json();
-     document.getElementById('title').value=d.title;
-     document.getElementById('desc').value=`${d.title} - ${d.author_name} | ALE TV HD`;
-     info.innerText='✅ Imeauto: '+d.title.substring(0,45);
-   }catch{
-     // Fallback kama oEmbed imeblock
-     document.getElementById('title').value=document.getElementById('title').value||'ALE TV - '+id;
-     document.getElementById('desc').value=document.getElementById('title').value+' | ALE TV HD';
-     info.innerText='✅ Link sawa - weka description mwenyewe';
-   }
-   document.getElementById('preview').innerHTML=`<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg">`;
- }else if(isFb(url)){
-   info.innerText='✅ Facebook Live detected';
-   document.getElementById('preview').innerHTML=`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1877f2;color:#fff;font-weight:900">FB LIVE LINK</div>`;
- }
-}
-
-window.goLive=async(liveNow)=>{
- let url=document.getElementById('link').value.trim(); if(!url) return alert('Weka link');
  let id=getYTId(url);
- if(!id &&!isFb(url)) return alert('Link si sahihi - tumia YouTube au Facebook');
- let payload={title:document.getElementById('title').value||'ALE TV HD',desc:document.getElementById('desc').value||'ALE TV LIVE',cat:document.getElementById('cat').value||'Burudani',url,startAt:Date.now(),isLiveNow:!!liveNow,type:isFb(url)?'facebook':'youtube',videoId:id||''};
- await set(ref(db,'live'),payload);
- await set(push(ref(db,'videos')),{...payload,createdAt:Date.now()});
- alert(liveNow?'🔴 GO LIVE!':'▶ PLAY VIDEO - watu wote wata-sync');
+ if(id){try{let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);let d=await r.json();document.getElementById('title').value=d.title;document.getElementById('desc').value=d.title+' | ALE TV';document.getElementById('autoInfo').innerText='✅ '+d.title.substring(0,40);}catch{} document.getElementById('preview').innerHTML=`<img src="https://i.ytimg.com/vi/${id}/hqdefault.jpg">`;}
 }
-window.stopLive=async()=>{await remove(ref(db,'live')); alert('⏹ STOP');}
+window.goLive=async(liveNow)=>{let url=document.getElementById('link').value.trim(); if(!url) return alert('Weka link'); let id=getYTId(url); let payload={title:document.getElementById('title').value||'ALE TV',desc:document.getElementById('desc').value||'',cat:document.getElementById('cat').value,url,startAt:Date.now(),isLiveNow:!!liveNow,type:isFb(url)?'facebook':'youtube',videoId:id||''}; await set(ref(db,'live'),payload); await set(push(ref(db,'videos')),{...payload,createdAt:Date.now()}); alert(liveNow?'🔴 LIVE':'▶ PLAY');}
+window.stopLive=async()=>{await remove(ref(db,'live')); alert('STOP');}
 window.saveSettings=async()=>{await set(ref(db,'settings'),{name:document.getElementById('sName').value,ticker:document.getElementById('sTicker').value}); alert('Saved');}
-
-onValue(ref(db,'live'),s=>{
- let v=s.val(); let st=document.getElementById('status');
- if(v){st.innerText='● LIVE ON AIR'; st.style.background='red'; st.style.color='#fff';
-   document.getElementById('preview').innerHTML=v.type==='facebook'?`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1877f2;color:#fff;font-weight:900">FB LIVE ON AIR</div>`:`<iframe src="https://www.youtube.com/embed/${v.videoId}?autoplay=1&mute=1&controls=0&rel=0" allow="autoplay; fullscreen"></iframe>`;
- }else{st.innerText='OFFLINE'; st.style.background='#000'; st.style.color='#ff8c00';}
-});
-
-onValue(ref(db,'videos'),s=>{
- let d=s.val(); if(!d){document.getElementById('list').innerHTML='<p style="text-align:center;color:#555;padding:20px">Playlist tupu</p>';return;}
- let h=''; Object.entries(d).sort((a,b)=>b[1].createdAt-a[1].createdAt).forEach(([k,v])=>{
-   h+=`<div class="card"><div style="width:60px;height:40px;background:#000;border-radius:6px;overflow:hidden"><img src="${v.videoId?'https://i.ytimg.com/vi/'+v.videoId+'/hqdefault.jpg':'https://via.placeholder.com/60x40?text=FB'}" style="width:100%;height:100%;object-fit:cover"></div><div style="flex:1"><b style="font-size:13px">${v.title}</b><br><small style="color:#888">${v.cat}</small></div><button onclick="reLive('${k}')" style="background:#ff8c00;color:#000;padding:6px 10px;border-radius:6px;border:0;font-weight:900">LIVE</button><button onclick="delV('${k}')" style="background:#222;color:red;padding:6px 10px;border-radius:6px;border:0;margin-left:4px">X</button></div>`;
- }); document.getElementById('list').innerHTML=h;
-});
+onValue(ref(db,'live'),s=>{let v=s.val(); document.getElementById('status').innerText=v?'● LIVE':'OFFLINE'; document.getElementById('status').style.background=v?'red':'#000'; document.getElementById('status').style.color=v?'#fff':'#ff8c00'; if(v){document.getElementById('preview').innerHTML=v.type==='facebook'?`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#1877f2;color:#fff;font-weight:900">FB LIVE</div>`:`<iframe src="https://www.youtube.com/embed/${v.videoId}?autoplay=1&mute=1&controls=0"></iframe>`;}});
+onValue(ref(db,'videos'),s=>{let d=s.val(); if(!d) return; let h=''; Object.entries(d).sort((a,b)=>b[1].createdAt-a[1].createdAt).forEach(([k,v])=>{h+=`<div style="background:#161616;padding:10px;border-radius:10px;margin:8px 0;display:flex;gap:10px;align-items:center"><div style="width:60px;height:40px;background:#000;border-radius:6px;overflow:hidden"><img src="${v.videoId?'https://i.ytimg.com/vi/'+v.videoId+'/hqdefault.jpg':''}" style="width:100%;height:100%;object-fit:cover"></div><div style="flex:1"><b style="font-size:13px">${v.title}</b></div><button onclick="reLive('${k}')" style="background:#ff8c00;padding:6px 10px;border-radius:6px;border:0">LIVE</button><button onclick="delV('${k}')" style="background:red;color:#fff;padding:6px 10px;border-radius:6px;border:0;margin-left:4px">X</button></div>`;}); document.getElementById('list').innerHTML=h;});
 window.reLive=async(k)=>{let snap=await new Promise(r=>onValue(ref(db,'videos/'+k),s=>r(s.val()),{onlyOnce:true})); if(snap) await set(ref(db,'live'),{...snap,startAt:Date.now()});}
 window.delV=async(k)=>{if(confirm('Futa?')) await remove(ref(db,'videos/'+k));}
-onValue(ref(db,'settings'),s=>{let d=s.val(); if(d){document.getElementById('sName').value=d.name||''; document.getElementById('sTicker').value=d.ticker||'';}})
 </script></body></html>
