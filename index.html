@@ -1,84 +1,78 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV</title>
-<script src="https://www.youtube.com/iframe_api"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}body{background:#000;color:#fff;font-family:Arial;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#top{height:52px;background:#0a0a0a;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid #1a1a1a}
+#top{height:50px;background:#0a0a0a;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:1px solid #1a1a1a;flex-shrink:0}
 #logo{font-weight:900;font-size:18px}#logo span{color:#ff7a00}
-#clock{font-size:11px;color:#888;background:#151515;padding:5px 10px;border-radius:20px}
-#live{font-size:11px;background:#e50000;padding:5px 12px;border-radius:20px;font-weight:900}
-#videoWrap{flex:1;position:relative;background:#000}
-#yt{width:100%;height:100%}
-#off{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000;z-index:2}
-#bottomBar{height:auto;background:#000;border-top:1px solid #111;padding:0;flex-shrink:0}
-#redBar{height:34px;background:#d40000;display:flex;align-items:center;padding:0 10px;gap:10px}
-#catBadge{background:#fff;color:#000;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:900;text-transform:uppercase}
+#clock{font-size:11px;background:#1a1a1a;padding:5px 10px;border-radius:20px;color:#888}
+#live{background:#e50000;padding:5px 12px;border-radius:20px;font-size:11px;font-weight:900}
+#videoWrap{flex:1;position:relative;background:#000;overflow:hidden}
+#ytFrame{width:100%;height:100%;border:0;background:#000}
+#off{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#000;z-index:5}
+#off h2{color:#ff7a00;font-size:14px;margin-top:10px;text-align:center;padding:0 20px}
+#off p{color:#555;font-size:10px;margin-top:5px}
+#bottom{flex-shrink:0;background:#000}
+#redBar{height:34px;background:#d40000;display:flex;align-items:center;padding:0 10px;gap:8px}
+#catBadge{background:#fff;color:#000;padding:4px 10px;border-radius:4px;font-size:10px;font-weight:900}
 #redTitle{font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#info{padding:12px 14px}
-#info b{font-size:14px;display:block}
-#info small{color:#ff7a00;font-size:10px;text-transform:uppercase;margin-top:2px;display:block}
-#descBox{margin-top:10px;background:#141414;border-left:3px solid #ff7a00;padding:10px;border-radius:4px;font-size:12px;color:#ccc;min-height:36px}
-#ticker{height:32px;background:#ff7a00;color:#000;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:800;overflow:hidden;white-space:nowrap}
+#info{padding:10px 12px}
+#info b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#info small{color:#ff7a00;font-size:10px;display:block;margin-top:2px;text-transform:uppercase}
+#descBox{margin-top:8px;background:#111;border-left:3px solid #ff7a00;padding:8px 10px;border-radius:4px;font-size:11px;color:#aaa;min-height:32px}
+#ticker{height:30px;background:#ff7a00;color:#000;display:flex;align-items:center;padding:0 10px;font-size:11px;font-weight:800}
 </style></head><body>
 
 <div id="top"><div id="logo">🔥 ALE <span>TV</span></div><div style="display:flex;gap:8px;align-items:center"><div id="clock">00:00:00</div><div id="live">● LIVE</div></div></div>
 
 <div id="videoWrap">
-<div id="off"><div style="font-size:40px;opacity:0.2">📺</div><div style="color:#ff7a00;font-weight:900;margin-top:8px" id="offTitle">ALE TV HD</div><div style="color:#555;font-size:10px;margin-top:4px" id="offSub">Inasubiri link kutoka Admin...</div></div>
-<div id="yt"></div>
+<div id="off"><div style="font-size:36px">📺</div><h2 id="offTitle">ALE TV HD</h2><p id="offSub">Inapakia haraka...</p></div>
+<iframe id="ytFrame" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe>
 </div>
 
-<div id="bottomBar">
-<div id="redBar"><div id="catBadge">--</div><div id="redTitle">Hakuna matangazo</div></div>
-<div id="info">
-<b id="bTitle">ALE TV HD</b>
-<small id="bCat">BURUDANI</small>
-<div id="descBox" id="bDesc">Hakuna description - weka link na description kwenye Admin</div>
-</div>
+<div id="bottom">
+<div id="redBar"><div id="catBadge">BURUDANI</div><div id="redTitle">Inasubiri...</div></div>
+<div id="info"><b id="bTitle">ALE TV</b><small id="bCat">LIVE</small><div id="descBox">...</div></div>
 <div id="ticker">🔥 ALE TV HD - LIVE 24/7</div>
 </div>
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";import{getDatabase,ref,onValue}from"https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 const db=getDatabase(initializeApp({apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv"}));
-let player=null, videos=[], cur=0, started=false;
+let videos=[], cur=0, timer=null;
 
 setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{hour12:false})},1000);
-function isValid(id){return id && /^[a-zA-Z0-9_-]{11}$/.test(id);}
-
-function updateUI(v){
- if(!v) return;
- document.getElementById('offTitle').innerText=v.title||'ALE TV HD';
- document.getElementById('catBadge').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('redTitle').innerText=v.title||'';
- document.getElementById('bTitle').innerText=v.title||'';
- document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
- document.getElementById('bDesc').innerText=v.desc||'Hakuna maelezo';
-}
-
-function play(id,start=0){
- if(!isValid(id)){ cur=(cur+1)%videos.length; if(videos[cur]) play(videos[cur].videoId); return; }
- if(player) try{player.destroy()}catch{}
+function valid(id){return id && /^[a-zA-Z0-9_-]{11}$/.test(id);}
+function play(id, start=0){
+ if(!valid(id)) return;
  document.getElementById('off').style.display='none';
- started=true;
- player=new YT.Player('yt',{width:'100%',height:'100%',videoId:id,
- playerVars:{autoplay:1,controls:1,modestbranding:1,fs:1,playsinline:1,mute:1,start:start,rel:0},
- events:{onReady:e=>{e.target.playVideo(); setTimeout(()=>{e.target.unMute()},800);},
- onError:()=>{ cur=(cur+1)%videos.length; if(videos[cur]) play(videos[cur].videoId); },
- onStateChange:e=>{ if(e.data==0){ cur=(cur+1)%videos.length; updateUI(videos[cur]); play(videos[cur].videoId); } }
- }});
+ // IFRAME DIRECT - HARAKA SANA, HAIKAI
+ document.getElementById('ytFrame').src=`https://www.youtube-nocookie.com/embed/${id}?autoplay=1&mute=1&controls=1&rel=0&playsinline=1&start=${start}&enablejsapi=1&origin=${location.origin}`;
+ // auto next baada ya dakika 5 kama user hajaswitch (kwa sababu hatuna YT API)
+ clearTimeout(timer);
+ timer=setTimeout(()=>{ cur=(cur+1)%videos.length; if(videos[cur]){ updateUI(videos[cur]); play(videos[cur].videoId);} }, 1000*60*8);
+}
+function updateUI(v){
+ document.getElementById('offTitle').innerText=v.title;
+ document.getElementById('catBadge').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('redTitle').innerText=v.title;
+ document.getElementById('bTitle').innerText=v.title;
+ document.getElementById('bCat').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('descBox').innerText=v.desc || v.title;
 }
 
 onValue(ref(db,'videos'),s=>{
- let d=s.val(); if(!d){ document.getElementById('offSub').innerText='Hakuna video - weka Admin'; return; }
- videos=Object.values(d).filter(v=>isValid(v.videoId)).sort((a,b)=>a.createdAt-b.createdAt);
- if(videos.length>0 &&!started){ updateUI(videos[0]); play(videos[0].videoId); }
+ let d=s.val(); if(!d) return;
+ videos=Object.values(d).filter(v=>valid(v.videoId)).sort((a,b)=>a.createdAt-b.createdAt);
+ if(videos.length>0 &&!document.getElementById('ytFrame').src){
+  updateUI(videos[0]);
+  play(videos[0].videoId);
+ }
 });
 
 onValue(ref(db,'live'),s=>{
- let v=s.val(); if(!v?.videoId||!isValid(v.videoId)) return;
- let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) cur=idx;
+ let v=s.val(); if(!v?.videoId||!valid(v.videoId)) return;
  updateUI(v);
  let st=Math.floor((Date.now()-v.startAt)/1000); if(st<0) st=0;
+ let idx=videos.findIndex(x=>x.videoId===v.videoId); if(idx>=0) cur=idx;
  play(v.videoId, v.isLiveNow?0:st);
 });
 </script></body></html>
