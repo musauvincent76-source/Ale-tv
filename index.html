@@ -39,10 +39,8 @@ body{margin:0;background:#000;color:#fff;font-family:sans-serif;overflow:hidden}
 </div>
 
 <script>
-// VIDEO 1 TU KWA SPEED - zingine zinakuja kutoka Firebase
 let videos=[{id:'jNQXAC9IVRw',title:'ALE TV - Karibu',cat:'LIVE',desc:'Karibu ALE TV - TV ya kweli duniani',isLive:false}];
 let current=null;let player=null;let ready=false;
-
 function updateGreeting(){
  let h=new Date().getHours();
  let el=document.getElementById('greeting');
@@ -50,7 +48,7 @@ function updateGreeting(){
  if(el)el.innerText=text;
 }
 updateGreeting();
-
+setInterval(updateGreeting,60000);
 setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
 function getSynced(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let elapsed=now%total;return{idx:Math.floor(elapsed/240)%videos.length,seek:elapsed%240}}
 function updateInfo(v){if(!v)return;document.getElementById('vTitle').innerText=v.title;document.getElementById('vCat').innerText=v.cat;document.getElementById('catLabel').innerText=v.cat;document.getElementById('vDesc').innerText=v.desc||'';document.getElementById('ticker').innerText='🔥 '+v.title+' | '+(v.desc||'ALE TV LIVE')+' | ALE TV LIVE WORLDWIDE 🔥';}
@@ -68,4 +66,16 @@ document.getElementById('playerBox').addEventListener('click',()=>{if(!player)re
 </script>
 <script src="https://www.youtube.com/iframe_api" async></script>
 <script type="module">
-// Firebase inache
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {getDatabase,ref,onValue} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+const firebaseConfig={apiKey:"AIzaSyDuf-Is10hDtjNJU7hzDqJmLT2czSXzODg",authDomain:"ale-tv.firebaseapp.com",databaseURL:"https://ale-tv-default-rtdb.firebaseio.com",projectId:"ale-tv",storageBucket:"ale-tv.firebasestorage.app",messagingSenderId:"548271956392",appId:"1:548271956392:web:6993343a96da96f7757d9d"};
+const app=initializeApp(firebaseConfig);const db=getDatabase(app);
+onValue(ref(db,'videos'),(snap)=>{
+ const data=snap.val();
+ if(!data||Object.keys(data).length==0)return;
+ let newV=Object.values(data).reverse().map(v=>({id:v.id,title:v.title,cat:v.cat||'LIVE',desc:v.desc||'',isLive:!!v.isLive}));
+ if(newV.length>0){videos=newV;let n=getSynced();updateInfo(videos[n.idx]);if(player&&ready){player.loadVideoById({videoId:videos[n.idx].id,startSeconds:videos[n.idx].isLive?0:n.seek});} else if(!player){createPlayer();}}
+});
+onValue(ref(db,'ticker'),(snap)=>{let d=snap.val();if(d&&d.text)document.getElementById('ticker').innerText='🔥 '+d.text+' | ALE TV LIVE 🔥';});
+</script>
+</body></html>
