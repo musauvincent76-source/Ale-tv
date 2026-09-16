@@ -1,44 +1,94 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - YOUR HOME OF SPORTS</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#000;overflow:hidden}
 #wrap{position:relative;width:100%;height:100vh;background:#000}
-#player{width:100%;height:calc(100vh - 50px)}
+#player{width:100%;height:calc(100vh - 50px);background:#000}
 #player iframe{width:100%;height:100%}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:5px 10px;border-radius:6px;font-size:10px;font-weight:900;z-index:5}
-#logo{position:absolute;top:10px;right:10px;background:red;color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:12px;z-index:5}
-#bar{position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(90deg,red,orange);display:flex;align-items:center;overflow:hidden;z-index:5}
-#bar b{background:#000;color:#fff;padding:0 10px;height:100%;display:flex;align-items:center;font-size:9px}
-#ad{flex:1;text-align:center;font-weight:900;font-size:12px;animation:zoom 6s infinite;color:#fff}
-@keyframes zoom{0%{transform:scale(.2);opacity:0}15%{transform:scale(1.2);opacity:1}25%{transform:scale(1)}85%{transform:scale(1)}100%{transform:scale(.2);opacity:0}}
+#live{position:absolute;top:12px;left:12px;background:red;color:#fff;padding:6px 14px;border-radius:20px;font-size:10px;font-weight:900;z-index:5;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+#logo{position:absolute;top:12px;right:12px;background:linear-gradient(90deg,red,orange);color:#fff;padding:7px 16px;border-radius:20px;font-weight:900;font-size:12px;z-index:5;border:2px solid #fff}
+#bar{position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(90deg,#ff0000,#ffae00);display:flex;align-items:center;z-index:5;border-top:2px solid #fff}
+#bar b{background:#000;color:#fff;height:100%;padding:0 12px;display:flex;align-items:center;font-size:9px}
+#ad{flex:1;text-align:center;font-weight:900;font-size:12px;color:#fff;animation:zoom 6s infinite}
+@keyframes zoom{0%{transform:scale(.2);opacity:0}15%{transform:scale(1.2);opacity:1}20%{transform:scale(1)}85%{transform:scale(1)}100%{transform:scale(.2);opacity:0}}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
 <div id="live">🔴 LIVE</div>
 <div id="logo">ALE TV</div>
-<div id="bar"><b>ADS</b><div id="ad">TILL 3624692 - TANGAZA HAPA</div></div>
+<div id="bar"><b>⚡ ADS</b><div id="ad">TILL 3624692 - SUPPORT ALE TV - Alex</div></div>
 </div>
 <script>
-let player,videos=[];
-function getId(u){if(!u)return'';if(u.includes('youtu.be/'))return u.split('youtu.be/')[1].split('?')[0];try{let a=new URL(u);if(a.searchParams.get('v'))return a.searchParams.get('v')}catch{}let m=u.match(/v=([^&]+)/);return m?m[1]:u;}
-function loadYT(cb){if(window.YT&&window.YT.Player){cb();return;}let s=document.createElement('script');s.src="https://www.youtube.com/iframe_api";s.async=true;window.onYouTubeIframeAPIReady=cb;document.head.appendChild(s);}
-function create(vId){
- loadYT(()=>{
-  player=new YT.Player('player',{videoId:vId,playerVars:{autoplay:1,mute:0,controls:1,rel:0,modestbranding:1,playsinline:1},
-   events:{onReady:e=>{e.target.playVideo(); e.target.unMute(); e.target.setVolume(100);},
-           onStateChange:e=>{if(e.data==0){videos.push(videos.shift()); e.target.loadVideoById(videos[0].id);}}
-  }});
- });
+let player, videos=[], cur=0;
+
+function getId(v){
+  if(!v) return '';
+  v=v.trim();
+  if(v.length==11 &&!v.includes('/')) return v;
+  if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0];
+  try{ let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v'); }catch{}
+  let m=v.match(/(?:embed\/|v\/|shorts\/|v=)([a-zA-Z0-9_-]{11})/);
+  if(m) return m[1];
+  return v.substring(0,11);
 }
-let ads=["🔥 ALE TV - YOUR HOME OF SPORTS!","💰 TILL 3624692 - SUPPORT ALE TV","📺 TANGAZA BIASHARA YAKO - 0703182307","⚡ ale-tv.vercel.app"];
-let ai=0;setInterval(()=>{document.getElementById('ad').innerText=ads[ai%ads.length];ai++;},5000);
+
+function loadYT(cb){
+  if(window.YT && window.YT.Player){cb();return;}
+  let s=document.createElement('script');
+  s.src="https://www.youtube.com/iframe_api";
+  document.head.appendChild(s);
+  window.onYouTubeIframeAPIReady=cb;
+}
+
+function play(id){
+  loadYT(()=>{
+    if(player){ player.loadVideoById(id); player.playVideo(); return; }
+    player=new YT.Player('player',{
+      videoId:id,
+      playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,autoplay:1},
+      events:{
+        onReady:e=>{
+          e.target.playVideo();
+          // jaribu kuwasha sauti baada ya 1.5 sec - HAKUNA TAP!
+          setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100);}catch{} },1500);
+        },
+        onStateChange:e=>{
+          if(e.data==0){ cur=(cur+1)%videos.length; e.target.loadVideoById(videos[cur].id); }
+        },
+        onError:e=>{
+          console.log('YT error',e.data);
+          cur=(cur+1)%videos.length;
+          if(videos[cur]) e.target.loadVideoById(videos[cur].id);
+        }
+      }
+    });
+  });
+}
+
+// ADS
+let ads=["🔥 ALE TV - YOUR HOME OF SPORTS 24/7!","💰 TILL 3624692 - SUPPORT ALE TV","📺 TANGAZA BIASHARA YAKO HAPA - 0703182307","⚡ ale-tv.vercel.app - WATCH LIVE!"];
+let ai=0; setInterval(()=>{ document.getElementById('ad').innerText=ads[ai%ads.length]; ai++; },5000);
 
 function init(){
- try{videos=JSON.parse(localStorage.getItem('ale_videos')||'[]').map(v=>({id:getId(v.id||v.ytid||''),title:v.title}));}catch{}
- if(!videos.length||!videos[0].id){videos=[{id:'jNQXAC9IVRw',title:'Demo'}];}
- create(videos[0].id);
+  // 1. Soma kutoka admin
+  let local=[];
+  try{ local=JSON.parse(localStorage.getItem('ale_videos')||'[]'); }catch{}
+  if(local.length){
+    videos=local.map(v=>({id:getId(v.id||v.ytid||''),title:v.title})).filter(v=>v.id && v.id.length>=10);
+  }
+  // 2. Kama bado hakuna - weka DEFAULT video inayofanya kazi 100%!
+  if(!videos.length){
+    videos=[
+      {id:'jNQXAC9IVRw',title:'ALE TV DEFAULT 1'},
+      {id:'5qap5aO4i9A',title:'LIVE 24/7'},
+      {id:'jfKfPfyJRdk',title:'ALE TV LIVE'}
+    ];
+  }
+  console.log('Playing:',videos);
+  play(videos[0].id);
 }
 init();
 </script></body></html>
