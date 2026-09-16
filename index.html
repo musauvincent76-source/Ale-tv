@@ -11,4 +11,95 @@ nav{background:#000;padding:12px 20px;display:flex;justify-content:space-between
 .logo span{color:#fff;font-size:11px;display:block;font-weight:400;letter-spacing:2px}
 .live{background:red;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.5}}
-.hero{background:linear-gradient(135deg,#0a1430 0%,#000 50%,#1
+.hero{background:linear-gradient(135deg,#0a1430 0%,#000 50%,#1a0a00 100%);padding:30px 20px;text-align:center;border-bottom:2px solid #ff6600}
+.hero h1{font-size:32px;color:#ff6600;margin-bottom:5px}
+.cat-bar{display:flex;gap:8px;padding:15px;overflow-x:auto;background:#0a1430}
+.cat{padding:8px 18px;background:#1a2744;border-radius:20px;white-space:nowrap;font-size:13px;border:1px solid #333}
+.cat.active{background:#ff6600;color:#fff;border-color:#ff6600}
+.container{padding:15px;max-width:1200px;margin:auto}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:15px}
+.card{background:#101f45;border-radius:12px;overflow:hidden;border:1px solid #1e2f5a}
+.thumb{height:180px;background:#000;position:relative;display:flex;align-items:center;justify-content:center}
+.thumb iframe,.thumb video{width:100%;height:100%;border:0}
+.badge{position:absolute;top:8px;left:8px;background:red;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:900}
+.info{padding:12px}
+.info h3{font-size:14px;margin-bottom:5px;line-height:1.3}
+.info small{color:#ff6600}
+footer{background:#000;padding:20px;text-align:center;margin-top:30px;border-top:2px solid #ff6600}
+footer b{color:#ff6600}
+</style>
+</head>
+<body>
+<nav>
+<div class="logo">ALE TV<span>YOUR HOME OF SPORTS</span></div>
+<div class="live">● LIVE</div>
+</nav>
+
+<div class="hero">
+<h1>ALE TV 🔥</h1>
+<p>YOUR HOME OF SPORTS - Mpira, Habari, Burudani LIVE</p>
+<p style="margin-top:10px"><small>📞 0703182307 | Alex Musau</small></p>
+</div>
+
+<div class="cat-bar">
+<div class="cat active" onclick="filterCat('ALL')">ALL</div>
+<div class="cat" onclick="filterCat('MPIRA FOOTBALL')">⚽ MPIRA</div>
+<div class="cat" onclick="filterCat('LIVE 24/7')">🔴 LIVE 24/7</div>
+<div class="cat" onclick="filterCat('HABARI')">📰 HABARI</div>
+<div class="cat" onclick="filterCat('BURUDANI')">🎬 BURUDANI</div>
+</div>
+
+<div class="container">
+<div id="videos" class="grid">
+<div class="card"><div class="thumb" style="background:#111"><span style="opacity:.5">⏳ Inapakia video...</span></div><div class="info"><h3>Karibu ALE TV</h3><small>Video zitaonekana hapa baada ya ku-upload</small></div></div>
+</div>
+</div>
+
+<footer>
+<b>ALE TV</b> - YOUR HOME OF SPORTS<br>
+<small>© 2026 Alex Musau | 0703182307 | ale-tv.vercel.app</small><br>
+<a href="/admin.html" style="color:#ff6600;margin-top:10px;display:inline-block">🔐 Admin Panel</a>
+</footer>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore, collection, getDocs, query, orderBy} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "WEKA API KEY YAKO HAPA",
+  authDomain: "aletv-xxxx.firebaseapp.com",
+  projectId: "aletv-xxxx",
+  storageBucket: "aletv-xxxx.appspot.com",
+  messagingSenderId: "123",
+  appId: "1:123:web:xxx"
+};
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+let allVideos=[];
+
+async function loadVideos(){
+ const q=query(collection(db,'videos'), orderBy('createdAt','desc'));
+ const snap=await getDocs(q);
+ allVideos=[];
+ snap.forEach(d=>allVideos.push(d.data()));
+ renderVideos(allVideos);
+}
+function renderVideos(videos){
+ const cont=document.getElementById('videos');
+ if(videos.length===0){cont.innerHTML=`<div class="card"><div class="thumb"><span>📺 Hakuna video bado - Nenda Admin ku-upload</span></div><div class="info"><h3>ALE TV Iko Tayari!</h3><small>Anza ku-upload sasa</small></div></div>`;return;}
+ cont.innerHTML=videos.map(v=>{
+  const isYT = v.type==='youtube' || v.videoUrl.includes('youtube') || v.videoUrl.includes('youtu.be');
+  const player = isYT ? `<iframe src="${v.videoUrl}" allowfullscreen></iframe>` : `<video controls src="${v.videoUrl}"></video>`;
+  return `<div class="card"><div class="thumb">${player}<div class="badge">LIVE</div></div><div class="info"><h3>${v.title}</h3><small>${v.category || 'MPIRA FOOTBALL'} • ALE TV</small></div></div>`;
+ }).join('');
+}
+window.filterCat=(cat)=>{
+ document.querySelectorAll('.cat').forEach(c=>c.classList.remove('active'));
+ event.target.classList.add('active');
+ if(cat==='ALL') renderVideos(allVideos);
+ else renderVideos(allVideos.filter(v=>v.category===cat));
+};
+loadVideos();
+</script>
+</body>
+</html>
