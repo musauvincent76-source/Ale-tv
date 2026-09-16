@@ -1,21 +1,9 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;height:100vh;display:flex;flex-direction:column}#top{height:40px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:2px solid #ff6600}#top h1{color:#fff;font-size:16px}#top h1 span{color:#ff6600}#clock{color:#fff;background:#000;border:1px solid #333;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900}#vid{flex:1;background:#000}#player{width:100%;height:100%}#ads{height:60px;background:#ff6600;display:flex;align-items:center;justify-content:center;color:#000;font-weight:900;font-size:14px}</style>
+<style>body{margin:0;background:#000;height:100vh;display:flex;flex-direction:column}#top{height:40px;background:#111;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:2px solid #ff6600}#top span{color:#ff6600}#vid{flex:1}#vid iframe{width:100%;height:100%;border:0}#ads{height:50px;background:#ff6600;display:flex;align-items:center;justify-content:center;font-weight:900}</style>
 </head><body>
 <div id="top"><h1>ALE <span>TV</span></h1><div id="clock">00:00:00</div></div>
-<div id="vid"><div id="player"></div></div>
-<div id="ads">TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307</div>
-<script src="https://www.youtube.com/iframe_api"></script>
-<script>
-let player;
-function onYouTubeIframeAPIReady(){
- player=new YT.Player('player',{
-  videoId:'jNQXAC9IVRw',
-  playerVars:{autoplay:1,mute:0,controls:1,rel:0}
- });
-}
-setInterval(()=>{
- document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
-},1000);
-</script>
+<div id="vid"><iframe src="https://www.youtube.com/embed/jNQXAC9IVRw?autoplay=1&mute=0" allow="autoplay; fullscreen"></iframe></div>
+<div id="ads">TILL 3624692 - ALE ACADEMY 0703182307</div>
+<script>setInterval(()=>{document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false})},1000)</script>
 </body></html>
