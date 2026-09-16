@@ -1,70 +1,31 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV LIVE</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#000;height:100vh;display:flex;flex-direction:column;font-family:Arial}
-#top{height:45px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:3px solid #ff6600}
-#top h1{color:#fff;font-size:18px;font-weight:900}#top h1 span{color:#ff6600}
-#clock{color:#00ff66;background:#000;border:1px solid #333;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:900}
-#vid{flex:1;background:#000;position:relative}
-#player{width:100%;height:100%}
-#ads{height:55px;background:#ff6600;color:#000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;text-align:center;padding:5px;animation:scroll 15s linear infinite}
-@keyframes scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-</style>
-</head>
-<body>
-<div id="top"><h1>ALE <span>TV</span> LIVE</h1><div id="clock">00:00:00</div></div>
-<div id="vid"><div id="player"></div></div>
-<div id="ads">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</div>
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE ADMIN</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0f0f0f;color:#fff;padding:12px}.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}button{width:100%;padding:14px;border:0;border-radius:10px;font-weight:900;font-size:15px;margin-top:8px}.green{background:#00ff66;color:#000}.orange{background:#ff6600;color:#fff}.dark{background:#2a2a2a;color:#fff}input,textarea{width:100%;padding:12px;background:#000;border:1px solid #333;color:#fff;border-radius:8px;margin-top:8px}#dbg{font-size:10px;color:#0f0;white-space:pre-wrap;word-break:break-all;margin-top:8px}</style></head><body>
 
-<script src="https://www.youtube.com/iframe_api"></script>
+<div class="card" style="border-color:#00ff66">
+<h2 style="color:#00ff66;text-align:center">ALE TV ADMIN ZERO</h2>
+<button class="green" onclick="add()">+ ONGEZA VIDEO</button>
+<p id="list" style="margin-top:10px;color:#888;font-size:12px">Hakuna video - ongeza moja</p>
+<button class="dark" onclick="clearAll()">🗑️ Futa Zote (takataka)</button>
+</div>
+
+<div class="card">
+<b>2. Description</b><textarea id="desc">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</textarea>
+<b style="display:block;margin-top:10px">3. Ad Chini</b><textarea id="ad">TILL 3624692 - ADVERTISE WITH US</textarea>
+<button class="orange" onclick="saveAll()">💾 SAVE YOTE - TV ITA-UPDATE</button>
+</div>
+
+<div class="card" style="border-color:#ff6600">
+<h3 style="color:#ff6600">📺 ONA TV SASA</h3>
+<p style="font-size:11px;color:#aaa;margin:6px 0">Bonyeza hapa kuona TV inavyoonekana kwa watu:</p>
+<button class="orange" onclick="watchTV()">🔍 ANGALIA TV SASA</button>
+<button class="dark" onclick="openTVNew()">📺 Fungua TV kwa Tab Mpya</button>
+</div>
+
+<div class="card">
+<b>Debug Keys:</b><pre id="dbg"></pre><button class="dark" onclick="showKeys()">🔍 Angalia Keys</button>
+</div>
+
 <script>
-let player;
-let lastId = '';
-
-// Chukua ID kutoka ADMIN
-function getLiveId(){
-  try{
-    let a = JSON.parse(localStorage.getItem('aletv_live_now')||'null');
-    if(a && a.ytid) return a.ytid;
-    let b = JSON.parse(localStorage.getItem('ale_zero_v1')||'null');
-    if(b && b.videos && b.videos[0]) return b.videos[0].id;
-  }catch(e){}
-  return 'jNQXAC9IVRw'; // video ya default
-}
-
-function onYouTubeIframeAPIReady(){
-  let vid = getLiveId();
-  lastId = vid;
-  player = new YT.Player('player',{
-    videoId: vid,
-    playerVars:{
-      autoplay:1,
-      mute:0,
-      controls:1,
-      rel:0,
-      playsinline:1,
-      modestbranding:1
-    },
-    events:{
-      onReady: (e)=>{ e.target.playVideo(); }
-    }
-  });
-}
-
-// Angalia kama ADMIN imebadilisha video - badilisha live
-setInterval(()=>{
-  document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
-  let nid = getLiveId();
-  if(nid && nid!== lastId && player && player.loadVideoById){
-    lastId = nid;
-    player.loadVideoById(nid);
-  }
-},2000);
-</script>
-</body>
-</html>
+let vids=[];
+function add(){let url=prompt('Weka YouTube link:');if(!url)return;let id=getId(url);if(!id){alert('Link mbaya');return;}vids=[{id:id}];document.getElementById('list').innerHTML='✅ Video: '+id; }
+function getId(v){v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match
