@@ -1,136 +1,22 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE ADMIN - FIX</title>
-<style>
-*{box-sizing:border-box;font-family:Arial}
-body{background:#111;color:#fff;padding:15px}
-h1{color:#00ff88;text-align:center}
-.box{background:#222;padding:15px;border-radius:10px;margin-bottom:15px;border:1px solid #333}
-input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #444;background:#000;color:#fff;margin:8px 0;font-size:14px}
-button{background:#00ff88;color:#000;border:0;padding:12px 20px;border-radius:8px;font-weight:900;width:100%;margin:5px 0;cursor:pointer}
-.small{background:#333;color:#fff}
-.list{background:#000;padding:10px;border-radius:8px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
-.del{background:red;color:#fff;padding:5px 12px;border-radius:5px;width:auto}
-#status{color:#00ff88;text-align:center;font-weight:900;margin:10px 0}
-</style>
-</head>
-<body>
-<h1>ALE TV ADMIN - FIX</h1>
-<div id="status"></div>
-
+<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE ADMIN</title>
+<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#111;padding:20px;color:#fff}.box{background:#000;border:2px solid #ff6600;border-radius:12px;padding:20px;max-width:400px;margin:auto}input{width:100%;padding:14px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;margin:8px 0;font-size:14px}button{width:100%;padding:14px;background:#ff6600;color:#fff;border:0;border-radius:8px;font-weight:900;font-size:16px;margin-top:10px}#msg{background:#0a0;color:#fff;padding:10px;border-radius:8px;margin-top:10px;display:none;text-align:center}</style></head><body>
 <div class="box">
-<h3>1. Weka Video za YouTube (Link au ID)</h3>
-<input id="ytInput" placeholder="Weka link ya YouTube hapa... https://youtu.be/xxxx">
-<button onclick="addVideo()">➕ ONGEZA VIDEO</button>
-<div id="videoList"></div>
-<button class="small" onclick="clearVideos()">🗑️ Futa Zote</button>
+<h2 style="color:#ff6600;text-align:center">ALE TV ADMIN</h2>
+<p style="font-size:12px;color:#888;text-align:center;margin:10px 0">Weka YouTube Link hapa</p>
+<input id="yt" placeholder="https://youtu.be/... au https://youtube.com/watch?v=...">
+<input id="desc" placeholder="Maelezo - mfano: ALE vs GOR">
+<button onclick="save()">SAVE & PLAY KWENYE TV</button>
+<div id="msg">✅ IMESAVIWA! Fungua TV sasa!</div>
+<p style="font-size:11px;color:#666;margin-top:15px;text-align:center">TV Link: /index.html<br>Ita-update yenyewe baada ya sec 2</p>
 </div>
-
-<div class="box">
-<h3>2. Description (ita-scroll juu)</h3>
-<textarea id="desc" rows="2">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</textarea>
-<h3>3. Advertisement (Google Ads chini)</h3>
-<textarea id="ad" rows="2">TILL 3624692 - ADVERTISE WITH US - 100K VIEWERS DAILY</textarea>
-<button onclick="saveAll()">💾 SAVE YOTE - TV ITA-UPDATE</button>
-</div>
-
-<div class="box">
-<h3>Debug - Keys ziko kwa LocalStorage:</h3>
-<pre id="debug" style="font-size:10px;white-space:pre-wrap;background:#000;padding:10px;border-radius:5px"></pre>
-<button class="small" onclick="showDebug()">🔍 Angalia Keys</button>
-</div>
-
 <script>
-function getId(v){
- if(!v) return '';
- v=v.trim();
- if(v.length==11 &&!v.includes('/') &&!v.includes('.')) return v;
- if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0];
- try{ let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v'); }catch{}
- let m=v.match(/([a-zA-Z0-9_-]{11})/);
- return m?m[1]:'';
+function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
+function save(){
+let y=document.getElementById('yt').value;let d=document.getElementById('desc').value;
+let id=getId(y);if(!id){alert('Link mbaya! Weka YouTube link sahihi');return;}
+localStorage.setItem('aletv_live_now',JSON.stringify({ytid:id,desc:d||'ALE TV LIVE',title:d}));
+localStorage.setItem('ale_zero_v1',JSON.stringify({videos:[{id:id,desc:d}]}));
+document.getElementById('msg').style.display='block';
+setTimeout(()=>{document.getElementById('msg').style.display='none';},3000);
 }
-
-let vids = [];
-function load(){
- try{
-  let raw = localStorage.getItem('azamtv_ale_final_2026');
-  if(raw){
-   let j=JSON.parse(raw);
-   if(j && j.playlist) vids = j.playlist.map(p=>getId(p.url||p.ytid||'')).filter(x=>x);
-  }
- }catch{}
- // load old too
- if(!vids.length){
-  try{
-   let old=JSON.parse(localStorage.getItem('ale_videos')||'[]');
-   if(old.length) vids = old.map(x=>getId(x.id||x.url||'')).filter(x=>x);
-  }catch{}
- }
- render();
- let d=localStorage.getItem('ale_academy_desc');
- if(d) document.getElementById('desc').value=d;
- let ad=localStorage.getItem('ale_ad_text');
- if(ad) document.getElementById('ad').value=ad;
- showDebug();
-}
-
-function render(){
- let html='';
- vids.forEach((id,i)=>{
-  html+=`<div class="list"><span>${i+1}. ${id}</span><button class="del" onclick="del(${i})">X</button></div>`;
- });
- document.getElementById('videoList').innerHTML=html||'<p style="color:#888">Hakuna video - ongeza moja</p>';
-}
-
-function addVideo(){
- let val=document.getElementById('ytInput').value.trim();
- let id=getId(val);
- if(!id){ alert('Link si sahihi! Weka link ya YouTube'); return; }
- vids.push(id);
- document.getElementById('ytInput').value='';
- render();
- saveAll();
-}
-
-function del(i){ vids.splice(i,1); render(); saveAll(); }
-function clearVideos(){ if(confirm('Futa zote?')){ vids=[]; render(); saveAll(); } }
-
-function saveAll(){
- if(!vids.length){ alert('Ongeza video moja kwanza!'); return; }
- let desc=document.getElementById('desc').value;
- let ad=document.getElementById('ad').value;
-
- // HII NDIO SIRI - SAVE KWA KEYS ZOTE 4 ILI TV ISOME LAZIMA
- let playlistObj = {playlist: vids.map(id=>({url:id, ytid:id}))};
- let playlistArr = vids.map(id=>({id:id, url:id, ytid:id}));
-
- localStorage.setItem('azamtv_ale_final_2026', JSON.stringify(playlistObj));
- localStorage.setItem('ale_videos', JSON.stringify(playlistArr));
- localStorage.setItem('ale_final_videos', JSON.stringify(playlistArr));
- localStorage.setItem('ale_playlist', JSON.stringify(vids));
-
- localStorage.setItem('ale_academy_desc', desc);
- localStorage.setItem('ale_ad_text', ad);
- localStorage.setItem('ale_desc', desc);
-
- document.getElementById('status').innerText='✅ SAVED! Videos: '+vids.length+' - TV ita-update in 5 sec';
- showDebug();
- setTimeout(()=>document.getElementById('status').innerText='',3000);
-}
-
-function showDebug(){
- let out='';
- ['azamtv_ale_final_2026','ale_videos','ale_final_videos','ale_playlist','ale_academy_desc','ale_ad_text'].forEach(k=>{
-  let v=localStorage.getItem(k);
-  out+=k+': '+(v? v.substring(0,120) : 'EMPTY')+'\n';
- });
- document.getElementById('debug').innerText=out;
-}
-load();
-</script>
-</body>
-</html>
+</script></body></html>
