@@ -1,180 +1,135 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ALE TV - Admin Dashboard</title>
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE ADMIN - FIX</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
-:root{--red:#ff0011;--dark:#050a18;--card:#101a35;--border:#1e2d5a}
-body{background:var(--dark);color:#fff;min-height:100vh}
-.top{position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#080e26,#000);border-bottom:3px solid var(--red);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.top b{color:var(--red);font-size:22px;letter-spacing:1px}
-.top b span{color:#fff;font-weight:300}
-.top.user{background:var(--card);padding:6px 12px;border-radius:20px;border:1px solid var(--border);font-size:11px}
-.tabs{padding:12px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
-.tabs::-webkit-scrollbar{display:none}
-.tab{padding:10px 18px;border-radius:30px;background:var(--card);border:1px solid var(--border);color:#8a9bbf;font-size:12px;font-weight:600;white-space:nowrap;cursor:pointer;transition:.2s}
-.tab.active{background:var(--red);color:#fff;border-color:var(--red);box-shadow:0 0 15px rgba(255,0,17,.4)}
-.wrap{padding:12px;max-width:800px;margin:auto}
-.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
-.kpi{background:linear-gradient(145deg,var(--card),#0a1228);border:1px solid var(--border);border-top:3px solid var(--red);border-radius:16px;padding:14px;text-align:center}
-.kpi b{font-size:22px;display:block;color:#fff}
-.kpi b.green{color:#00ff88}
-.kpi span{font-size:9px;color:#6b7aa3;letter-spacing:1px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:14px}
-.card-title{font-size:12px;font-weight:800;letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:8px}
-.card-title i{color:var(--red)}
-label{font-size:10px;color:#6b7aa3;font-weight:700;letter-spacing:1px;margin-top:10px;display:block}
-input,select,textarea{width:100%;padding:14px 14px;background:#050a18;border:1.5px solid var(--border);border-radius:14px;color:#fff;outline:none;margin-top:6px;font-size:14px;transition:.2s}
-input:focus,textarea:focus,select:focus{border-color:var(--red);box-shadow:0 0 0 3px rgba(255,0,17,.15)}
-textarea{height:90px;resize:none}
-.btn{width:100%;padding:15px;border-radius:30px;border:0;background:linear-gradient(90deg,var(--red),#ffae00);color:#fff;font-weight:900;font-size:14px;letter-spacing:1px;cursor:pointer;margin-top:14px;box-shadow:0 8px 20px rgba(255,0,17,.3)}
-.btn:active{transform:scale(.98)}
-.msg{text-align:center;font-size:11px;font-weight:700;margin-top:10px;min-height:16px}
-.item{background:#070d20;border:1px solid var(--border);border-left:4px solid #00ff88;border-radius:12px;padding:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:10px}
-.item.t{flex:1}
-.item b{font-size:13px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
-.item small{font-size:9px;color:#6b7aa3}
-.del{background:#1a0a0a;color:#ff4444;border:1px solid #3a1515;padding:7px 12px;border-radius:20px;cursor:pointer}
-.empty{text-align:center;padding:30px;opacity:.4;font-size:12px}
-.pill{display:inline-block;padding:3px 8px;border-radius:20px;background:#0a1430;border:1px solid var(--border);font-size:8px;margin-top:4px}
+*{box-sizing:border-box;font-family:Arial}
+body{background:#111;color:#fff;padding:15px}
+h1{color:#00ff88;text-align:center}
+.box{background:#222;padding:15px;border-radius:10px;margin-bottom:15px;border:1px solid #333}
+input,textarea{width:100%;padding:12px;border-radius:8px;border:1px solid #444;background:#000;color:#fff;margin:8px 0;font-size:14px}
+button{background:#00ff88;color:#000;border:0;padding:12px 20px;border-radius:8px;font-weight:900;width:100%;margin:5px 0;cursor:pointer}
+.small{background:#333;color:#fff}
+.list{background:#000;padding:10px;border-radius:8px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
+.del{background:red;color:#fff;padding:5px 12px;border-radius:5px;width:auto}
+#status{color:#00ff88;text-align:center;font-weight:900;margin:10px 0}
 </style>
 </head>
 <body>
+<h1>ALE TV ADMIN - FIX</h1>
+<div id="status"></div>
 
-<div class="top">
-<div><b>ALE <span>TV</span></b><div style="font-size:8px;letter-spacing:3px;opacity:.5;margin-top:2px">YOUR HOME OF SPORTS</div></div>
-<div class="user"><i class="fa fa-circle" style="color:#00ff88;font-size:8px"></i> Alex • Admin</div>
+<div class="box">
+<h3>1. Weka Video za YouTube (Link au ID)</h3>
+<input id="ytInput" placeholder="Weka link ya YouTube hapa... https://youtu.be/xxxx">
+<button onclick="addVideo()">➕ ONGEZA VIDEO</button>
+<div id="videoList"></div>
+<button class="small" onclick="clearVideos()">🗑️ Futa Zote</button>
 </div>
 
-<div class="tabs">
-<div class="tab active"><i class="fa fa-table-columns"></i> Dashboard</div>
-<div class="tab" onclick="window.open('index.html','_blank')"><i class="fa fa-tv"></i> ONA LIVE</div>
-<div class="tab"><i class="fa fa-bullhorn"></i> TILL 3624692</div>
-<div class="tab"><i class="fa fa-video"></i> <span id="countTab">0 Videos</span></div>
+<div class="box">
+<h3>2. Description (ita-scroll juu)</h3>
+<textarea id="desc" rows="2">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</textarea>
+<h3>3. Advertisement (Google Ads chini)</h3>
+<textarea id="ad" rows="2">TILL 3624692 - ADVERTISE WITH US - 100K VIEWERS DAILY</textarea>
+<button onclick="saveAll()">💾 SAVE YOTE - TV ITA-UPDATE</button>
 </div>
 
-<div class="wrap">
-
-<div class="grid">
-<div class="kpi"><b id="kTotal">0</b><span>JUMLA VIDEO</span></div>
-<div class="kpi"><b id="kLive" class="green">0</b><span>LIVE NOW</span></div>
-<div class="kpi"><b>AUTO</b><span>MODE ON</span></div>
-</div>
-
-<div class="card">
-<div class="card-title"><i class="fa fa-plus"></i> WEKA VIDEO MPYA - AUTO FETCH</div>
-<label>YOUTUBE LINK</label>
-<input id="url" placeholder="Paste YouTube link hapa... https://youtu.be/...">
-<label>VIDEO TITLE (Auto)</label>
-<input id="title" placeholder="Title itajijaza automatically...">
-<label>DESCRIPTION (Auto)</label>
-<textarea id="desc" placeholder="Description itajijaza automatically..."></textarea>
-<label>CATEGORY</label>
-<select id="cat">
-<option value="MPIRA FOOTBALL">⚽ MPIRA FOOTBALL</option>
-<option value="LIVE 24/7">🔴 LIVE 24/7</option>
-<option value="HABARI">📰 HABARI</option>
-<option value="BURUDANI">🎬 BURUDANI</option>
-<option value="GOSPEL">🙏 GOSPEL</option>
-</select>
-<button class="btn" id="addBtn"><i class="fa fa-rocket"></i> WEKA LIVE SASA</button>
-<div id="msg" class="msg"></div>
-</div>
-
-<div class="card">
-<div class="card-title" style="justify-content:space-between"><span><i class="fa fa-list"></i> PLAYLIST YAKO</span><button onclick="load()" style="background:#050a18;color:#8a9bbf;border:1px solid var(--border);padding:6px 12px;border-radius:20px;font-size:10px"><i class="fa fa-rotate"></i> Refresh</button></div>
-<div id="list"></div>
-</div>
-
-<div class="card" style="text-align:center;font-size:10px;opacity:.5;line-height:1.8">
-<i class="fa fa-circle" style="color:#00ff88;font-size:8px"></i> SYSTEM ONLINE<br>
-ALE TV • FINAL ONE INCH<br>
-0703182307 • ale-tv.vercel.app<br>
-TILL 3624692 - Alex Musau
-</div>
-
+<div class="box">
+<h3>Debug - Keys ziko kwa LocalStorage:</h3>
+<pre id="debug" style="font-size:10px;white-space:pre-wrap;background:#000;padding:10px;border-radius:5px"></pre>
+<button class="small" onclick="showDebug()">🔍 Angalia Keys</button>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
-function getYtId(u){
- if(!u) return '';
- if(u.includes('youtu.be/')) return u.split('youtu.be/')[1].split(/[?&#]/)[0];
- try{ let url=new URL(u); if(url.searchParams.get('v')) return url.searchParams.get('v'); }catch{}
- let m=u.match(/(?:v=|embed\/|shorts\/)([^&?/]+)/);
+function getId(v){
+ if(!v) return '';
+ v=v.trim();
+ if(v.length==11 &&!v.includes('/') &&!v.includes('.')) return v;
+ if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0];
+ try{ let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v'); }catch{}
+ let m=v.match(/([a-zA-Z0-9_-]{11})/);
  return m?m[1]:'';
 }
-async function autoFetch(){
- let u=$('url').value.trim();
- let id=getYtId(u);
- if(!id) return;
- $('msg').innerHTML='<i class="fa fa-spinner fa-spin"></i> Inatafuta title...';
- $('msg').style.color='#ffae00';
+
+let vids = [];
+function load(){
  try{
-   let r=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
-   let d=await r.json();
-   $('title').value=d.title;
-   $('desc').value=`${d.title}\n\n📺 ALE TV - YOUR HOME OF SPORTS\n💰 TILL 3624692 - Support ALE TV\n🔔 Subscribe & Share!\n\nauthor: ${d.author_name}`;
-   $('msg').innerHTML='✅ Imejijaza automatically!';
-   $('msg').style.color='#00ff88';
- }catch{
-   $('title').value='ALE TV LIVE - '+id;
-   $('desc').value=`LIVE on ALE TV - YOUR HOME OF SPORTS\nTILL 3624692 - Alex Musau\n0703182307`;
-   $('msg').innerHTML='⚠️ Auto failed - hariri manual';
-   $('msg').style.color='#ffae00';
- }
-}
-$('url').addEventListener('paste',()=>setTimeout(autoFetch,500));
-$('url').addEventListener('change',autoFetch);
-$('url').addEventListener('blur',autoFetch);
-
-$('addBtn').onclick=()=>{
- let url=$('url').value.trim();
- let id=getYtId(url);
- if(!id){ alert('Weka YouTube link sahihi!'); return; }
- let title=$('title').value.trim() || 'ALE TV LIVE - '+id;
- let desc=$('desc').value.trim() || title+' | TILL 3624692';
- let cat=$('cat').value;
- $('msg').innerHTML='<i class="fa fa-spinner fa-spin"></i> Inapakia...';
- let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
- vids.unshift({id:id,title:title,desc:desc,cat:cat,date:new Date().toISOString()});
- localStorage.setItem('ale_videos',JSON.stringify(vids));
- $('msg').innerHTML='✅ Imewekwa! Iko LIVE sasa kwenye TV!';
- $('msg').style.color='#00ff88';
- $('url').value=''; $('title').value=''; $('desc').value='';
- load();
- setTimeout(()=>{$('msg').innerHTML='';},3000);
-};
-
-window.load=()=>{
- let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
- $('kTotal').innerText=vids.length;
- $('kLive').innerText=vids.length;
- $('countTab').innerText=vids.length+' Videos';
+  let raw = localStorage.getItem('azamtv_ale_final_2026');
+  if(raw){
+   let j=JSON.parse(raw);
+   if(j && j.playlist) vids = j.playlist.map(p=>getId(p.url||p.ytid||'')).filter(x=>x);
+  }
+ }catch{}
+ // load old too
  if(!vids.length){
-   $('list').innerHTML='<div class="empty"><i class="fa fa-video" style="font-size:28px;display:block;margin-bottom:10px"></i>Hakuna video bado<br>Weka YouTube link juu</div>';
-   return;
+  try{
+   let old=JSON.parse(localStorage.getItem('ale_videos')||'[]');
+   if(old.length) vids = old.map(x=>getId(x.id||x.url||'')).filter(x=>x);
+  }catch{}
  }
- $('list').innerHTML=vids.map((v,i)=>`
-   <div class="item">
-     <div class="t">
-       <b><i class="fa fa-circle" style="color:#00ff88;font-size:8px"></i> ${v.title}</b>
-       <small>${v.cat}</small> <span class="pill">${v.id}</span>
-     </div>
-     <button class="del" onclick="delVid(${i})"><i class="fa fa-trash"></i></button>
-   </div>
- `).join('');
-};
-window.delVid=(i)=>{
- if(!confirm('Futa video hii?')) return;
- let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
- vids.splice(i,1);
- localStorage.setItem('ale_videos',JSON.stringify(vids));
- load();
-};
+ render();
+ let d=localStorage.getItem('ale_academy_desc');
+ if(d) document.getElementById('desc').value=d;
+ let ad=localStorage.getItem('ale_ad_text');
+ if(ad) document.getElementById('ad').value=ad;
+ showDebug();
+}
+
+function render(){
+ let html='';
+ vids.forEach((id,i)=>{
+  html+=`<div class="list"><span>${i+1}. ${id}</span><button class="del" onclick="del(${i})">X</button></div>`;
+ });
+ document.getElementById('videoList').innerHTML=html||'<p style="color:#888">Hakuna video - ongeza moja</p>';
+}
+
+function addVideo(){
+ let val=document.getElementById('ytInput').value.trim();
+ let id=getId(val);
+ if(!id){ alert('Link si sahihi! Weka link ya YouTube'); return; }
+ vids.push(id);
+ document.getElementById('ytInput').value='';
+ render();
+ saveAll();
+}
+
+function del(i){ vids.splice(i,1); render(); saveAll(); }
+function clearVideos(){ if(confirm('Futa zote?')){ vids=[]; render(); saveAll(); } }
+
+function saveAll(){
+ if(!vids.length){ alert('Ongeza video moja kwanza!'); return; }
+ let desc=document.getElementById('desc').value;
+ let ad=document.getElementById('ad').value;
+
+ // HII NDIO SIRI - SAVE KWA KEYS ZOTE 4 ILI TV ISOME LAZIMA
+ let playlistObj = {playlist: vids.map(id=>({url:id, ytid:id}))};
+ let playlistArr = vids.map(id=>({id:id, url:id, ytid:id}));
+
+ localStorage.setItem('azamtv_ale_final_2026', JSON.stringify(playlistObj));
+ localStorage.setItem('ale_videos', JSON.stringify(playlistArr));
+ localStorage.setItem('ale_final_videos', JSON.stringify(playlistArr));
+ localStorage.setItem('ale_playlist', JSON.stringify(vids));
+
+ localStorage.setItem('ale_academy_desc', desc);
+ localStorage.setItem('ale_ad_text', ad);
+ localStorage.setItem('ale_desc', desc);
+
+ document.getElementById('status').innerText='✅ SAVED! Videos: '+vids.length+' - TV ita-update in 5 sec';
+ showDebug();
+ setTimeout(()=>document.getElementById('status').innerText='',3000);
+}
+
+function showDebug(){
+ let out='';
+ ['azamtv_ale_final_2026','ale_videos','ale_final_videos','ale_playlist','ale_academy_desc','ale_ad_text'].forEach(k=>{
+  let v=localStorage.getItem(k);
+  out+=k+': '+(v? v.substring(0,120) : 'EMPTY')+'\n';
+ });
+ document.getElementById('debug').innerText=out;
+}
 load();
 </script>
 </body>
