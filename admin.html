@@ -1,29 +1,129 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - Admin Auto Description</title>
+<title>ALE TV - Admin FIX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#050a14;color:#fff;display:flex;min-height:100vh}
-.sidebar{width:240px;background:linear-gradient(180deg,#0a1430,#000);padding:20px;border-right:3px solid #ff0000;position:fixed;height:100vh}
-.sidebar h1{color:#ff0000;font-size:26px;font-weight:900}
-.sidebar small{letter-spacing:3px;font-size:10px;opacity:.6}
-.menu{margin-top:30px}
-.menu a{display:flex;gap:10px;padding:13px;border-radius:12px;text-decoration:none;color:#fff;opacity:.6;margin-bottom:6px;font-size:13px}
-.menu a.active{background:#ff0000;opacity:1;font-weight:800}
-.main{margin-left:240px;flex:1;padding:20px}
-.topbar{display:flex;justify-content:space-between;align-items:center;background:#0e1d40;padding:16px;border-radius:16px;border-left:4px solid #ff0000;margin-bottom:20px}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
-.stat{background:linear-gradient(145deg,#0e1d40,#0a1430);padding:18px;border-radius:16px;text-align:center;border-top:3px solid #ff0000}
-.stat b{font-size:28px;color:#ff0000;display:block}
-.card{background:#0e1d40;border:1px solid #1a2d60;border-radius:16px;padding:20px;margin-bottom:16px}
-input,select,textarea{width:100%;padding:14px;border-radius:20px;border:1px solid #234080;background:#050a14;color:#fff;margin:7px 0;outline:none}
-textarea{height:90px;border-radius:16px;resize:none}
-.btn{width:100%;padding:14px;border-radius:30px;border:0;background:linear-gradient(90deg,#ff0000,#ffae00);color:#fff;font-weight:900;cursor:pointer}
-.item{display:flex;justify-content:space-between;align-items:center;background:#0a1430;padding:12px;border-radius:12px;margin-bottom:8px;border-left:3px solid #00ff88}
-@media(max-width:700px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0}.stats{grid-template-columns:1fr 1fr}}
+body{background:#020a18;color:#fff;min-height:100vh}
+.header{background:linear-gradient(90deg,#0a1430,#000);padding:15px 20px;border-bottom:3px solid #ff0000;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+.header h1{color:#ff0000;font-size:22px;font-weight:900}
+.nav{padding:12px 15px;display:flex;gap:8px;overflow-x:auto}
+.nav a{padding:10px 18px;border-radius:25px;text-decoration:none;color:#fff;background:#0e1d40;font-size:12px;white-space:nowrap;border:1px solid #1a2d60}
+.nav a.active{background:#ff0000;font-weight:900}
+.main{padding:15px}
+.stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:15px}
+.stat{background:linear-gradient(145deg,#0e1d40,#0a1430);padding:15px;border-radius:15px;text-align:center;border-top:3px solid #ff0000}
+.stat b{font-size:24px;color:#ff0000;display:block}
+.card{background:#0e1d40;border:1px solid #1a2d60;border-radius:15px;padding:16px;margin-bottom:14px}
+input,select,textarea{width:100%;padding:13px;border-radius:12px;border:1px solid #234080;background:#020a18;color:#fff;margin:6px 0;outline:none;font-size:14px}
+textarea{height:80px}
+.btn{width:100%;padding:14px;border-radius:30px;border:0;background:linear-gradient(90deg,#ff0000,#ffae00);color:#fff;font-weight:900;cursor:pointer;margin-top:8px}
+.item{display:flex;justify-content:space-between;align-items:center;background:#050a14;padding:10px;border-radius:10px;margin-bottom:8px;border-left:3px solid #00ff88}
 </style></head><body>
-<div class="sidebar">
-<h1>ALE TV</h1><small>YOUR HOME OF SPORTS</small>
-<div class="menu">
+
+<div class="header">
+<div><h1>ALE TV</h1><small style="letter-spacing:2px;font-size:9px;opacity:.6">YOUR HOME OF SPORTS</small></div>
+<div style="text-align:right"><b style="font-size:12px">Alex</b><br><small style="color:#ff0000;font-size:10px">Admin</small></div>
+</div>
+
+<div class="nav">
 <a class="active">📺 Dashboard</a>
-<a href="index.html" target="_blank
+<a href="index.html" target="_blank">🔴 ONA LIVE</a>
+<a>🎬 <span id="mCount">0</span> Videos</a>
+<a>💰 TILL 3624692</a>
+</div>
+
+<div class="main">
+<div class="stats">
+<div class="stat"><b id="total">0</b><span style="font-size:9px;opacity:.6">JUMLA</span></div>
+<div class="stat"><b id="live" style="color:#00ff88">0</b><span style="font-size:9px;opacity:.6">LIVE</span></div>
+<div class="stat"><b style="color:#fff">AUTO</b><span style="font-size:9px;opacity:.6">ON</span></div>
+</div>
+
+<div class="card">
+<div style="color:#ff0000;font-weight:900;margin-bottom:8px;font-size:13px">➕ WEKA VIDEO - AUTO DESCRIPTION</div>
+<input id="url" placeholder="1. Weka YouTube link hapa">
+<input id="title" placeholder="2. Title itajijaza auto">
+<textarea id="desc" placeholder="3. Description itajijaza auto"></textarea>
+<select id="cat"><option>MPIRA FOOTBALL</option><option>LIVE 24/7</option><option>HABARI</option><option>BURUDANI</option><option>GOSPEL</option></select>
+<button class="btn" id="addBtn">🔴 WEKA LIVE</button>
+<div id="msg" style="text-align:center;margin-top:10px;font-size:11px;min-height:16px;color:#00ff88"></div>
+</div>
+
+<div class="card">
+<div style="display:flex;justify-content:space-between"><b style="font-size:13px">🎬 Playlist Firebase</b><button onclick="load()" style="background:#000;color:#fff;border:1px solid #333;padding:5px 10px;border-radius:15px;font-size:10px">🔄 Refresh</button></div>
+<div id="list" style="margin-top:10px"></div>
+</div>
+
+<div class="card" style="font-size:10px;opacity:.5;text-align:center">
+● ONLINE - ALE TV KE<br>0703182307 | ale-tv.vercel.app<br>FINAL ONE INCH - FIREBASE LIVE
+</div>
+</div>
+
+<script type="module">
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp, query, orderBy} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig = {
+  apiKey: "AIzaSyB7tL7xJ5p8k9mN0qR1sT2uV3wX4yZ5aBc",
+  authDomain: "ale-tv-ke.firebaseapp.com",
+  projectId: "ale-tv-ke",
+  storageBucket: "ale-tv-ke.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef123456"
+};
+//!!! BADILISHA HII NA CONFIG YAKO YA KWELI KUTOKA FIREBASE!!!
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+function getYtId(u){ if(!u) return ''; if(u.includes('youtu.be/')) return u.split('youtu.be/')[1].split('?')[0].split('&')[0]; try{let url=new URL(u); if(url.searchParams.get('v')) return url.searchParams.get('v');}catch{} let m=u.match(/v=([^&]+)/); return m?m[1]:''; }
+
+async function autoFetch(){
+ let u=document.getElementById('url').value.trim();
+ let id=getYtId(u); if(!id) return;
+ document.getElementById('msg').innerText='🔍 Inatafuta title...';
+ try{
+  let res=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
+  let data=await res.json();
+  document.getElementById('title').value=data.title;
+  document.getElementById('desc').value=`${data.title}\n\n📺 ALE TV - YOUR HOME OF SPORTS\n💰 TILL 3624692 - Alex\n🔔 Subscribe!`;
+  document.getElementById('msg').innerText='✅ Imejijaza!';
+ }catch{
+  document.getElementById('title').value='ALE TV LIVE - '+id;
+  document.getElementById('desc').value=`LIVE on ALE TV - YOUR HOME OF SPORTS | TILL 3624692`;
+  document.getElementById('msg').innerText='⚠️ Default - hariri';
+ }
+}
+document.getElementById('url').addEventListener('paste',()=>setTimeout(autoFetch,600));
+document.getElementById('url').addEventListener('blur',autoFetch);
+
+document.getElementById('addBtn').onclick=async()=>{
+ let t=document.getElementById('title').value.trim();
+ let u=document.getElementById('url').value.trim();
+ let cat=document.getElementById('cat').value;
+ let d=document.getElementById('desc').value.trim();
+ if(!u) return alert('Weka link!');
+ let id=getYtId(u); if(!id) return alert('Si YouTube!');
+ if(!t) t=cat+' - '+id;
+ if(!d) d=t+' | TILL 3624692';
+ document.getElementById('msg').innerText='⏳ Inapakia...';
+ try{
+  await addDoc(collection(db,'videos'),{title:t,description:d,videoUrl:`https://www.youtube.com/embed/${id}`,ytid:id,category:cat,type:'youtube',createdAt:serverTimestamp()});
+  document.getElementById('msg').innerText='✅ Iko LIVE!';
+  document.getElementById('title').value=''; document.getElementById('url').value=''; document.getElementById('desc').value='';
+  load();
+ }catch(e){ document.getElementById('msg').innerText='❌ '+e.message+' - Badilisha firebaseConfig!'; }
+};
+
+window.load=async()=>{
+ try{
+  const q=query(collection(db,'videos'), orderBy('createdAt','desc'));
+  const snap=await getDocs(q);
+  let arr=[]; snap.forEach(d=>arr.push({fid:d.id,...d.data()}));
+  document.getElementById('total').innerText=arr.length;
+  document.getElementById('live').innerText=arr.length;
+  document.getElementById('mCount').innerText=arr.length;
+  document.getElementById('list').innerHTML=arr.map(v=>`<div class="item"><div><b style="font-size:12px">🔴 ${v.title}</b><br><small style="opacity:.5;font-size:9px">${v.category} • ${v.ytid}</small></div><button onclick="delV('${v.fid}')" style="background:red;border:0;color:#fff;padding:5px 10px;border-radius:15px">X</button></div>`).join('') || '<div style="text-align:center;opacity:.4;font-size:11px">Hakuna video</div>';
+ }catch(e){ document.getElementById('list').innerHTML='<div style="color:orange;font-size:11px">Error: '+e.message+'<br>Badilisha firebaseConfig juu na yako!</div>'; }
+}
+window.delV=async(id)=>{ if(confirm('Futa?')){ await deleteDoc(doc(db,'videos',id)); load(); } }
+load();
+</script></body></html>
