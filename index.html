@@ -1,61 +1,38 @@
-DOCTYPE html>
-<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV ADMIN</title>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV KE LIVE - Azam Style</title>
 <style>
-body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
-h2{color:#f59e0b;text-align:center}
-.card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
-input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
-button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
-.btn-add{background:#f59e0b;color:#000;width:100%;padding:14px;font-size:15px}
-.btn-del{background:#ff0000;color:#fff}
-.btn-ticker{background:#00ff88;color:#000;width:100%}
-.btn-tv{background:#ff6600;color:#fff;width:100%;padding:16px;font-size:16px;margin-top:8px;box-shadow:0 0 15px rgba(255,102,0,.4);border-radius:8px}
-.list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
-.stats{display:flex;gap:10px;text-align:center}.stats div{background:#222;flex:1;padding:10px;border-radius:8px}.stats b{color:#f59e0b;font-size:18px;display:block}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#050a14;color:#fff;font-family:'Segoe UI',sans-serif}
+header{background:linear-gradient(90deg,#001a4d,#002a7a);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600;position:sticky;top:0;z-index:99}
+header b{letter-spacing:1px}
+header b span{color:#ff6600}
+.badge{background:#ff0033;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:900;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
+#playerWrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
+#playerWrap iframe{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
+#msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#888}
+.info{padding:16px;background:linear-gradient(180deg,#0a1430,#050a14)}
+.title{font-size:18px;font-weight:900}
+.meta{font-size:11px;opacity:.6;margin-top:4px}
+.btn-join{background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;border:0;padding:14px;width:100%;border-radius:30px;font-weight:900;margin-top:14px}
 </style></head><body>
-<h2>🔥 ALE TV ADMIN 🔥</h2>
-<div class="stats"><div><b id="totalV">0</b>Videos</div><div><b>LIVE</b></div><div><b id="time">00:00</b></div></div>
-
-<div class="card" style="border:2px solid #ff6600">
-<button class="btn-tv" onclick="location.href='index.html'">📺 ONA TV SASA - JUU</button>
-</div>
-
-<div class="card">
-<h3>➕ Weka Video Mpya</h3>
-<input id="ytLink" placeholder="Weka YouTube Link" onpaste="setTimeout(autoDesc,200)" oninput="autoDesc()">
-<input id="vTitle" placeholder="Title">
-<textarea id="vDesc" placeholder="Description - ita-scroll kwa TV"></textarea>
-<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>OUTDOOR</option></select>
-<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
-<p id="autoInfo" style="font-size:11px;color:#00ff88"></p>
-</div>
-
-<div class="card">
-<h3>📢 Ticker</h3>
-<input id="tickerCustom" placeholder="Habari ya chini...">
-<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER</button>
-<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
-</div>
-
-<div class="card"><h3>📋 Videos (<span id="count">0</span>)</h3><div id="list"></div><button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button></div>
-
-<!-- HAPA NDIPO BATONI YA MWISHO ULIYOITAKA -->
-<div class="card" style="border:2px solid #00ff88;background:#001a0a">
-<button class="btn-tv" style="background:#00ff88;color:#000" onclick="window.open('index.html','_blank')">📺 ONA TV - BATONI YA MWISHO - BONGOZA HAPA</button>
-<p style="text-align:center;font-size:11px;color:#00ff88;margin-top:8px">👆 Hii ndio batoni ya ending mkuu - bonyeza uone TV!</p>
-</div>
-
+<header><b>AZAM <span>ALE TV</span></b><span class="badge">● LIVE</span></header>
+<div id="playerWrap"><div id="msg">📺 Hakuna matangazo<br><span style="font-size:11px">Subiri Admin awek e video</span></div><iframe id="yt" style="display:none" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>
+<div class="info"><div class="title" id="vTitle">Karibu ALE TV KE LIVE</div><div class="meta" id="vMeta">Azam TV Experience • Fresh System - Hakuna kujificha</div><button class="btn-join" onclick="location.reload()">🔄 Refresh TV</button></div>
 <script>
-function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v));if(v.length){let l=v[v.length-1];localStorage.setItem('ale_tv_id',l.id);localStorage.setItem('aletv_live_now',JSON.stringify({ytid:l.id,title:l.title,desc:l.desc}));localStorage.setItem('ale_ticker_final',l.desc+' • '+(localStorage.getItem('ale_ticker_custom')||'TILL 3624692'))}}
-function extractId(u){if(!u) return '';if(u.length==11) return u;let m=u.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/);return m?m[1]:''}
-async function autoDesc(){let link=document.getElementById('ytLink').value.trim();let id=extractId(link);if(id.length!=11) return;document.getElementById('autoInfo').innerText='⏳ Inatafuta...';try{let r=await fetch('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v='+id+'&format=json');let d=await r.json();document.getElementById('vTitle').value=d.title;document.getElementById('vDesc').value=document.getElementById('vCat').value+' | '+d.title+' | ALE TV KE LIVE - TILL 3624692';document.getElementById('autoInfo').innerText='✅ Imejaza: '+d.title}catch(e){document.getElementById('vTitle').value=document.getElementById('vCat').value+' Video';document.getElementById('vDesc').value=document.getElementById('vCat').value+' | ALE TV KE LIVE';document.getElementById('autoInfo').innerText='✅ Auto'}}
-function addVideo(){let id=extractId(document.getElementById('ytLink').value.trim());if(id.length!=11){alert('Weka link');return}let v=getV();v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV',desc:document.getElementById('vDesc').value||'ALE TV',cat:document.getElementById('vCat').value});saveV(v);alert('✅ Imewekwa!');render()}
-function saveTicker(){let t=document.getElementById('tickerCustom').value;localStorage.setItem('ale_ticker_custom',t);let v=getV();if(v.length){localStorage.setItem('ale_ticker_final',v[v.length-1].desc+' • '+t)}else localStorage.setItem('ale_ticker_final',t);document.getElementById('curTicker').innerText=t;alert('Ticker saved')}
-function render(){let v=getV();document.getElementById('count').innerText=v.length;document.getElementById('totalV').innerText=v.length;document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_final')||'-';let h='';v.forEach((x,i)=>{h+=`<div class="list-item"><div><b>${x.title}</b><br><small style="color:#f59e0b">${x.cat}</small> - ${x.id}</div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`});document.getElementById('list').innerHTML=h||'Hakuna';}
-function delV(i){if(confirm('Futa?')){let v=getV();v.splice(i,1);localStorage.setItem('ale_videos',JSON.stringify(v));if(v.length) saveV(v);render()}}
-function clearAll(){if(confirm('Futa zote?')){localStorage.clear();render()}}
-setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
-render();
+const KEY='azamtv_ale_final_2026';
+function getYtId(u){if(!u)return'';if(u.includes('youtu.be/'))return u.split('youtu.be/')[1].split('?')[0];try{return new URL(u).searchParams.get('v')||'';}catch{let m=u.match(/v=([^&]+)/);return m?m[1]:'';}}
+function loadTV(){
+ let cur=null; try{cur=JSON.parse(localStorage.getItem('aletv_live_now')||'null');}catch{}
+ let st=null; try{st=JSON.parse(localStorage.getItem(KEY)||'null');}catch{}
+ if(!cur && st && st.playlist) cur=st.playlist.find(p=>p.status==='now')||st.playlist[0];
+ let msg=document.getElementById('msg'), yt=document.getElementById('yt');
+ if(!cur ||!cur.url){ msg.style.display='block'; yt.style.display='none'; return; }
+ let id=cur.ytid||getYtId(cur.url);
+ document.getElementById('vTitle').innerText=cur.title;
+ document.getElementById('vMeta').innerText='● LIVE NOW: '+cur.title+' • '+(cur.cat||'Live')+' • Quality: Data Saver (haikatiki)';
+ msg.style.display='none'; yt.style.display='block';
+ // Azam stable player - tiny quality + nocookie
+ yt.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0&modestbranding=1&vq=tiny&enablejsapi=1';
+}
+loadTV(); setInterval(loadTV,4000);
 </script></body></html>
