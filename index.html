@@ -5,90 +5,117 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#000;overflow:hidden}
 #wrap{position:relative;width:100%;height:100vh;background:#000}
-#player{width:100%;height:calc(100vh - 50px);background:#000}
-#player iframe{width:100%;height:100%}
+#player{width:100%;height:calc(100vh - 200px);background:#000} /* PANDISHA JUU - ACHA BLACK 2 INCHES */
+#player iframe{width:100%;height:100%;pointer-events:none}
 #live{position:absolute;top:12px;left:12px;background:red;color:#fff;padding:6px 14px;border-radius:20px;font-size:10px;font-weight:900;z-index:5;animation:blink 1s infinite}
 @keyframes blink{50%{opacity:.5}}
-#logo{position:absolute;top:12px;right:12px;background:linear-gradient(90deg,red,orange);color:#fff;padding:7px 16px;border-radius:20px;font-weight:900;font-size:12px;z-index:5;border:2px solid #fff}
-#bar{position:absolute;bottom:0;left:0;right:0;height:50px;background:linear-gradient(90deg,#ff0000,#ffae00);display:flex;align-items:center;z-index:5;border-top:2px solid #fff}
-#bar b{background:#000;color:#fff;height:100%;padding:0 12px;display:flex;align-items:center;font-size:9px}
-#ad{flex:1;text-align:center;font-weight:900;font-size:12px;color:#fff;animation:zoom 6s infinite}
-@keyframes zoom{0%{transform:scale(.2);opacity:0}15%{transform:scale(1.2);opacity:1}20%{transform:scale(1)}85%{transform:scale(1)}100%{transform:scale(.2);opacity:0}}
+#logo{position:absolute;top:12px;right:12px;background:linear-gradient(90deg,red,orange);color:#fff;padding:7px 16px;border-radius:20px;font-weight:900;font-size:12px;z-index:5;border:2px solid #fff;box-shadow:0 0 15px red}
+#clickUnmute{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:15;background:rgba(0,0,0,.6);color:#fff;padding:10px 20px;border-radius:30px;border:2px solid #fff;font-weight:900;font-size:12px;cursor:pointer;display:none}
+
+/* BLACK 2 INCHES */
+#blackSpace{position:absolute;bottom:80px;left:0;right:0;height:120px;background:#000;z-index:4;display:flex;align-items:center;justify-content:center;color:#222;font-size:10px;letter-spacing:3px}
+
+/* ADS KALI - DESIGN INABADILIKA RANGI */
+#adBox{position:absolute;bottom:0;left:0;right:0;height:80px;z-index:10;display:flex;align-items:center;overflow:hidden;border-top:3px solid #fff;border-bottom:3px solid #fff}
+.design1{background:linear-gradient(90deg,#ff0000,#ffae00,#ff0000,#ff0000);background-size:300% 100%;animation:bgMove 1.5s linear infinite}
+.design2{background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);background-size:300% 100%;animation:bgMove 1s linear infinite;color:#000}
+.design3{background:linear-gradient(90deg,#8a00ff,#ff00ff,#00ff88,#8a00ff);background-size:300% 100%;animation:bgMove.8s linear infinite}
+.design4{background:#000;color:#fff;border:3px solid red;animation:borderFlash.5s infinite}
+.design5{background:linear-gradient(90deg,#ffff00,#ffae00,#ffff00);color:#000;background-size:200% 100%;animation:bgMove 1.2s linear infinite}
+@keyframes bgMove{0%{background-position:0%}100%{background-position:300%}}
+@keyframes borderFlash{0%{border-color:red}50%{border-color:yellow}100%{border-color:red}}
+#adLabel{background:#000;color:#fff;font-weight:900;font-size:9px;padding:0 12px;height:100%;display:flex;align-items:center;letter-spacing:1px}
+#adStage{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#adText{font-weight:900;font-size:14px;text-align:center;letter-spacing:.5px;animation:zoomPop 6s ease-in-out infinite, colorBlink.6s infinite alternate;text-shadow:0 0 10px rgba(0,0,0,.8);white-space:nowrap}
+@keyframes zoomPop{0%{transform:scale(.1) rotate(-10deg);opacity:0}15%{transform:scale(1.4) rotate(2deg);opacity:1}25%{transform:scale(1) rotate(0)}75%{transform:scale(1.1)}85%{transform:scale(1)}100%{transform:scale(.1);opacity:0}}
+@keyframes colorBlink{0%{color:#fff}50%{color:#ffff00}100%{color:#fff}}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
+<div id="blackSpace">ALE TV - YOUR HOME OF SPORTS</div>
 <div id="live">🔴 LIVE</div>
 <div id="logo">ALE TV</div>
-<div id="bar"><b>⚡ ADS</b><div id="ad">TILL 3624692 - SUPPORT ALE TV - Alex</div></div>
+<div id="clickUnmute" onclick="unmute()">🔊 TAP FOR SOUND</div>
+<div id="adBox" class="design1"><div id="adLabel">⚡ ADS</div><div id="adStage"><div id="adText">TILL 3624692 - SUPPORT ALE TV</div></div></div>
 </div>
+
 <script>
 let player, videos=[], cur=0;
+function getId(v){ if(!v) return ''; v=v.trim(); if(v.length==11 &&!v.includes('/')) return v; if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0]; try{let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=v.match(/(?:embed\/|v\/|shorts\/|v=)([a-zA-Z0-9_-]{11})/); return m?m[1]:v.substring(0,11); }
+function loadYT(cb){ if(window.YT && window.YT.Player){cb();return;} let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); window.onYouTubeIframeAPIReady=cb; }
 
-function getId(v){
-  if(!v) return '';
-  v=v.trim();
-  if(v.length==11 &&!v.includes('/')) return v;
-  if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0];
-  try{ let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v'); }catch{}
-  let m=v.match(/(?:embed\/|v\/|shorts\/|v=)([a-zA-Z0-9_-]{11})/);
-  if(m) return m[1];
-  return v.substring(0,11);
-}
-
-function loadYT(cb){
-  if(window.YT && window.YT.Player){cb();return;}
-  let s=document.createElement('script');
-  s.src="https://www.youtube.com/iframe_api";
-  document.head.appendChild(s);
-  window.onYouTubeIframeAPIReady=cb;
-}
+window.unmute=()=>{ try{player.unMute(); player.setVolume(100); document.getElementById('clickUnmute').style.display='none';}catch{} }
 
 function play(id){
-  loadYT(()=>{
-    if(player){ player.loadVideoById(id); player.playVideo(); return; }
-    player=new YT.Player('player',{
-      videoId:id,
-      playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,autoplay:1},
-      events:{
-        onReady:e=>{
-          e.target.playVideo();
-          // jaribu kuwasha sauti baada ya 1.5 sec - HAKUNA TAP!
-          setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100);}catch{} },1500);
-        },
-        onStateChange:e=>{
-          if(e.data==0){ cur=(cur+1)%videos.length; e.target.loadVideoById(videos[cur].id); }
-        },
-        onError:e=>{
-          console.log('YT error',e.data);
-          cur=(cur+1)%videos.length;
-          if(videos[cur]) e.target.loadVideoById(videos[cur].id);
-        }
-      }
-    });
+ loadYT(()=>{
+  if(player){ player.loadVideoById(id); return; }
+  player=new YT.Player('player',{
+   videoId:id,
+   playerVars:{autoplay:1,mute:1,controls:0,rel:0,modestbranding:1,playsinline:1,loop:0},
+   events:{
+    onReady:e=>{
+      e.target.mute(); e.target.playVideo();
+      document.getElementById('clickUnmute').style.display='block';
+      setTimeout(()=>{ try{e.target.playVideo();}catch{} },1000);
+    },
+    onStateChange:e=>{ if(e.data==0){ cur=(cur+1)%videos.length; e.target.loadVideoById(videos[cur].id); } },
+    onError:e=>{ cur=(cur+1)%videos.length; if(videos[cur]) player.loadVideoById(videos[cur].id); }
+   }
   });
+ });
 }
 
-// ADS
-let ads=["🔥 ALE TV - YOUR HOME OF SPORTS 24/7!","💰 TILL 3624692 - SUPPORT ALE TV","📺 TANGAZA BIASHARA YAKO HAPA - 0703182307","⚡ ale-tv.vercel.app - WATCH LIVE!"];
-let ai=0; setInterval(()=>{ document.getElementById('ad').innerText=ads[ai%ads.length]; ai++; },5000);
+// ADS NYINGI SANA ZA LATV + GOOGLE
+let latvAds=[
+ "🔥 ALE TV - YOUR HOME OF SPORTS 24/7 LIVE!",
+ "💰 TILL 3624692 - SUPPORT ALE TV - Alex Musau - 0703182307",
+ "📺 TANGAZA BIASHARA YAKO HAPA - 100K VIEWERS - ALE TV KE!",
+ "⚡ WATCH LIVE: ale-tv.vercel.app - POPOTE DUNIANI!",
+ "🎵 Mpira, Habari, Burudani, Gospel - LIVE ON ALE TV!",
+ "🙏 GOD BLESS ALE TV - SUBSCRIBE & SHARE!",
+ "🏆 FOOTBALL LIVE - PREMIER LEAGUE - LALIGA - UCL - ON ALE TV!"
+];
+let googleAds=[];
+let allAds=[...latvAds];
+let ai=0; let designs=["design1","design2","design3","design4","design5"];
+
+function showAd(){
+ let box=document.getElementById('adBox');
+ let txt=document.getElementById('adText');
+ box.className=designs[ai % designs.length];
+ txt.style.animation='none'; void txt.offsetWidth;
+ txt.innerText=allAds[ai % allAds.length] || latvAds[0];
+ txt.style.animation='zoomPop 6s ease-in-out infinite, colorBlink.6s infinite alternate';
+ ai++;
+}
+showAd(); setInterval(showAd,6000);
+
+// VUTA GOOGLE NEWS KENYA - ADS ZA GOOGLE
+async function loadGoogle(){
+ try{
+  let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');
+  let res=await fetch(url); let text=await res.text();
+  let xml=new DOMParser().parseFromString(text,"text/xml");
+  let items=xml.querySelectorAll("item");
+  googleAds=[];
+  for(let i=0;i<Math.min(15,items.length);i++){
+    googleAds.push("📰 BREAKING: "+items[i].querySelector("title").textContent.substring(0,70));
+  }
+  allAds=[...latvAds,...googleAds];
+ }catch(e){}
+}
+loadGoogle(); setInterval(loadGoogle,120000);
 
 function init(){
-  // 1. Soma kutoka admin
-  let local=[];
-  try{ local=JSON.parse(localStorage.getItem('ale_videos')||'[]'); }catch{}
-  if(local.length){
-    videos=local.map(v=>({id:getId(v.id||v.ytid||''),title:v.title})).filter(v=>v.id && v.id.length>=10);
-  }
-  // 2. Kama bado hakuna - weka DEFAULT video inayofanya kazi 100%!
-  if(!videos.length){
-    videos=[
-      {id:'jNQXAC9IVRw',title:'ALE TV DEFAULT 1'},
-      {id:'5qap5aO4i9A',title:'LIVE 24/7'},
-      {id:'jfKfPfyJRdk',title:'ALE TV LIVE'}
-    ];
-  }
-  console.log('Playing:',videos);
-  play(videos[0].id);
+ let local=[];
+ try{ local=JSON.parse(localStorage.getItem('ale_videos')||'[]'); }catch{}
+ if(local.length){ videos=local.map(v=>({id:getId(v.id||v.ytid||'')} )).filter(v=>v.id.length>=10); }
+ if(!videos.length){
+   videos=[
+     {id:'jNQXAC9IVRw'},{id:'5qap5aO4i9A'},{id:'jfKfPfyJRdk'},{id:'9bZkp7q19f0'},{id:'dQw4w9WgXcQ'}
+   ];
+ }
+ play(videos[0].id);
 }
 init();
 </script></body></html>
