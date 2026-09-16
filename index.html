@@ -1,38 +1,14 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV KE LIVE - Azam Style</title>
+<!DOCTYPE html>
+<html lang="sw">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV - YOUR HOME OF SPORTS</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#050a14;color:#fff;font-family:'Segoe UI',sans-serif}
-header{background:linear-gradient(90deg,#001a4d,#002a7a);padding:12px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600;position:sticky;top:0;z-index:99}
-header b{letter-spacing:1px}
-header b span{color:#ff6600}
-.badge{background:#ff0033;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:900;animation:blink 1s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.6}}
-#playerWrap{width:100%;aspect-ratio:16/9;background:#000;position:relative;overflow:hidden}
-#playerWrap iframe{width:100%;height:100%;border:0;position:absolute;top:0;left:0}
-#msg{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#888}
-.info{padding:16px;background:linear-gradient(180deg,#0a1430,#050a14)}
-.title{font-size:18px;font-weight:900}
-.meta{font-size:11px;opacity:.6;margin-top:4px}
-.btn-join{background:linear-gradient(90deg,#ff6600,#ff8800);color:#fff;border:0;padding:14px;width:100%;border-radius:30px;font-weight:900;margin-top:14px}
-</style></head><body>
-<header><b>AZAM <span>ALE TV</span></b><span class="badge">● LIVE</span></header>
-<div id="playerWrap"><div id="msg">📺 Hakuna matangazo<br><span style="font-size:11px">Subiri Admin awek e video</span></div><iframe id="yt" style="display:none" allowfullscreen allow="autoplay; encrypted-media; picture-in-picture"></iframe></div>
-<div class="info"><div class="title" id="vTitle">Karibu ALE TV KE LIVE</div><div class="meta" id="vMeta">Azam TV Experience • Fresh System - Hakuna kujificha</div><button class="btn-join" onclick="location.reload()">🔄 Refresh TV</button></div>
-<script>
-const KEY='azamtv_ale_final_2026';
-function getYtId(u){if(!u)return'';if(u.includes('youtu.be/'))return u.split('youtu.be/')[1].split('?')[0];try{return new URL(u).searchParams.get('v')||'';}catch{let m=u.match(/v=([^&]+)/);return m?m[1]:'';}}
-function loadTV(){
- let cur=null; try{cur=JSON.parse(localStorage.getItem('aletv_live_now')||'null');}catch{}
- let st=null; try{st=JSON.parse(localStorage.getItem(KEY)||'null');}catch{}
- if(!cur && st && st.playlist) cur=st.playlist.find(p=>p.status==='now')||st.playlist[0];
- let msg=document.getElementById('msg'), yt=document.getElementById('yt');
- if(!cur ||!cur.url){ msg.style.display='block'; yt.style.display='none'; return; }
- let id=cur.ytid||getYtId(cur.url);
- document.getElementById('vTitle').innerText=cur.title;
- document.getElementById('vMeta').innerText='● LIVE NOW: '+cur.title+' • '+(cur.cat||'Live')+' • Quality: Data Saver (haikatiki)';
- msg.style.display='none'; yt.style.display='block';
- // Azam stable player - tiny quality + nocookie
- yt.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&playsinline=1&rel=0&modestbranding=1&vq=tiny&enablejsapi=1';
-}
-loadTV(); setInterval(loadTV,4000);
-</script></body></html>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial}
+body{background:#050a14;color:#fff}
+nav{background:#000;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #ff6600;position:sticky;top:0;z-index:100}
+.logo{font-weight:900;font-size:22px;color:#ff6600;line-height:1}
+.logo span{color:#fff;font-size:11px;display:block;font-weight:400;letter-spacing:2px}
+.live{background:red;padding:4px 10px;border-radius:20px;font-size:12px;font-weight:900;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.5}}
+.hero{background:linear-gradient(135deg,#0a1430 0%,#000 50%,#1
