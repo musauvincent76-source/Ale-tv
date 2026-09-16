@@ -1,159 +1,17 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - PUBLIC SYNC</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#000;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-#top{height:42px;background:#0a1430;display:flex;align-items:center;justify-content:space-between;padding:0 12px;flex-shrink:0;border-bottom:2px solid #ff6600}
-#top h1{color:#fff;font-size:17px;font-weight:900}
-#top h1 span{color:#ff6600}
-#clock{background:#000;color:#fff;border:1px solid #333;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:900;min-width:80px;text-align:center}
-#videoBox{flex:1;background:#000;position:relative}
-#player{width:100%;height:100%}
-#player iframe{width:100%;height:100%;border:0}
-
-/* GOOGLE ADS - RANGI MINGI INABADILIKA KAMA GOOGLE */
-#gAds{height:90px;display:flex;flex-shrink:0;overflow:hidden;border-top:3px solid #fff;border-bottom:3px solid #fff;background:linear-gradient(270deg,#4285f4,#ea4335,#fbbc05,#34a853,#4285f4);background-size:600% 600%;animation:rb 3s linear infinite}
-@keyframes rb{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-#gL{width:60px;background:#202124;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0;border-right:2px solid #fff}
-#gIcon{font-size:24px;animation:j.6s infinite alternate}
-@keyframes j{0%{transform:translateY(0)}100%{transform:translateY(-6px)}}
-#gLab{font-size:8px;font-weight:900;background:#fff;color:#000;padding:1px 5px;border-radius:3px;margin-top:2px}
-#gC{flex:1;background:rgba(255,255,255,.93);margin:3px;border-radius:6px;padding:6px 10px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-#gTop{font-size:8px;color:#5f6368;display:flex;gap:5px;align-items:center}
-#gTop b{border:1px solid #dadce0;padding:1px 5px;border-radius:3px}
-#gTitle{font-size:12px;font-weight:700;color:#1a0dab;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#gDesc{font-size:15px;font-weight:900;color:#000;white-space:nowrap;display:inline-block;animation:sx 8s linear infinite}
-@keyframes sx{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-#gBot{font-size:9px;color:#4d5156;display:flex;gap:6px}
-#gBot span{background:#e8f0fe;padding:1px 6px;border-radius:10px;border:1px solid #8ab4f8}
-
-#ticker{height:28px;background:#0a1430;display:flex;align-items:center;overflow:hidden;flex-shrink:0;border-top:1px solid #1a2d60}
-#ticker b{background:#ff6600;color:#fff;font-size:8px;padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0}
-#ticker div{flex:1;overflow:hidden;white-space:nowrap}
-#ticker div span{display:inline-block;padding-left:100%;animation:mr 30s linear infinite;color:#fff;font-size:11px}
-@keyframes mr{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#over{position:fixed;inset:0;background:#050a14;z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center}
-#over button{background:#ff6600;color:#fff;border:0;padding:18px 45px;border-radius:30px;font-weight:900;font-size:18px}
-#dbg{font-size:9px;color:#666;margin-top:10px}
-</style>
-</head>
-<body>
-<div id="top"><h1>ALE <span>TV</span></h1><div id="clock">00:00:00</div></div>
-<div id="videoBox"><div id="player"></div></div>
-<div id="gAds"><div id="gL"><div id="gIcon">📢</div><div id="gLab">Ads</div></div><div id="gC"><div id="gTop"><b>Ad</b><span id="gUrl">ale-tv.com • Sponsored</span></div><div id="gTitle">ALE TV</div><div id="gDesc">TILL 3624692 - ADVERTISE WITH US</div><div id="gBot"><span>Public</span><span>100K views</span><span id="gCall">Till 3624692</span></div></div></div>
-<div id="ticker"><b>BREAKING</b><div><span id="tick">ALE TV - PUBLIC SYNC - SAME TIME EVERYWHERE</span></div></div>
-<div id="over"><button onclick="startTV()">▶️ BONYEZA HAPA KUANZA TV</button><div id="dbg">Inasoma ADMIN...</div></div>
-
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV</title></head>
+<body style="margin:0;background:#000;height:100vh;display:flex;align-items:center;justify-content:center;color:#fff">
+<div id="player" style="width:100%;height:100vh"></div>
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player, videos=[], curIdx=-1;
-const KEY='azamtv_ale_final_2026';
-const BIRTH=Date.UTC(2025,0,1)/1000;
-const SLOT=240;
-
-function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/')&&!v.includes('.'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
-
-function fromAdmin(){
- try{
-  let raw=localStorage.getItem(KEY);
-  if(!raw){ document.getElementById('dbg').innerText='ADMIN empty - weka video'; return []; }
-  let st=JSON.parse(raw);
-  if(!st.playlist ||!st.playlist.length){ document.getElementById('dbg').innerText='ADMIN haina playlist'; return []; }
-  // Chukua LIVE kwanza
-  let live = st.playlist.find(p=>p.status==='now');
-  let list = live? [live,...st.playlist.filter(p=>p.id!==live.id)] : st.playlist;
-  let ids = list.map(p=>getId(p.ytid||p.url||p.id||'')).filter(x=>x);
-  ids=[...new Set(ids)];
-  document.getElementById('dbg').innerText='ADMIN: '+ids.length+' videos - LIVE: '+(live?live.ytid:'first');
-  return ids;
- }catch(e){ document.getElementById('dbg').innerText='Error kusoma ADMIN'; return []; }
-}
-
-function worldPos(){
- if(!videos.length) return {i:0,s:0};
- let now=Date.now()/1000, elapsed=Math.floor(now-BIRTH), total=videos.length*SLOT, p=elapsed%total;
- return {i:Math.floor(p/SLOT), s:p%SLOT};
-}
-
+let player;
 function onYouTubeIframeAPIReady(){
- videos=fromAdmin();
- if(!videos.length) videos=['jNQXAC9IVRw']; // fallback tu
- let w=worldPos();
- // Kama ADMIN ina LIVE, cheza LIVE kwanza, sio worldPos
- try{
-  let raw=JSON.parse(localStorage.getItem(KEY)||'null');
-  let live=raw && raw.playlist? raw.playlist.find(p=>p.status==='now') : null;
-  if(live){
-   let id=getId(live.ytid||live.url||'');
-   if(id){ curIdx=videos.indexOf(id); if(curIdx==-1) curIdx=0; videos=[id,...videos.filter(x=>x!==id)]; w={i:0,s:0}; }
-  }
- }catch{}
- player=new YT.Player('player',{videoId:videos[w.i],playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,start:w.s},
-  events:{
-   onReady:e=>{ e.target.seekTo(w.s,true); e.target.playVideo(); },
-   onStateChange:e=>{ if(e.data==0){ let nw=worldPos(); player.loadVideoById({videoId:videos[nw.i],startSeconds:nw.s}); curIdx=nw.i; } },
-   onError:e=>{ let nxt=(curIdx+1)%videos.length; player.loadVideoById({videoId:videos[nxt],startSeconds:0}); }
-  }
+ player = new YT.Player('player',{
+  videoId:'jNQXAC9IVRw',
+  playerVars:{autoplay:1,mute:1,controls:1}
  });
 }
-
-function startTV(){
- document.getElementById('over').style.display='none';
- if(player){ player.unMute(); player.setVolume(100); player.playVideo(); }
-}
-
-// PUBLIC SYNC - RUDI ONLINE SAME SECONDS
-setInterval(()=>{
- if(!player||!videos.length) return;
- try{
-  let raw=JSON.parse(localStorage.getItem(KEY)||'null');
-  let live=raw && raw.playlist? raw.playlist.find(p=>p.status==='now') : null;
-  if(live){
-   let liveId=getId(live.ytid||live.url||'');
-   let currentId=player.getVideoData().video_id;
-   if(liveId && liveId!==currentId){
-    player.loadVideoById({videoId:liveId,startSeconds:0});
-    return;
-   }
-  }
- }catch{}
- let w=worldPos();
- if(w.i!==curIdx){
-  try{ curIdx=w.i; player.loadVideoById({videoId:videos[w.i],startSeconds:w.s}); }catch{}
- } else {
-  try{ let ct=player.getCurrentTime(); if(Math.abs(ct-w.s)>15) player.seekTo(w.s,true); }catch{}
- }
-},10000);
-
-setInterval(()=>{
- document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
- let fresh=fromAdmin();
- if(fresh.length && fresh.join(',')!==videos.join(',')){
-  // kama admin imebadilisha, update lakini usi-reload kama ni same LIVE
-  let sameLive = fresh[0]===videos[0];
-  if(!sameLive) videos=fresh;
- }
-},2000);
-
-// GOOGLE ADS RANGI MINGI
-let ads=[
- {ic:"📢",lb:"Ads",u:"ale-tv.com/ads",t:"Advertise With ALE TV - TILL 3624692",d:"🔴 ADVERTISE NOW - TILL 3624692 - 100K VIEWERS DAILY!",c:"Till 3624692",bg:"linear-gradient(270deg,#4285f4,#34a853,#fbbc05,#ea4335)",tg:["Public","100K"]},
- {ic:"🏫",lb:"JOIN",u:"alefootballacademy.co.ke",t:"ALE Football Academy - Registration Open 2026",d:"🟡 JOIN ALE ACADEMY - 0703182307 - TRAINING 4-18 YEARS ⚽",c:"0703182307",bg:"linear-gradient(270deg,#fbbc05,#ff6d00,#fbbc05)",tg:["Youth","Football"]},
- {ic:"💰",lb:"TILL",u:"MPESA Till 3624692",t:"Support ALE TV - MPESA TILL 3624692",d:"💰 TILL 3624692 - SUPPORT ALE TV - ASANTE SANA 🙏",c:"Support",bg:"linear-gradient(270deg,#34a853,#00e676,#34a853)",tg:["Support","Thanks"]},
- {ic:"🌍",lb:"LIVE",u:"ale-tv.com/live",t:"ALE TV Public - Same Time Everywhere",d:"🌍 KISUMU • NAIROBI • MOMBASA • UGANDA • TANZANIA - SAME TIME!",c:"Live",bg:"linear-gradient(270deg,#ea4335,#ff6d00,#ea4335)",tg:["Live","Public"]},
-];
-let ai=0; setInterval(()=>{
- let a=ads[ai%ads.length];
- document.getElementById('gAds').style.background=a.bg; document.getElementById('gAds').style.backgroundSize="600% 600%";
- document.getElementById('gIcon').innerText=a.ic; document.getElementById('gLab').innerText=a.lb;
- document.getElementById('gUrl').innerText=a.u; document.getElementById('gTitle').innerText=a.t;
- let de=document.getElementById('gDesc'); de.style.animation='none'; void de.offsetWidth; de.innerText=a.d; de.style.animation='sx 8s linear infinite';
- document.getElementById('gCall').innerText=a.c; ai++;
-},3500);
 </script>
 </body>
- </html>
+</html>
