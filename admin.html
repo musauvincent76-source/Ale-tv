@@ -1,85 +1,96 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV ADMIN</title>
+<title>ALE TV ADMIN - AUTO DESC</title>
 <style>
 body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
 h2{color:#f59e0b;text-align:center}
 .card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
 input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px}
 button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
-.btn-add{background:#f59e0b;color:#000;width:100%}
+.btn-add{background:#f59e0b;color:#000;width:100%;padding:14px;font-size:15px}
 .btn-del{background:#ff0000;color:#fff}
-.btn-edit{background:#00f5ff;color:#000}
 .btn-ticker{background:#00ff88;color:#000;width:100%}
+.btn-tv{background:#ff6600;color:#fff;width:100%;padding:14px;font-size:15px;margin-top:8px}
 .list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
-.stats{display:flex;gap:10px;text-align:center}
-.stats div{background:#222;flex:1;padding:10px;border-radius:8px}
-.stats b{color:#f59e0b;font-size:18px;display:block}
+.stats{display:flex;gap:10px;text-align:center}.stats div{background:#222;flex:1;padding:10px;border-radius:8px}.stats b{color:#f59e0b;font-size:18px;display:block}
 </style></head><body>
-<h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
+<h2>🔥 ALE TV ADMIN - AUTO DESC 🔥</h2>
+<div class="stats"><div><b id="totalV">0</b>Videos</div><div><b>LIVE</b>Status</div><div><b id="time">00:00</b>Time</div></div>
 
-<div class="stats">
-<div><b id="totalV">0</b>Videos</div>
-<div><b id="liveV">LIVE</b>Status</div>
-<div><b id="time">00:00</b>Time</div>
+<div class="card" style="border:2px solid #ff6600">
+<button class="btn-tv" onclick="location.href='index.html'">📺 ONA TV SASA</button>
+<button class="btn-tv" style="background:#222;border:1px solid #ff6600" onclick="window.open('index.html','_blank')">📺 Tab Mpya</button>
 </div>
 
 <div class="card">
-<h3>➕ Weka Video Mpya</h3>
-<input id="ytLink" placeholder="Weka YouTube Link au ID (https://youtube.com/watch?v=...)">
-<input id="vTitle" placeholder="Title ya video">
-<textarea id="vDesc" placeholder="Description"></textarea>
-<select id="vCat">
-<option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option>
-</select>
-<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
+<h3>➕ Weka Video Mpya - Description itajaza yenyewe!</h3>
+<input id="ytLink" placeholder="Weka YouTube Link - ukiweka itajaza description yenyewe" onpaste="setTimeout(autoDesc,200)" oninput="autoDesc()">
+<input id="vTitle" placeholder="Title - itajazwa auto kutoka YouTube">
+<textarea id="vDesc" placeholder="Description - hii ndio ita-scroll kwa TV chini"></textarea>
+<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option><option>OUTDOOR</option></select>
+<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO - IENDE TV</button>
+<p id="autoInfo" style="font-size:11px;color:#00ff88;margin-top:6px"></p>
 </div>
 
 <div class="card">
-<h3>📢 Ticker Custom</h3>
-<input id="tickerCustom" placeholder="Andika habari ya chini...">
-<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER</button>
-<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
+<h3>📢 Ticker ya Chini - Hii ndio ina-scroll TV</h3>
+<input id="tickerCustom" placeholder="Andika habari itakayo-scroll...">
+<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER - IENDE TV</button>
+<p style="font-size:11px;color:#888">Current scroll: <span id="curTicker" style="color:#f59e0b">-</span></p>
 </div>
 
-<div class="card">
-<h3>📋 Videos Zote (<span id="count">0</span>)</h3>
-<div id="list"></div>
-<button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
-</div>
+<div class="card"><h3>📋 Videos (<span id="count">0</span>)</h3><div id="list"></div><button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button></div>
 
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
-function extractId(url){
- if(!url) return '';
- if(url.length==11) return url;
- let m=url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/);
- return m?m[1]:url;
+function saveV(v){
+ localStorage.setItem('ale_videos',JSON.stringify(v));
+ if(v.length){
+  let last=v[v.length-1];
+  localStorage.setItem('ale_tv_id',last.id);
+  localStorage.setItem('aletv_live_now',JSON.stringify({ytid:last.id,title:last.title,desc:last.desc,cat:last.cat}));
+  // ticker itakuwa description + custom
+  let ticker = last.desc + ' • ' + (localStorage.getItem('ale_ticker_custom')||'TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307');
+  localStorage.setItem('ale_ticker_final', ticker);
+ }
+}
+function extractId(url){ if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/); return m?m[1]:''; }
+
+async function autoDesc(){
+ let link=document.getElementById('ytLink').value.trim();
+ let id=extractId(link);
+ if(id.length!=11) return;
+ document.getElementById('autoInfo').innerText='⏳ Inatafuta jina la video...';
+ try{
+  let res=await fetch('https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v='+id+'&format=json');
+  let data=await res.json();
+  let title=data.title||'';
+  document.getElementById('vTitle').value=title;
+  // Description auto = OUTDOOR + Title + Cat
+  let cat=document.getElementById('vCat').value;
+  let desc = cat + ' | ' + title + ' | ALE TV KE LIVE - TILL 3624692';
+  document.getElementById('vDesc').value=desc;
+  document.getElementById('autoInfo').innerText='✅ Imejaza yenyewe: '+title;
+ }catch(e){
+  let cat=document.getElementById('vCat').value;
+  document.getElementById('vTitle').value=cat+' Video - '+id;
+  document.getElementById('vDesc').value=cat+' | ALE TV KE LIVE | TILL 3624692 | 0703182307';
+  document.getElementById('autoInfo').innerText='✅ Imejaza auto (offline)';
+ }
 }
 function addVideo(){
  let link=document.getElementById('ytLink').value.trim();
  let id=extractId(link);
- if(id.length!=11){alert('Link mbaya mkuu! Weka link ya YouTube');return}
+ if(id.length!=11){alert('Weka link sahihi ya YouTube mkuu');return}
  let v=getV();
- v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV Video',desc:document.getElementById('vDesc').value||'',cat:document.getElementById('vCat').value});
- saveV(v); alert('Imewekwa!'); location.reload();
+ v.push({id:id,title:document.getElementById('vTitle').value||'ALE TV Video',desc:document.getElementById('vDesc').value||'ALE TV KE LIVE',cat:document.getElementById('vCat').value});
+ saveV(v); alert('✅ Imewekwa! Description ita-scroll kwa TV sasa!'); render();
+ document.getElementById('ytLink').value=''; document.getElementById('vTitle').value=''; document.getElementById('vDesc').value='';
 }
-function saveTicker(){
- let t=document.getElementById('tickerCustom').value;
- localStorage.setItem('ale_ticker_custom',t); alert('Ticker updated!'); document.getElementById('curTicker').innerText=t;
-}
-function render(){
- let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
- document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
- let html=''; v.forEach((x,i)=>{
-  html+=`<div class="list-item"><div><b>${x.title}</b><br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
- });
- document.getElementById('list').innerHTML=html||'Hakuna video';
-}
-function delV(i){if(confirm('Futa hii?')){let v=getV(); v.splice(i,1); saveV(v); render();}}
-function clearAll(){if(confirm('Futa zote kweli?')){localStorage.removeItem('ale_videos'); render();}}
+function saveTicker(){ let t=document.getElementById('tickerCustom').value; localStorage.setItem('ale_ticker_custom',t); let v=getV(); if(v.length){let last=v[v.length-1]; localStorage.setItem('ale_ticker_final', last.desc + ' • ' + t);} else localStorage.setItem('ale_ticker_final',t); alert('Ticker imesaviwa - ita-scroll kwa TV!'); document.getElementById('curTicker').innerText=t; }
+function render(){ let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length; document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_final')||localStorage.getItem('ale_ticker_custom')||'TILL 3624692'; let html=''; v.forEach((x,i)=>{ html+=`<div class="list-item"><div><b>${x.title}</b><br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small><br><small style="color:#aaa;font-size:9px">${x.desc.substring(0,40)}...</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`; }); document.getElementById('list').innerHTML=html||'Hakuna video'; }
+function delV(i){ if(confirm('Futa?')){ let v=getV(); v.splice(i,1); localStorage.setItem('ale_videos',JSON.stringify(v)); if(v.length) saveV(v); else {localStorage.removeItem('ale_tv_id');localStorage.removeItem('aletv_live_now');} render(); } }
+function clearAll(){ if(confirm('Futa zote?')){ localStorage.clear(); render(); } }
 setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
 render();
-</script>
-</body></html>
+</script></body></html>
