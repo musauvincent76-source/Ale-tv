@@ -3,116 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - PUBLIC SYNC</title>
+<title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
 body{background:#000;height:100vh;display:flex;flex-direction:column;overflow:hidden}
-#top{height:38px;background:#111;display:flex;align-items:center;border-bottom:3px solid #00ff88;flex-shrink:0;overflow:hidden}
-#top b{background:#00ff88;color:#000;font-size:10px;padding:0 12px;height:100%;display:flex;align-items:center;flex-shrink:0}
-#marquee{flex:1;overflow:hidden;white-space:nowrap;display:flex;align-items:center}
-#marquee span{display:inline-block;padding-left:100%;animation:mv 25s linear infinite;color:#00ff88;font-size:11px;font-weight:900}
-@keyframes mv{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#clock{width:85px;background:#000;color:#fff;border-left:2px solid #00ff88;height:100%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;flex-shrink:0}
-#video{flex:1;background:#000;position:relative}
+#top{height:40px;background:#111;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #fff;flex-shrink:0;padding:0 12px}
+#top h1{font-size:16px;color:#fff;letter-spacing:1px}
+#clock{font-size:13px;font-weight:900;color:#fff;background:#000;padding:4px 10px;border:1px solid #333;border-radius:4px}
+#video{flex:1;background:#000}
 #player{width:100%;height:100%}
-#player iframe{width:100%;height:100%;border:0}
-#bottom{height:30px;background:#000;border-top:2px solid red;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
-#bottom b{background:red;color:#fff;font-size:8px;padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0}
-#bottom div{flex:1;overflow:hidden;white-space:nowrap}
-#bottom div span{display:inline-block;padding-left:100%;animation:sc 40s linear infinite;color:#fff;font-size:11px}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#btn{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-#btn button{background:#00ff88;color:#000;border:0;padding:18px 35px;border-radius:30px;font-weight:900;font-size:18px}
+#descBar{height:28px;background:#00ff88;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
+#descBar span{white-space:nowrap;color:#000;font-weight:900;font-size:11px;padding-left:100%;animation:mv 25s linear infinite}
+@keyframes mv{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#adBar{height:50px;background:#ffeb00;display:flex;align-items:center;overflow:hidden;flex-shrink:0;border-top:2px solid #000;border-bottom:2px solid #000}
+#adBar b{background:#000;color:#ffeb00;font-size:9px;padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0}
+#adBar span{flex:1;white-space:nowrap;color:#000;font-weight:900;font-size:14px;padding-left:20px;animation:ad 15s linear infinite}
+@keyframes ad{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+#btn{position:fixed;inset:0;background:#000;z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
+#btn button{background:#fff;color:#000;border:0;padding:18px 40px;border-radius:30px;font-weight:900;font-size:18px}
 </style>
 </head>
 <body>
 
-<div id="top"><b>🏫 ACADEMY</b><div id="marquee"><span id="descTxt">ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692</span></div><div id="clock">00:00:00</div></div>
+<div id="top">
+  <h1>ALE TV</h1>
+  <div id="clock">00:00:00</div>
+</div>
 
 <div id="video"><div id="player"></div></div>
 
-<div id="bottom"><b>BREAKING</b><div><span id="tickTxt">ALE TV PUBLIC SYNC - TILL 3624692</span></div></div>
+<div id="descBar"><span id="descTxt">ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692</span></div>
 
-<div id="btn"><button onclick="startTV()">▶️ BONYEZA HAPA KUANZA TV</button><p style="color:#888;font-size:10px;margin-top:10px">PUBLIC SYNC - SAME SECONDS KILA MTU</p></div>
+<div id="adBar"><b>ADS</b><span id="adTxt">ADVERTISE WITH US - TILL 3624692 - 100K VIEWERS DAILY</span></div>
+
+<div id="btn"><button onclick="startTV()">▶️ BONYEZA HAPA</button><p style="color:#666;font-size:10px;margin-top:10px">PUBLIC TV - SAME TIME</p></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player, videos=[], curIdx=-1;
-const BIRTH = Date.UTC(2025,0,1)/1000; // Mwanzo wa kuhesabu
-const SLOT = 240; // kila video 4 min kwa public sync
+let player, videos=[], cur=-1;
+const BIRTH = Date.UTC(2025,0,1)/1000;
+const SLOT = 240;
 
-function getId(v){ if(!v) return ''; v=v.trim(); if(v.length==11&&!v.includes('/')) return v; if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0]; try{let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=v.match(/([a-zA-Z0-9_-]{11})/); return m?m[1]:''; }
+function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v')}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
 
-function loadFromAdmin(){
- let list=[];
+function fromAdmin(){
  try{
-  let az = JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null');
-  if(az && az.playlist && az.playlist.length){
-   list = az.playlist.map(p=>getId(p.url||p.ytid||'')).filter(x=>x);
-  }
+  let a=JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null');
+  if(a&&a.playlist&&a.playlist.length) return a.playlist.map(p=>getId(p.url||p.ytid||'')).filter(x=>x);
  }catch{}
- return list;
+ return [];
 }
 
-function getWorldPos(){
- let now = Date.now()/1000;
- let elapsed = Math.floor(now - BIRTH);
- let total = videos.length * SLOT;
- if(total==0) return {idx:0,seek:0};
- let pos = elapsed % total;
- return {idx: Math.floor(pos/SLOT), seek: pos % SLOT };
+function worldPos(){
+ let now=Date.now()/1000, elapsed=Math.floor(now-BIRTH), total=videos.length*SLOT;
+ if(!total) return {i:0,s:0};
+ let p=elapsed%total;
+ return {i:Math.floor(p/SLOT), s:p%SLOT};
 }
 
 function onYouTubeIframeAPIReady(){
- videos = loadFromAdmin();
- if(!videos.length){
-  videos = ['jNQXAC9IVRw']; // fallback kama admin bado haina video
- }
- let w = getWorldPos();
- curIdx = w.idx;
- player = new YT.Player('player',{
-  videoId: videos[w.idx],
-  playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,start:w.seek},
-  events:{
-   onReady:e=>{ e.target.seekTo(w.seek,true); e.target.playVideo(); },
-   onStateChange:e=>{ if(e.data==0){ let nw=getWorldPos(); curIdx=nw.idx; e.target.loadVideoById({videoId:videos[nw.idx],startSeconds:nw.seek}); } }
-  }
+ videos=fromAdmin();
+ if(!videos.length) videos=['jNQXAC9IVRw'];
+ let w=worldPos(); cur=w.i;
+ player=new YT.Player('player',{videoId:videos[w.i],playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,start:w.s},
+  events:{onReady:e=>{e.target.seekTo(w.s,true);e.target.playVideo();},
+  onStateChange:e=>{if(e.data==0){let n=worldPos();cur=n.i;e.target.loadVideoById({videoId:videos[n.i],startSeconds:n.s})}}}
  });
 }
 
 function startTV(){
  document.getElementById('btn').style.display='none';
- if(player){ player.unMute(); player.setVolume(100); player.playVideo(); }
+ player.unMute(); player.setVolume(100); player.playVideo();
 }
 
-// PUBLIC SYNC - RUDI ONLINE SAME SECONDS
 setInterval(()=>{
- if(!player||!videos.length) return;
- let w = getWorldPos();
- if(w.idx!==curIdx){
-  curIdx=w.idx;
-  try{ player.loadVideoById({videoId:videos[w.idx],startSeconds:w.seek}); }catch{}
- }else{
-  try{
-   let cur = player.getCurrentTime();
-   if(Math.abs(cur - w.seek) > 15){ // kama mtu ametoka akirudi - mrudishe same second
-    player.seekTo(w.seek,true);
-   }
-  }catch{}
- }
+ if(!player||!videos.length)return;
+ let w=worldPos();
+ if(w.i!==cur){cur=w.i;player.loadVideoById({videoId:videos[w.i],startSeconds:w.s})}
+ else{try{if(Math.abs(player.getCurrentTime()-w.s)>12)player.seekTo(w.s,true)}catch{}}
 },20000);
 
-// DESCRIPTION INA-SCROLL KUTOKA ADMIN
 setInterval(()=>{
- document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
- let d = localStorage.getItem('ale_academy_desc') || 'ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692';
- document.getElementById('descTxt').innerText = (d.toUpperCase() + ' • ').repeat(3);
- document.getElementById('tickTxt').innerText = (d.toUpperCase() + ' • TILL 3624692 • PUBLIC SAME SECONDS • ').repeat(3);
- // Angalia kama admin ameongeza video mpya
- let fresh = loadFromAdmin();
- if(fresh.length && fresh.length!== videos.length){
-  videos = fresh;
- }
+ document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
+ let d=localStorage.getItem('ale_academy_desc')||'ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692';
+ document.getElementById('descTxt').innerText=d.toUpperCase();
+ let ad=localStorage.getItem('ale_ad_text')||'TILL 3624692 - ADVERTISE WITH US - 100K VIEWERS - ALE TV PUBLIC';
+ document.getElementById('adTxt').innerText=ad.toUpperCase();
+ let fresh=fromAdmin(); if(fresh.length&&fresh.length!=videos.length) videos=fresh;
 },1000);
 </script>
 </body>
