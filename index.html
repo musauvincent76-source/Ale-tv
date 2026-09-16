@@ -2,42 +2,34 @@
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV - YOUR HOME OF SPORTS</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,Helvetica,sans-serif}
-body{background:#000;color:#fff;overflow-x:hidden}
-#wrap{position:relative;width:100%;background:#000}
-#player{width:100%;aspect-ratio:16/10;min-height:62vh;background:#000}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;overflow:hidden}
+#wrap{position:relative;width:100%;height:100vh;background:#000}
+#player{width:100%;height:calc(100vh - 80px);background:#000}
 #player iframe{width:100%;height:100%;pointer-events:none!important}
 #overlay{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;cursor:pointer}
-#overlay b{background:linear-gradient(90deg,#ff0000,#ffae00);color:#fff;padding:16px 32px;border-radius:40px;font-weight:900;animation:pulse 1s infinite;box-shadow:0 0 20px #ff0000}
+#overlay b{background:linear-gradient(90deg,#ff0000,#ffae00);color:#fff;padding:18px 36px;border-radius:40px;font-weight:900;font-size:16px;animation:pulse 1s infinite;box-shadow:0 0 20px #ff0000}
 @keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.1)}100%{transform:scale(1)}}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:5px 12px;border-radius:8px;font-size:11px;font-weight:900;z-index:10;animation:blink.8s infinite}
-@keyframes blink{50%{opacity:.4}}
-#aleLogo{position:absolute;top:10px;right:10px;z-index:15;background:linear-gradient(135deg,#ff0000,#ffae00);color:#fff;padding:8px 18px;border-radius:25px;font-weight:900;font-size:14px;letter-spacing:2px;border:2px solid #fff;box-shadow:0 0 20px #ff0000;display:flex;gap:8px;align-items:center}
+#live{position:absolute;top:12px;left:12px;background:red;color:#fff;padding:6px 14px;border-radius:8px;font-size:11px;font-weight:900;z-index:10}
+#aleLogo{position:absolute;top:12px;right:12px;z-index:15;background:linear-gradient(135deg,#ff0000,#ffae00);color:#fff;padding:8px 18px;border-radius:25px;font-weight:900;font-size:14px;letter-spacing:2px;border:2px solid #fff;box-shadow:0 0 15px #ff0000;display:flex;gap:8px;align-items:center}
 #aleLogo i{width:10px;height:10px;background:#fff;border-radius:50%;display:inline-block;animation:blink.6s infinite}
-#clockBox{position:absolute;bottom:88px;left:0;z-index:11;background:#000;color:#00ff88;border:2px solid #00ff88;border-left:0;padding:4px 10px;border-radius:0 12px 0 0;font-size:12px;font-weight:900}
-#tickerWrap{position:absolute;bottom:52px;left:0;right:0;height:28px;background:linear-gradient(90deg,#ff0000,#b30000);z-index:8;display:flex;align-items:center;overflow:hidden}
-#ticker span{white-space:nowrap;color:#fff;font-weight:900;font-size:11px;animation:scroll 22s linear infinite;padding-left:100%}
+@keyframes blink{50%{opacity:.3}}
+#clockBox{position:absolute;bottom:88px;left:0;z-index:11;background:#000;color:#00ff88;border:2px solid #00ff88;border-left:0;padding:5px 12px;border-radius:0 12px 0 0;font-size:12px;font-weight:900}
+#tickerWrap{position:absolute;bottom:52px;left:0;right:0;height:30px;background:linear-gradient(90deg,#ff0000,#b30000);z-index:8;display:flex;align-items:center;overflow:hidden}
+#ticker span{white-space:nowrap;color:#fff;font-weight:900;font-size:12px;animation:scroll 20s linear infinite;padding-left:100%}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-
-/* ADVERTISEMENT INAWAKA WAKA - DESIGN TOFAUTI */
 #breakingBox{position:absolute;bottom:0;left:0;right:0;height:52px;z-index:12;display:flex;align-items:center;overflow:hidden;border-top:2px solid #fff;border-bottom:2px solid #fff}
 .style1{background:linear-gradient(90deg,#ff0000,#ffae00,#ff0000);background-size:200% 100%;animation:bgMove 2s linear infinite}
 .style2{background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);background-size:200% 100%;animation:bgMove 1.5s linear infinite}
 .style3{background:linear-gradient(90deg,#8a00ff,#ff00ff,#8a00ff);background-size:200% 100%;animation:bgMove 1s linear infinite}
-.style4{background:linear-gradient(90deg,#000,#333,#000);border:2px solid #ff0000!important}
+.style4{background:#111;border-color:#ff0000!important}
 .style5{background:linear-gradient(90deg,#ffae00,#fff200,#ffae00);color:#000!important}
 @keyframes bgMove{0%{background-position:0%}100%{background-position:200%}}
-#breakLabel{color:#fff;font-weight:900;font-size:9px;padding:0 12px;height:100%;display:flex;align-items:center;background:#000;letter-spacing:1px}
+#breakLabel{color:#fff;font-weight:900;font-size:9px;padding:0 12px;height:100%;display:flex;align-items:center;background:#000}
 #adStage{flex:1;display:flex;align-items:center;justify-content:center}
-#adText{font-weight:900;font-size:12px;text-align:center;letter-spacing:.5px;animation:zoomFlash 8s ease-in-out infinite, colorFlash.5s infinite alternate}
-@keyframes zoomFlash{0%{transform:scale(.1) rotate(-5deg);opacity:0}10%{transform:scale(1.3) rotate(2deg);opacity:1}20%{transform:scale(1) rotate(0)}80%{transform:scale(1.05)}90%{transform:scale(1.2)}100%{transform:scale(.1);opacity:0}}
-@keyframes colorFlash{0%{color:#fff;text-shadow:0 0 5px #fff}50%{color:#ffff00;text-shadow:0 0 10px #ffff00}100%{color:#fff;text-shadow:0 0 15px #ff0000}}
-
-/* INFO */
-#infoBox{background:#0e1d40;border-top:3px solid #ff0000;padding:14px}
-#infoBox h2{color:#fff;font-size:15px}
-#infoBox p{font-size:11px;opacity:.7;margin-top:6px;white-space:pre-wrap}
-#catBadge{background:#ff0000;color:#fff;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:900}
+#adText{font-weight:900;font-size:12px;text-align:center;animation:zoomFlash 7s ease-in-out infinite, colorFlash.6s infinite alternate}
+@keyframes zoomFlash{0%{transform:scale(.1);opacity:0}12%{transform:scale(1.3);opacity:1}20%{transform:scale(1)}80%{transform:scale(1.05)}100%{transform:scale(.1);opacity:0}}
+@keyframes colorFlash{0%{color:#fff;text-shadow:0 0 5px #fff}100%{color:#ffff00;text-shadow:0 0 10px #ffff00}}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
@@ -45,19 +37,15 @@ body{background:#000;color:#fff;overflow-x:hidden}
 <div id="live">🔴 LIVE</div>
 <div id="aleLogo"><i></i> ALE TV</div>
 <div id="clockBox">00:00:00</div>
-<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV - YOUR HOME OF SPORTS - TILL 3624692 - 0703182307</span></div></div>
-<div id="breakingBox" class="style1"><div id="breakLabel">⚡ ADS</div><div id="adStage"><div id="adText">Advertise on ALE TV!</div></div></div>
-</div>
-<div id="infoBox">
-<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="vTitle">Loading ALE TV...</h2><span id="catBadge">LIVE</span></div>
-<p id="vDesc">ALE TV - YOUR HOME OF SPORTS</p>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV - YOUR HOME OF SPORTS - TILL 3624692 - 0703182307 - ale-tv.vercel.app</span></div></div>
+<div id="breakingBox" class="style1"><div id="breakLabel">⚡ ADS</div><div id="adStage"><div id="adText">TANGAZA HAPA - 100K VIEWERS!</div></div></div>
 </div>
 
 <script type="module">
 import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {getFirestore, collection, getDocs, query, orderBy} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 const firebaseConfig = {
-  apiKey: "WEKA HAPA API KEY YAKO YA KWELI",
+  apiKey: "WEKA API KEY YAKO YA KWELI HAPA",
   authDomain: "ale-tv-xxxx.firebaseapp.com",
   projectId: "ale-tv-xxxx",
   storageBucket: "ale-tv-xxxx.appspot.com",
@@ -66,71 +54,26 @@ const firebaseConfig = {
 };
 const app=initializeApp(firebaseConfig);
 const db=getFirestore(app);
-
 const BIRTH=new Date('2025-01-01T00:00:00Z').getTime(); const SLOT=240;
 let player,videos=[],curIdx=0;
-
 function findNow(){ if(!videos.length) return null; let e=Math.floor((Date.now()-BIRTH)/1000); return {idx:Math.floor(e/SLOT)%videos.length, seek:e%SLOT}; }
 function loadYT(cb){ if(window.YT&&window.YT.Player){cb();return;} let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; s.async=true; window.onYouTubeIframeAPIReady=cb; document.head.appendChild(s); }
-function createPlayer(vId,seek){ loadYT(()=>{ player=new YT.Player('player',{videoId:vId,playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek},events:{onReady:e=>{e.target.playVideo();},onStateChange:e=>{if(e.data==0){curIdx=(curIdx+1)%videos.length; updateInfo(videos[curIdx]); e.target.loadVideoById(videos[curIdx].id);}}}}); }); }
-function updateInfo(v){ document.getElementById('vTitle').innerText=v.title; document.getElementById('vDesc').innerText=v.description||v.title; document.getElementById('catBadge').innerText=v.category||'LIVE'; document.getElementById('tick').innerText='NOW: '+v.title+' | TILL 3624692 | '+(v.description||'').substring(0,60); }
+function createPlayer(vId,seek){ loadYT(()=>{ player=new YT.Player('player',{videoId:vId,playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek},events:{onReady:e=>{e.target.playVideo();},onStateChange:e=>{if(e.data==0){curIdx=(curIdx+1)%videos.length; e.target.loadVideoById(videos[curIdx].id);}}}}); }); }
 window.startTV=()=>{ let w=findNow(); if(!w) return; curIdx=w.idx; if(!player) createPlayer(videos[curIdx].id,w.seek); else{ try{ player.seekTo(w.seek,true); player.unMute(); player.setVolume(100); player.playVideo(); }catch{} } document.getElementById('overlay').style.display='none'; }
-
 setInterval(()=>{ document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'}); },1000);
 
-// ADVERTISEMENT DESIGN TOFAUTI - INAWAKA WAKA
-let myAds=[
- "🔥 ALE TV - YOUR HOME OF SPORTS 24/7 LIVE!",
- "💰 TILL 3624692 - SUPPORT ALE TV - Alex Musau",
- "📺 TANGAZA BIASHARA YAKO HAPA - 0703182307 - 100K Viewers!",
- "⚡ ale-tv.vercel.app - WATCH LIVE EVERYWHERE!",
- "🎵 Mpira, Habari, Burudani - LIVE ON ALE TV!"
-];
-let googleAds=[];
-let allAds=[...myAds];
-let ai=0;
-let styles=["style1","style2","style3","style4","style5"];
-
-function showAd(){
- let box=document.getElementById('breakingBox');
- let el=document.getElementById('adText');
- // badilisha design kila wakati
- box.className=styles[ai % styles.length];
- // badilisha animation
- el.style.animation='none'; void el.offsetWidth;
- let text=allAds[ai % allAds.length] || myAds[0];
- el.innerText=text;
- el.style.animation='zoomFlash 8s ease-in-out infinite, colorFlash.5s infinite alternate';
- ai++;
-}
-showAd();
-setInterval(showAd, 7000);
-
-// VUTA GOOGLE NEWS KENYA - ADS ZA GOOGLE
-async function loadGoogleNews(){
- try{
-  let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');
-  let res=await fetch(url);
-  let text=await res.text();
-  let xml=new DOMParser().parseFromString(text,"text/xml");
-  let items=xml.querySelectorAll("item");
-  googleAds=[];
-  for(let i=0;i<Math.min(15,items.length);i++){
-    let t=items[i].querySelector("title").textContent;
-    googleAds.push("📰 BREAKING: "+t);
-  }
-  allAds=[...myAds,...googleAds];
-  console.log('Google News loaded', googleAds.length);
- }catch(e){}
-}
-loadGoogleNews();
-setInterval(loadGoogleNews, 120000);
-
+// ADS INAWAKA WAKA DESIGN TOFAUTI
+let myAds=["🔥 ALE TV - YOUR HOME OF SPORTS 24/7!","💰 TILL 3624692 - SUPPORT ALE TV - Alex","📺 TANGAZA BIASHARA YAKO HAPA - 0703182307","⚡ ale-tv.vercel.app - WATCH LIVE!","🎵 Mpira, Habari, Burudani LIVE!"];
+let googleAds=[]; let allAds=[...myAds]; let ai=0; let styles=["style1","style2","style3","style4","style5"];
+function showAd(){ let box=document.getElementById('breakingBox'); let el=document.getElementById('adText'); box.className=styles[ai%styles.length]; el.style.animation='none'; void el.offsetWidth; el.innerText=allAds[ai%allAds.length]||myAds[0]; el.style.animation='zoomFlash 7s ease-in-out infinite, colorFlash.6s infinite alternate'; ai++; }
+showAd(); setInterval(showAd,7000);
+async function loadGoogleNews(){ try{ let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en'); let res=await fetch(url); let text=await res.text(); let xml=new DOMParser().parseFromString(text,"text/xml"); let items=xml.querySelectorAll("item"); googleAds=[]; for(let i=0;i<Math.min(12,items.length);i++){ googleAds.push("📰 BREAKING: "+items[i].querySelector("title").textContent); } allAds=[...myAds,...googleAds]; }catch(e){} }
+loadGoogleNews(); setInterval(loadGoogleNews,120000);
 async function init(){
- try{ const q=query(collection(db,'videos'), orderBy('createdAt','desc')); const snap=await getDocs(q); let vCloud=[]; snap.forEach(d=>{let data=d.data(); let y=data.ytid|| (data.videoUrl?data.videoUrl.split('embed/')[1]?.split('?')[0]:''); if(y) vCloud.push({id:y,title:data.title,description:data.description||'',category:data.category||'LIVE'}); }); if(vCloud.length) videos=vCloud; }catch(e){ console.log(e); }
- if(!videos.length){ try{videos=JSON.parse(localStorage.getItem('ale_videos')||'[]').map(x=>({id:x.id,title:x.title,description:x.title,category:'LIVE'}));}catch{} }
- if(!videos.length){ document.getElementById('vTitle').innerText='Hakuna video - weka admin.html'; return; }
- let w=findNow(); updateInfo(videos[w.idx]); createPlayer(videos[w.idx].id,w.seek);
+ try{ const q=query(collection(db,'videos'), orderBy('createdAt','desc')); const snap=await getDocs(q); let vCloud=[]; snap.forEach(d=>{let data=d.data(); let y=data.ytid|| (data.videoUrl?data.videoUrl.split('embed/')[1]?.split('?')[0]:''); if(y) vCloud.push({id:y,title:data.title}); }); if(vCloud.length) videos=vCloud; }catch(e){}
+ if(!videos.length){ try{videos=JSON.parse(localStorage.getItem('ale_videos')||'[]').map(x=>({id:x.id,title:x.title}));}catch{} }
+ if(!videos.length){ document.getElementById('tick').innerText='HAKUNA VIDEO - WEKA ADMIN.HTML'; return; }
+ let w=findNow(); createPlayer(videos[w.idx].id,w.seek); document.getElementById('tick').innerText='NOW: '+videos[w.idx].title+' | TILL 3624692 | ALE TV';
 }
 init();
 </script></body></html>
