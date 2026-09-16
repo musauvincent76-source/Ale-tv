@@ -5,55 +5,52 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;overflow:hidden}
 #wrap{position:relative;width:100%;height:100vh;background:#000}
-/* NIMEIPANDISHA JUU INCH MBILI - kutoka 200px mpaka 130px */
-#player{width:100%;height:calc(100vh - 130px);background:#000}
+/* TV IMEPANDA JUU - IMEACHA NYEUSI NYINGI CHINI */
+#player{width:100%;height:58vh;background:#000}
 #player iframe{width:100%;height:100%}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:900;z-index:5}
 #logo{position:absolute;top:10px;right:10px;background:red;color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:12px;z-index:5;border:2px solid #fff}
-#black{position:absolute;bottom:80px;left:0;right:0;height:50px;background:#000;z-index:4;display:flex;align-items:center;justify-content:center;color:#444;font-size:8px;letter-spacing:2px}
-#adBox{position:absolute;bottom:0;left:0;right:0;height:80px;z-index:10;display:flex;align-items:center;border-top:3px solid #fff}
+/* HAPA NDIPO NYEUSI ULIYOSEMA - 2 INCHES */
+#blackZone{position:absolute;top:58vh;left:0;right:0;height:22vh;background:#050505;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;border-top:2px solid #111;border-bottom:2px solid #111}
+#blackZone b{color:#222;font-size:9px;letter-spacing:3px}
+#blackZone small{color:#333;font-size:8px;margin-top:4px}
+/* ADS - HAPA CHINI KAMA ULIACHA */
+#adBox{position:absolute;bottom:0;left:0;right:0;height:20vh;z-index:10;display:flex;align-items:center;border-top:3px solid #fff}
 .d1{background:linear-gradient(90deg,red,orange,red);background-size:300% 100%;animation:m 1.5s linear infinite}
 .d2{background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);background-size:300% 100%;animation:m 1s linear infinite}
 .d3{background:linear-gradient(90deg,#8a00ff,#ff00ff,#8a00ff);background-size:300% 100%;animation:m.8s linear infinite}
-.d4{background:#000;color:#fff;border:3px solid yellow}
 @keyframes m{0%{background-position:0%}100%{background-position:300%}}
 #adLabel{background:#000;color:#fff;padding:0 10px;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900}
 #ad{flex:1;text-align:center;font-weight:900;font-size:14px;animation:z 6s infinite;color:#fff}
 @keyframes z{0%{transform:scale(.1);opacity:0}15%{transform:scale(1.3);opacity:1}25%{transform:scale(1)}85%{transform:scale(1)}100%{transform:scale(.1);opacity:0}}
-#resume{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:30;background:#000;color:#fff;border:2px solid #00ff88;border-radius:16px;padding:16px 20px;text-align:center;display:none;width:80%;max-width:300px}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
-<div id="black">ALE TV - YOUR HOME OF SPORTS</div>
+<div id="blackZone"><b>ALE TV - YOUR HOME OF SPORTS</b><small>TILL 3624692 • SPACE YA VITU ZINGINE HAPA</small></div>
 <div id="live">🔴 LIVE</div>
 <div id="logo">ALE TV</div>
-<div id="resume"><div style="color:#00ff88;font-weight:900">KARIBU TENA MKUU! 🙏</div><div id="rt" style="font-size:11px;margin:8px 0"></div><button onclick="goResume()" style="background:#00ff88;color:#000;border:0;padding:10px 20px;border-radius:20px;font-weight:900;width:100%">ENDELEA ▶️</button><button onclick="goNew()" style="margin-top:8px;background:#222;color:#fff;border:1px solid #444;padding:8px;border-radius:20px;width:100%;font-size:10px">ANZA UPYA</button></div>
-<div id="adBox" class="d1"><div id="adLabel">ADS</div><div id="adStage" style="flex:1;display:flex;justify-content:center"><div id="ad">TILL 3624692</div></div></div>
+<div id="adBox" class="d1"><div id="adLabel">ADS</div><div id="ad" style="flex:1;display:flex;justify-content:center"><span id="adTxt">TILL 3624692</span></div></div>
 </div>
 <script>
-let player, videos=[], cur=0, resumeData=null;
+let player, videos=[], cur=0;
+const SLOT = 240; // kila video 4 min
 function getId(v){ if(!v) return ''; v=v.trim(); if(v.length==11&&!v.includes('/')) return v; if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0]; try{let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=v.match(/([a-zA-Z0-9_-]{11})/); return m?m[1]:''; }
 function loadYT(cb){ if(window.YT&&window.YT.Player){cb();return;} let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); window.onYouTubeIframeAPIReady=cb; }
 
-// SAVE KILA SEKUNDE - HII NDIO FIX!
-function saveNow(){
- if(!player||!player.getCurrentTime) return;
- try{
-  let t=player.getCurrentTime();
-  if(t>2){ // usisave sec 0-2
-    localStorage.setItem('ale_resume', JSON.stringify({id:videos[cur].id, idx:cur, t:t, at:Date.now()}));
-  }
- }catch{}
+function getBirth(){
+  let b=localStorage.getItem('ale_birth');
+  if(!b){ b=Date.now().toString(); localStorage.setItem('ale_birth', b); }
+  return parseInt(b);
 }
 
-window.goResume=()=>{
- document.getElementById('resume').style.display='none';
- if(resumeData){ playAt(resumeData.idx, resumeData.t); }
-}
-window.goNew=()=>{
- localStorage.removeItem('ale_resume');
- document.getElementById('resume').style.display='none';
- playAt(0,0);
+function findNow(){
+  let birth=getBirth();
+  let elapsed=Math.floor((Date.now()-birth)/1000); // sec tangu TV ianze mara ya kwanza
+  let totalSlot=videos.length*SLOT;
+  let pos=elapsed%totalSlot;
+  let idx=Math.floor(pos/SLOT);
+  let seek=pos%SLOT;
+  return {idx:idx, seek:seek, elapsed:elapsed};
 }
 
 function playAt(idx, seek){
@@ -62,27 +59,37 @@ function playAt(idx, seek){
  loadYT(()=>{
   if(player){
     player.loadVideoById({videoId:vid, startSeconds:seek});
-    setTimeout(()=>{ try{player.setPlaybackRate(0.9); player.unMute(); player.setVolume(100);}catch{} },600);
+    setTimeout(()=>{ try{player.setPlaybackRate(0.9); player.playVideo(); player.unMute();}catch{} },600);
     return;
   }
   player=new YT.Player('player',{
    videoId:vid,
-   playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,start:Math.floor(seek)},
+   playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,start:seek},
    events:{
     onReady:e=>{
       e.target.playVideo();
-      try{ e.target.setPlaybackRate(0.9); }catch{}
-      setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100); e.target.setPlaybackRate(0.9);}catch{} },1200);
-      // ANZA KUSAVE KILA 1 SEC - HII NDIO SIRI!
-      setInterval(saveNow,1000);
+      try{e.target.setPlaybackRate(0.9);}catch{}
+      setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100); e.target.setPlaybackRate(0.9);}catch{} },1000);
+      // kila 10 sec angalia kama tuko nyuma
+      setInterval(()=>{
+        try{
+          let now=findNow();
+          let curTime=e.target.getCurrentTime();
+          // kama tuko nyuma zaidi ya 15 sec, ruka mbele
+          if(Math.abs(now.seek-curTime)>15 || now.idx!=cur){
+            cur=now.idx;
+            e.target.loadVideoById({videoId:videos[now.idx].id, startSeconds:now.seek});
+          }
+          e.target.setPlaybackRate(0.9);
+        }catch{}
+      },10000);
     },
     onStateChange:e=>{
       try{e.target.setPlaybackRate(0.9);}catch{}
-      saveNow();
-      if(e.data==0){ // video imeisha - futa save, nenda next
-        localStorage.removeItem('ale_resume');
-        cur=(cur+1)%videos.length;
-        e.target.loadVideoById(videos[cur].id);
+      if(e.data==0){
+        let now=findNow();
+        cur=now.idx;
+        e.target.loadVideoById({videoId:videos[cur].id, startSeconds:now.seek});
       }
     }
    }
@@ -91,11 +98,11 @@ function playAt(idx, seek){
 }
 
 // ADS
-let ads=["🔥 ALE TV - YOUR HOME OF SPORTS!","💰 TILL 3624692 - SUPPORT ALE TV","📺 TANGAZA HAPA - 0703182307","⚡ ale-tv.vercel.app - LIVE 24/7","🏆 MPIRA LIVE - ALE TV!"];
-let ai=0, des=["d1","d2","d3","d4"];
+let ads=["🔥 ALE TV - YOUR HOME OF SPORTS!","💰 TILL 3624692 - SUPPORT ALE TV - 0703182307","📺 TANGAZA BIASHARA YAKO HAPA - 100K VIEWERS","⚡ ale-tv.vercel.app - LIVE 24/7"];
+let ai=0, des=["d1","d2","d3"];
 setInterval(()=>{
  document.getElementById('adBox').className=des[ai%des.length];
- let el=document.getElementById('ad');
+ let el=document.getElementById('adTxt');
  el.style.animation='none'; void el.offsetWidth;
  el.innerText=ads[ai%ads.length];
  el.style.animation='z 6s infinite';
@@ -107,27 +114,8 @@ function init(){
  try{ loc=JSON.parse(localStorage.getItem('ale_videos')||'[]'); }catch{}
  if(loc.length){ videos=loc.map(v=>({id:getId(v.id)})).filter(v=>v.id); }
  if(!videos.length){ videos=[{id:'jNQXAC9IVRw'},{id:'5qap5aO4i9A'},{id:'jfKfPfyJRdk'}]; }
-
- // CHECK KAMA ALISHAWAHI TAZAMA
- let saved=null;
- try{ saved=JSON.parse(localStorage.getItem('ale_resume')||'null'); }catch{}
- if(saved && (Date.now()-saved.at)<6*60*60*1000){ // kama ni ndani ya masaa 6
-   let idx=videos.findIndex(v=>v.id==saved.id);
-   if(idx>=0){
-     resumeData={idx:idx, t:saved.t};
-     document.getElementById('rt').innerText=`Uliishia sec ${Math.floor(saved.t)} - Video ${idx+1}`;
-     document.getElementById('resume').style.display='block';
-     // auto resume baada ya 4 sec
-     setTimeout(()=>{ if(document.getElementById('resume').style.display!='none') goResume(); },4000);
-     return;
-   }
- }
- playAt(0,0);
+ let now=findNow();
+ playAt(now.idx, now.seek);
 }
 init();
-
-// SAVE AKITOKA ONLINE
-window.addEventListener('pagehide', saveNow);
-window.addEventListener('beforeunload', saveNow);
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveNow(); });
 </script></body></html>
