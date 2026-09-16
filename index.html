@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV - ONE INCH</title>
+<title>ALE TV - ONE INCH KUBWA SANA</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:sans-serif}
 #wrap{position:relative;width:100%;background:#000;overflow:hidden}
-#player{width:100%;aspect-ratio:16/6;background:#000}
-#player iframe{width:100%;height:100%;pointer-events:none!important}
+#player{width:100%;aspect-ratio:16/4.8;background:#000}
+#player iframe{width:100%;height:100%;pointer-events:none!important;transform:scale(1.15);transform-origin:center}
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
 #overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
@@ -17,7 +17,7 @@ body{background:#000;color:#fff;font-family:sans-serif}
 #ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 15s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 #breakingBox{position:absolute;bottom:0;left:0;right:0;height:78px;background:#000;border-top:3px solid #ff0000;border-bottom:3px solid #ff0000;z-index:12;display:flex;align-items:center;overflow:hidden}
-#breakingLabel{background:#ff0000;color:#fff;font-weight:900;font-size:11px;padding:0 14px;height:100%;display:flex;align-items:center;letter-spacing:1px;white-space:nowrap}
+#breakingLabel{background:#ff0000;color:#fff;font-weight:900;font-size:11px;padding:0 14px;height:100%;display:flex;align-items:center}
 #breakingTicker{flex:1;overflow:hidden;white-space:nowrap}
 #breakingTicker span{display:inline-block;padding-left:100%;color:#fff;font-weight:700;font-size:12px;animation:scroll2 60s linear infinite}
 @keyframes scroll2{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
@@ -32,7 +32,7 @@ body{background:#000;color:#fff;font-family:sans-serif}
 <div id="clockBox">00:00:00</div>
 <div id="nextBox"></div>
 <div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV WORLD LIVE</span></div></div>
-<div id="breakingBox"><div id="breakingLabel">⚡ BREAKING NEWS</div><div id="breakingTicker"><span id="breakText">Loading Trending News from Google... | ALE TV - The Home of African Hits & World News | Advertise Here: ALE TV ni ya kazi gani? - Ni TV ya Muziki, Habari, na Burudani 24/7 LIVE! |</span></div></div>
+<div id="breakingBox"><div id="breakingLabel">⚡ BREAKING NEWS</div><div id="breakingTicker"><span id="breakText">ALE TV LIVE - TV KUBWA SANA - Waimbaji wanaonekana full! |</span></div></div>
 </div>
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
@@ -45,7 +45,7 @@ function startTV(){let w=findNow();if(!w)return;videos=getV();curIdx=w.idx;if(!p
 function resumeLiveGentle(){if(!player)return;let w=findNow();if(!w)return;try{let c=player.getCurrentTime(),d=w.seek-c;if(Math.abs(d)>12){isCatching=true;player.setPlaybackRate(1.08);setTimeout(()=>{try{let w2=findNow();if(Math.abs(w2.seek-player.getCurrentTime())>8)player.seekTo(w2.seek,true);player.setPlaybackRate(1);isCatching=false}catch{}},15000)}else{player.setPlaybackRate(1);if(Math.abs(d)>4)player.seekTo(w.seek,true)}player.playVideo()}catch{}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)resumeLiveGentle()});window.addEventListener('online',resumeLiveGentle);window.addEventListener('focus',resumeLiveGentle);
 setInterval(()=>{document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});if(!player||!player.getDuration)return;try{let d=player.getDuration(),c=player.getCurrentTime(),rem=d-c;if(rem<=60&&rem>0){let n=videos[(curIdx+1)%videos.length];if(n){let nb=document.getElementById('nextBox');nb.style.display='block';nb.innerText='NEXT: '+n.title}}else document.getElementById('nextBox').style.display='none';if(!isCatching&&player.getPlaybackRate()!==1)player.setPlaybackRate(1)}catch{}},1000);
-async function loadBreaking(){try{let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');let res=await fetch(url);let text=await res.text();let xml=new DOMParser().parseFromString(text,"text/xml");let items=xml.querySelectorAll("item");let news=[];for(let i=0;i<Math.min(8,items.length);i++){news.push(items[i].querySelector("title").textContent.replace(' - ',' | '))}let advert="ALE TV - Ni TV ya Muziki, Habari, na Burudani 24/7 LIVE | TANGAZA BIASHARA YAKO HAPA - Watu 100k wanaona! |";let finalText=news.join(' ⚡ ')+' ⚡ '+advert+' ⚡ '+news.join(' ⚡ ');document.getElementById('breakText').innerText=finalText}catch(e){document.getElementById('breakText').innerText="ALE TV - The Home of African Hits | Advertise Your Business Here - Call ALE TV | BREAKING: Trending in Kenya | ALE TV LIVE 24/7 |"}}
+async function loadBreaking(){try{let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');let res=await fetch(url);let text=await res.text();let xml=new DOMParser().parseFromString(text,"text/xml");let items=xml.querySelectorAll("item");let news=[];for(let i=0;i<Math.min(8,items.length);i++){news.push(items[i].querySelector("title").textContent.replace(' - ',' | '))}let advert="ALE TV - Ni TV ya Muziki, Habari, na Burudani 24/7 LIVE | TANGAZA BIASHARA YAKO HAPA - Watu 100k wanaona! |";let finalText=news.join(' ⚡ ')+' ⚡ '+advert;document.getElementById('breakText').innerText=finalText}catch(e){document.getElementById('breakText').innerText="ALE TV - The Home of African Hits | Advertise Your Business Here | BREAKING: Trending in Kenya | ALE TV LIVE 24/7 |"}}
 loadBreaking();setInterval(loadBreaking,1000*60*5);
 let v=getV();videos=v;if(v.length){let w=findNow();createPlayer(v[w.idx].id,w.seek);document.getElementById('tick').innerText='NOW: '+v[w.idx].title+' | ALE TV LIVE'}
 </script>
