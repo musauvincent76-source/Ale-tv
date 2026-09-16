@@ -1,14 +1,37 @@
 <!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>ALE TV KE LIVE</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;height:100vh;display:flex;flex-direction:column;font-family:sans-serif}#top{height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:3px solid #f59e0b}#top b{color:#f59e0b}#clock{color:#0f0;background:#000;border:1px solid #333;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:900}#vid{flex:1;background:#000;position:relative}#vid iframe{width:100%;height:100%;border:0}#ticker{height:44px;background:#f59e0b;color:#000;display:flex;align-items:center;font-weight:900;overflow:hidden;white-space:nowrap}#ticker div{padding-left:100%;animation:scroll 25s linear infinite}#no{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#555;text-align:center}@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}</style>
+<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;height:100vh;display:flex;flex-direction:column;font-family:sans-serif;overflow:hidden}#top{height:50px;background:linear-gradient(90deg,#111,#000);display:flex;align-items:center;justify-content:space-between;padding:0 16px;border-bottom:3px solid #f59e0b}#top b{color:#f59e0b;letter-spacing:1px}#clock{color:#00ff88;background:#000;border:1px solid #333;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:900}#vid{flex:1;background:#000;position:relative}#vid iframe{width:100%;height:100%;border:0}#ticker{height:46px;background:#f59e0b;color:#000;display:flex;align-items:center;font-weight:900;overflow:hidden;white-space:nowrap;font-size:15px}#ticker div{padding-left:100%;animation:scroll 30s linear infinite}#no{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#666;text-align:center}@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}</style>
 </head><body>
-<div id="top"><b>ALE TV KE LIVE</b><div id="clock">00:00:00</div></div>
-<div id="vid"><iframe id="yt" allow="autoplay; fullscreen"></iframe><div id="no">📺 Hakuna Video<br><small>Weka YouTube kwa Admin</small></div></div>
-<div id="ticker"><div id="tick">TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307 - ALE TV KE LIVE</div></div>
+<div id="top"><b>ALE TV KE LIVE - AZAM STYLE</b><div id="clock">00:00:00</div></div>
+<div id="vid"><iframe id="yt" allow="autoplay; encrypted-media; fullscreen" allowfullscreen></iframe><div id="no" style="display:none">📺 Hakuna Video<br><small style="font-size:11px">Nenda ADMIN weka YouTube link</small></div></div>
+<div id="ticker"><div id="tick">TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307 - ALE TV KE LIVE - KARIBU</div></div>
 <script>
-function getId(){ return localStorage.getItem('ale_tv_id')|| (JSON.parse(localStorage.getItem('aletv_live_now')||'{}').ytid) || (JSON.parse(localStorage.getItem('ale_videos')||'[]').slice(-1)[0]?.id) || ''; }
-function getTicker(){ return localStorage.getItem('ale_ticker_final') || localStorage.getItem('ale_ticker_custom') || (JSON.parse(localStorage.getItem('aletv_live_now')||'{}').desc) || 'TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307'; }
-function load(){ let id=getId(); let tk=getTicker(); document.getElementById('tick').innerText=tk + ' • ' + tk; if(!id){document.getElementById('no').style.display='block';return} document.getElementById('no').style.display='none'; document.getElementById('yt').src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=0&controls=1'; }
-load();
-setInterval(()=>{ document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false}); let nid=getId(); if(nid &&!document.getElementById('yt').src.includes(nid)) load(); let nt=getTicker(); if(nt && document.getElementById('tick').innerText.substring(0,20)!==nt.substring(0,20)) document.getElementById('tick').innerText=nt + ' • ' + nt; },2000);
+function getData(){
+  try{
+    let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
+    let now=JSON.parse(localStorage.getItem('aletv_live_now')||'null');
+    let tid=localStorage.getItem('ale_tv_id')||'';
+    let finalTicker=localStorage.getItem('ale_ticker_final')||'';
+    return {vids,now,tid,finalTicker};
+  }catch(e){return {vids:[],now:null,tid:'',finalTicker:''}}
+}
+function loadTV(){
+  let {vids,now,tid,finalTicker}=getData();
+  let id = now?.ytid || tid || (vids[vids.length-1]?.id) || '';
+  let ticker = finalTicker || now?.desc || (vids[vids.length-1]?.desc) || localStorage.getItem('ale_ticker_custom') || 'TILL 3624692 • ALE FOOTBALL ACADEMY 0703182307 • ALE TV KE LIVE';
+  
+  document.getElementById('tick').innerText = ticker + ' • ' + ticker + ' • ' + ticker;
+  
+  let iframe=document.getElementById('yt');
+  if(!id){ document.getElementById('no').style.display='block'; iframe.src=''; return; }
+  document.getElementById('no').style.display='none';
+  if(!iframe.src.includes(id)){
+    iframe.src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=0&controls=1&rel=0&modestbranding=1&playsinline=1';
+  }
+}
+loadTV();
+setInterval(()=>{
+  document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
+  loadTV();
+},2000);
 </script></body></html>
