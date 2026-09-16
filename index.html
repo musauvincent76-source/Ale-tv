@@ -2,156 +2,75 @@
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ALE TV - PUBLIC CONTINUOUS</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-html,body{width:100%;height:100%;background:#000;overflow:hidden}
-body{display:flex;flex-direction:column;height:100vh;height:100dvh}
-#head{height:34px;display:flex;background:#111;border-bottom:3px solid #00ff88;flex-shrink:0}
-#head b{background:#00ff88;color:#000;font-size:9px;padding:0 10px;display:flex;align-items:center;flex-shrink:0}
-#head span{flex:1;color:#00ff88;font-size:11px;font-weight:900;white-space:nowrap;overflow:hidden;padding-left:10px;display:flex;align-items:center}
-#clock{width:85px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;border-left:2px solid #00ff88;flex-shrink:0;font-size:12px}
-#vid{flex:1;background:#000;position:relative;overflow:hidden}
+body{background:#000;color:#fff;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+#top{height:36px;background:#111;display:flex;align-items:center;border-bottom:3px solid #00ff88;flex-shrink:0}
+#top b{background:#00ff88;color:#000;font-size:10px;padding:0 10px;height:100%;display:flex;align-items:center}
+#top span{flex:1;font-size:11px;font-weight:900;color:#00ff88;padding-left:10px;white-space:nowrap;overflow:hidden}
+#time{width:80px;background:#000;border-left:2px solid #00ff88;display:flex;align-items:center;justify-content:center;font-weight:900;flex-shrink:0}
+#video{flex:1;background:#000;position:relative}
 #player{width:100%;height:100%}
-.badge{position:absolute;top:8px;padding:4px 12px;border-radius:20px;font-size:9px;font-weight:900;color:#fff;z-index:5}
-#live{left:8px;background:red;animation:b 1s infinite}
-#logo{right:8px;background:red;border:1px solid #fff}
-#sync{bottom:8px;left:50%;transform:translateX(-50%);background:rgba(0,255,136,.9);color:#000;font-size:8px;font-weight:900;padding:3px 10px;border-radius:20px;z-index:5}
-@keyframes b{50%{opacity:.4}}
-#ad{height:88px;background:#fff;display:flex;flex-shrink:0;overflow:hidden;border-top:4px solid transparent;border-image:linear-gradient(90deg,#4285f4,#ea4335,#fbbc05,#34a853) 1}
-#adL{width:55px;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
-#adC{flex:1;padding:5px 10px;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
-#adC div:first-child{font-size:8px;color:#5f6368}
-#adC div:nth-child(2){font-size:12px;color:#1a0dab;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#adC div:nth-child(3){font-size:14px;color:#000;font-weight:900;white-space:nowrap;animation:sc 9s linear infinite}
+#ads{height:70px;background:yellow;color:#000;display:flex;align-items:center;flex-shrink:0}
+#ads div:first-child{width:50px;background:#000;color:#fff;height:100%;display:flex;align-items:center;justify-content:center;font-size:20px}
+#ads div:last-child{flex:1;text-align:center;font-weight:900;font-size:16px;animation:sc 10s linear infinite;white-space:nowrap}
 @keyframes sc{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-#adC div:last-child{font-size:10px;color:#006621}
-#ticker{height:26px;background:#000;border-top:2px solid red;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
-#ticker b{background:red;font-size:8px;padding:0 8px;height:100%;display:flex;align-items:center;flex-shrink:0}
-#ticker span{font-size:10px;white-space:nowrap;padding-left:100%;animation:s 35s linear infinite;color:#fff}
-@keyframes s{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#over{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:999;display:flex;align-items:center;justify-content:center;flex-direction:column}
-#over button{background:#00ff88;color:#000;border:0;padding:18px 35px;border-radius:30px;font-weight:900;font-size:17px}
+#break{height:26px;background:#000;border-top:2px solid red;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
+#break b{background:red;padding:0 8px;height:100%;display:flex;align-items:center;font-size:8px}
+#break span{color:#fff;font-size:10px;white-space:nowrap;padding-left:10px}
+#btn{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#00ff88;color:#000;border:0;padding:20px 40px;border-radius:30px;font-weight:900;font-size:18px;z-index:999}
 </style>
 </head>
 <body>
-<div id="head"><b>🏫 ACADEMY</b><span id="aTxt">ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692</span><div id="clock">00:00:00</div></div>
-<div id="vid"><div id="player"></div><div id="live" class="badge">🔴 LIVE PUBLIC</div><div id="logo" class="badge">ALE TV</div><div id="sync" class="badge">🌍 PUBLIC - IMEENDELEA</div></div>
-<div id="ad"><div id="adL"><div id="aI">📢</div><div style="font-size:7px;font-weight:900">Ad</div></div><div id="adC"><div><span style="border:1px solid #dadce0;border-radius:3px;padding:1px 4px">Ad</span> <span id="aU">ale-tv.com</span></div><div id="aT">ALE TV Advertisement</div><div id="aD">TILL 3624692 - ADVERTISE WITH US</div><div id="aLk">Till 3624692</div></div></div>
-<div id="ticker"><b>BREAKING</b><span id="tTxt">ALE TV PUBLIC CONTINUOUS</span></div>
-<div id="over"><button onclick="start()">▶️ BONYEZA HAPA KUANZA TV</button><p style="font-size:11px;margin-top:10px;color:#888">TV inaendelea - ukitoka ukirudi utapata imeendelea</p></div>
+
+<div id="top"><b>🏫 ACADEMY</b><span id="desc">ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692</span><div id="time">00:00</div></div>
+
+<div id="video"><div id="player"></div></div>
+
+<div id="ads"><div>📢</div><div id="adText">TILL 3624692 - ADVERTISE WITH US</div></div>
+
+<div id="break"><b>BREAKING</b><span id="tick">ALE TV - PUBLIC TV - TILL 3624692</span></div>
+
+<button id="btn" onclick="playTV()">▶️ BONYEZA HAPA TV ICHEZE</button>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
-let player, videos=[], curIdx=-1;
-const BIRTH = Date.UTC(2025,0,1)/1000; // Jan 1 2025
-const SLOT = 240; // 4 min per video
-
-function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v')}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
-
-function getWorldPosition(){
- let now=Date.now()/1000;
- let elapsed=Math.floor(now-BIRTH);
- let total=videos.length*SLOT;
- if(total==0) return {idx:0,seek:0};
- let pos=elapsed%total;
- return {idx:Math.floor(pos/SLOT),seek:pos%SLOT};
-}
-
+let player;
 function onYouTubeIframeAPIReady(){
- initVideos();
-}
-
-function initVideos(){
- let list=[];
- try{
-  let az=JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null');
-  if(az&&az.playlist&&az.playlist.length){
-   list=az.playlist.map(p=>({id:getId(p.url||p.ytid||'')}))
-  .filter(x=>x.id);
-  }
- }catch{}
- if(!list.length){
-  try{
-   let old=JSON.parse(localStorage.getItem('ale_videos')||'[]');
-   if(old.length) list=old.map(v=>({id:getId(v.id||'')})).filter(x=>x.id);
-  }catch{}
- }
- if(!list.length) list=[{id:'jNQXAC9IVRw'},{id:'jfKfPfyJRdk'},{id:'5qap5aO4i9A'}];
- videos=list;
- let w=getWorldPosition();
- curIdx=w.idx;
  player=new YT.Player('player',{
-  videoId:videos[w.idx].id,
-  playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,start:w.seek},
+  videoId:'jNQXAC9IVRw',
+  width:'100%',
+  height:'100%',
+  playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1},
   events:{
    onReady:e=>{
-    e.target.seekTo(w.seek,true);
     e.target.playVideo();
-   },
-   onStateChange:e=>{
-    if(e.data==0){ // video imeisha, nenda next kwa world position
-     let nw=getWorldPosition();
-     curIdx=nw.idx;
-     e.target.loadVideoById({videoId:videos[nw.idx].id,startSeconds:nw.seek});
-    }
    }
   }
  });
 }
-
-function start(){
- document.getElementById('over').style.display='none';
+function playTV(){
+ document.getElementById('btn').style.display='none';
  if(player){
+  player.playVideo();
   player.unMute();
   player.setVolume(100);
-  player.playVideo();
  }
 }
 
-// SYNC KILA 30 SECONDS - HAKUNA KUANZA ZERO, NI KUENDELEA TU
+// TIME + ADS ROTATION
 setInterval(()=>{
- if(!player||!videos.length) return;
- let w=getWorldPosition();
- // Kama index imebadilika (time ya video mpya) - badilisha video
- if(w.idx!==curIdx){
-  curIdx=w.idx;
-  try{ player.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek}); }catch{}
- } else {
-  // Kama ni video moja lakini seek imetofautiana zaidi ya 10 sec - sync kidogo
-  try{
-   let current=player.getCurrentTime();
-   if(Math.abs(current-w.seek)>12){
-    player.seekTo(w.seek,true);
-   }
-  }catch{}
- }
-},30000); // check kila 30 sec pekee - si kila time
-
-setInterval(()=>{
- document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
- let d=localStorage.getItem('ale_academy_desc')||'ALE FOOTBALL ACADEMY - 0703182307 - TILL 3624692';
- document.getElementById('aTxt').innerText=d.toUpperCase();
- document.getElementById('tTxt').innerText=d.toUpperCase()+' • TILL 3624692 • PUBLIC CONTINUOUS - UKITOKA UKIRUDI IMEENDELEA • ';
+ document.getElementById('time').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
 },1000);
 
-// ADS GOOGLE STYLE
-let ads=[{i:"📢",u:"ale-tv.com/ad",t:"Advertise With ALE TV - TILL 3624692",d:"🔴 ADVERTISE NOW - TILL 3624692 - 100K VIEWERS!",l:"Till 3624692"},{i:"🏫",u:"alefootballacademy.co.ke",t:"ALE Academy - Registration Open",d:"🟡 JOIN ALE ACADEMY - 0703182307 - 4-18 YEARS!",l:"0703182307"},{i:"💰",u:"mpesa",t:"Support ALE TV - TILL 3624692",d:"💰 TILL 3624692 - ASANTE SANA!",l:"Till 3624692"},{i:"🌍",u:"ale-tv.com",t:"Public TV - Same Time Everywhere",d:"🌍 KISUMU • NAIROBI • MOMBASA • UGANDA - SAME TIME!",l:"Public Continuous"}];
-let idx=0;setInterval(()=>{let a=ads[idx%ads.length];document.getElementById('aI').innerText=a.i;document.getElementById('aU').innerText=a.u;document.getElementById('aT').innerText=a.t;let e=document.getElementById('aD');e.style.animation='none';void e.offsetWidth;e.innerText=a.d;e.style.animation='sc 9s linear infinite';document.getElementById('aLk').innerText=a.l;idx++;},4000);
-
-// ADMIN CONNECT - KAMA ADMIN IMEUPDATE VIDEO
+let ads=["TILL 3624692 - ADVERTISE WITH US - 100K VIEWERS","ALE ACADEMY - JOIN NOW 0703182307","TILL 3624692 - SUPPORT ALE TV","ALE TV PUBLIC - KISUMU NAIROBI MOMBASA SAME TIME"];
+let i=0;
 setInterval(()=>{
- try{
-  let az=JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null');
-  if(az&&az.playlist){
-   let newList=az.playlist.map(p=>getId(p.url||p.ytid||'')).filter(x=>x);
-   if(newList.length&&newList.length!==videos.length){
-    videos=newList.map(id=>({id}));
-   }
-  }
- }catch{}
-},5000);
+ document.getElementById('adText').innerText=ads[i%ads.length];
+ i++;
+},3000);
 </script>
 </body>
 </html>
