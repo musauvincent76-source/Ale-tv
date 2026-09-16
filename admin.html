@@ -1,110 +1,99 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE ADMIN GEK</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head><body class="bg-[#0a0a0a] text-white p-4">
-<div class="max-w-2xl mx-auto">
-
-<div class="flex justify-between items-center mb-6">
-<h1 class="text-xl font-black">ALE <span class="text-orange-500">GEK ADMIN</span></h1>
-<a href="/" target="_blank" class="bg-white text-black px-5 py-2 rounded-full text-xs font-black">📺 ONA TV</a>
+<title>ALE TV ADMIN</title>
+<style>
+body{margin:0;background:#111;color:#fff;font-family:sans-serif;padding:12px}
+h2{color:#f59e0b;text-align:center}
+.card{background:#1a1a1a;padding:12px;border-radius:10px;margin:10px 0;border:1px solid #333}
+input,select,textarea{width:100%;padding:10px;margin:6px 0;background:#000;color:#fff;border:1px solid #444;border-radius:6px;box-sizing:border-box}
+button{padding:10px 15px;border:none;border-radius:6px;font-weight:bold;cursor:pointer;margin:3px}
+.btn-add{background:#f59e0b;color:#000;width:100%}
+.btn-del{background:#ff0000;color:#fff}
+.btn-ticker{background:#00ff88;color:#000;width:100%}
+.list-item{background:#222;padding:8px;border-radius:6px;margin:5px 0;display:flex;justify-content:space-between;align-items:center}
+.stats{display:flex;gap:10px;text-align:center}
+.stats div{background:#222;flex:1;padding:10px;border-radius:8px}
+.stats b{color:#f59e0b;font-size:18px;display:block}
+#preview{display:none;gap:10px;align-items:center;background:#000;padding:8px;border-radius:6px;border:1px solid #f59e0b;margin-top:8px}
+</style></head><body>
+<h2>🔥 ALE TV ADMIN PANEL 🔥</h2>
+<div style="display:flex;gap:10px;margin-bottom:15px">
+<a href="index.html" target="_blank" style="flex:1;text-decoration:none"><button style="width:100%;background:#00ff88;color:#000;padding:12px;font-size:15px">📺 FUNGUA TV - LIVE ROCKET 🚀</button></a>
 </div>
-
-<div class="bg-[#18181b] border border-zinc-800 rounded-2xl p-5">
-<input id="link" placeholder="Paste YouTube link hapa..." class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm outline-none focus:border-orange-500">
-<div id="status" class="text-[11px] mt-2 text-zinc-500">👉 Weka link...</div>
-
-<div id="preview" class="hidden mt-4 flex gap-3 bg-black p-3 rounded-xl border border-zinc-800">
-<img id="thumb" class="w-20 h-14 rounded object-cover">
-<div class="flex-1"><p id="pTitle" class="text-xs font-bold"></p><p id="pChannel" class="text-[10px] text-zinc-500"></p></div>
+<div class="stats">
+<div><b id="totalV">0</b>Videos</div>
+<div><b id="liveV">LIVE</b>Status</div>
+<div><b id="time">00:00</b>Time</div>
 </div>
+<div class="card">
+<h3>➕ Weka Video Mpya - GEK AUTOMATIC 🤖</h3>
+<input id="ytLink" placeholder="Weka YouTube Link hapa... title itajazana yenyewe!" oninput="autoGek()">
+<div id="status" style="font-size:11px;color:#888;margin-top:4px">👉 Weka link...</div>
+<div id="preview"><img id="thumb" style="width:60px;height:40px;border-radius:4px;object-fit:cover"><div><b id="pTitle" style="font-size:11px"></b><br><small id="pChan" style="color:#888"></small></div></div>
 
-<input id="title" placeholder="Title (ita-auto)" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm mt-4">
-<input id="cat" value="BURUDANI" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm mt-3">
-<textarea id="desc" rows="3" placeholder="Description (ita-auto)" class="w-full bg-black border border-zinc-800 rounded-xl px-4 py-3 text-sm mt-3"></textarea>
-
-<button onclick="save()" id="btn" class="w-full bg-orange-500 text-black font-black py-3 rounded-xl mt-4 text-sm">⚡ GEK & HIFADHI</button>
-<p id="msg" class="text-xs text-center mt-3"></p>
+<input id="vTitle" placeholder="Title (ita-auto)">
+<textarea id="vDesc" placeholder="Description (ita-auto)"></textarea>
+<select id="vCat"><option>BURUDANI</option><option>HABARI</option><option>MICHEZO</option><option>DINI</option><option>ELIMU</option><option>MZIKI</option></select>
+<label style="display:flex;align-items:center;gap:8px;margin:8px 0;font-size:13px;color:#ff4444"><input type="checkbox" id="isLive" style="width:auto"> 🔴 Hii ni LIVE STREAMING</label>
+<button class="btn-add" onclick="addVideo()">💾 SAVE VIDEO</button>
 </div>
-
-<div class="mt-6">
-<h2 class="text-xs font-black text-zinc-500 mb-2">🔴 LIVE KWA TV - HIZI NDIZO ZITA-SCROLL CHINI</h2>
-<div id="list" class="space-y-2"></div>
+<div class="card">
+<h3>📢 Ticker Custom</h3>
+<input id="tickerCustom" placeholder="Andika habari ya chini...">
+<button class="btn-ticker" onclick="saveTicker()">🔄 UPDATE TICKER</button>
+<p style="font-size:11px;color:#888">Current: <span id="curTicker">-</span></p>
 </div>
-
+<div class="card">
+<h3>📋 Videos Zote (<span id="count">0</span>)</h3>
+<div id="list"></div>
+<button onclick="clearAll()" style="background:#333;color:#fff;width:100%;margin-top:10px">🗑️ Futa Zote</button>
 </div>
-
 <script>
-let currentId=null;
-
-function getId(u){
- let m=u.match(/(?:v=|youtu.be\/|shorts\/|embed\/)([a-zA-Z0-9_-]{11})/);
- return m?m[1]:null;
-}
-
-// GEK AUTOMATIC - inavuta title/desc kutoka YouTube
-async function gekYouTube(id){
+function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+function saveV(v){localStorage.setItem('ale_videos',JSON.stringify(v))}
+function extractId(url){if(!url) return ''; if(url.length==11) return url; let m=url.match(/(?:v=|youtu\.be\/|embed\/|shorts\/)([A-Za-z0-9_-]{11})/); return m?m[1]:'';}
+let curId=null;
+async function autoGek(){
+ let link=document.getElementById('ytLink').value.trim();
+ let id=extractId(link);
+ if(!id || id.length!=11 || id==curId) return;
+ curId=id;
+ document.getElementById('status').innerText='⏳ Na-GEK...';
+ document.getElementById('thumb').src=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
+ document.getElementById('preview').style.display='flex';
  try{
-  document.getElementById('status').innerText='⏳ Na-GEK...';
-  // YouTube oEmbed - FREE, hakuna API key
   let res=await fetch(`https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${id}&format=json`);
   let data=await res.json();
-
-  document.getElementById('title').value=data.title;
-  document.getElementById('desc').value=data.title + " | " + data.author_name;
+  document.getElementById('vTitle').value=data.title;
+  document.getElementById('vDesc').value=data.title+' | '+data.author_name+' | ALE TV';
   document.getElementById('pTitle').innerText=data.title;
-  document.getElementById('pChannel').innerText=data.author_name;
-  document.getElementById('thumb').src=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
-  document.getElementById('preview').classList.remove('hidden');
-  document.getElementById('status').innerHTML=`✅ <span class="text-green-400">Ime-GEK! ${data.title}</span>`;
-  document.getElementById('status').innerHTML+=`<br><span class="text-[10px]">Ita-reflect kwenye TV ticker chini 👇</span>`;
+  document.getElementById('pChan').innerText=data.author_name;
+  document.getElementById('status').innerHTML=`✅ <span style="color:#00ff88">Ime-GEK! ${data.title}</span>`;
  }catch(e){
-  document.getElementById('status').innerText='⚠️ Ime-GEK thumb tu, weka title mwenyewe';
-  document.getElementById('thumb').src=`https://img.youtube.com/vi/${id}/mqdefault.jpg`;
-  document.getElementById('preview').classList.remove('hidden');
+  document.getElementById('status').innerText='✅ Thumb sawa, weka title mwenyewe';
  }
 }
-
-document.getElementById('link').addEventListener('input', (e)=>{
- let id=getId(e.target.value.trim());
- if(id && id!==currentId){
-  currentId=id;
-  gekYouTube(id);
- }
-});
-
-// LOCAL STORAGE - ndio TV inasoma
-function save(){
- let id=currentId;
- let t=document.getElementById('title').value.trim();
- let d=document.getElementById('desc').value.trim();
- let c=document.getElementById('cat').value;
- if(!id||!t){ document.getElementById('msg').innerText='❌ Weka link kwanza'; return; }
-
- let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
- vids.unshift({id:id, title:t, cat:c, desc:d, createdAt:Date.now()});
- localStorage.setItem('ale_videos', JSON.stringify(vids));
-
- document.getElementById('msg').innerText='🔥 Imehifadhi! Itaonekana kwenye TV ticker chini sasa!';
- document.getElementById('link').value='';
- document.getElementById('title').value='';
- document.getElementById('desc').value='';
- document.getElementById('preview').classList.add('hidden');
- render();
+function addVideo(){
+ let link=document.getElementById('ytLink').value.trim();
+ let id=extractId(link);
+ if(id.length!=11){alert('Link mbaya mkuu! Weka link ya YouTube');return}
+ let v=getV();
+ v.push({id:id,title:document.getElementById('vTitle').value||document.getElementById('pTitle').innerText||'ALE TV Video',desc:document.getElementById('vDesc').value||'',cat:document.getElementById('vCat').value,isLive:document.getElementById('isLive').checked});
+ saveV(v); alert('Imewekwa! 🚀'); document.getElementById('ytLink').value=''; document.getElementById('vTitle').value=''; document.getElementById('vDesc').value=''; document.getElementById('preview').style.display='none'; curId=null; render();
 }
-
+function saveTicker(){let t=document.getElementById('tickerCustom').value; localStorage.setItem('ale_ticker_custom',t); alert('Ticker updated!'); document.getElementById('curTicker').innerText=t;}
 function render(){
- let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
- let el=document.getElementById('list');
- el.innerHTML='';
- vids.forEach((v,i)=>{
-  el.innerHTML+=`<div class="bg-[#18181b] border border-zinc-800 rounded-xl p-2 flex gap-2 items-center">
-  <img src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg" class="w-14 h-9 rounded">
-  <div class="flex-1"><b class="text-[11px]">${v.title}</b><p class="text-[9px] text-zinc-500 truncate">${v.desc}</p></div>
-  <button onclick="del(${i})" class="text-[10px] bg-red-900 px-2 py-1 rounded">FUTA</button></div>`;
+ let v=getV(); document.getElementById('count').innerText=v.length; document.getElementById('totalV').innerText=v.length;
+ document.getElementById('curTicker').innerText=localStorage.getItem('ale_ticker_custom')||'Exclusive';
+ let html=''; v.forEach((x,i)=>{
+  let liveTag=x.isLive?' <span style="background:red;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px">LIVE</span>':'';
+  html+=`<div class="list-item"><div><b>${x.title}</b>${liveTag}<br><small style="color:#f59e0b">${x.cat}</small> - <small>${x.id}</small></div><div><button class="btn-del" onclick="delV(${i})">X</button></div></div>`;
  });
+ document.getElementById('list').innerHTML=html||'Hakuna video';
 }
-window.del=(i)=>{ let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]'); vids.splice(i,1); localStorage.setItem('ale_videos', JSON.stringify(vids)); render(); }
+function delV(i){if(confirm('Futa hii?')){let v=getV(); v.splice(i,1); saveV(v); render();}}
+function clearAll(){if(confirm('Futa zote kweli?')){localStorage.removeItem('ale_videos'); render();}}
+setInterval(()=>{document.getElementById('time').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false})},1000);
 render();
 </script>
 </body></html>
