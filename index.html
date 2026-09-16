@@ -1,121 +1,121 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - WORLD TV</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
 body{background:#000;overflow:hidden}
 #wrap{position:relative;width:100%;height:100vh;background:#000}
-/* TV IMEPANDA JUU - IMEACHA NYEUSI NYINGI CHINI */
-#player{width:100%;height:58vh;background:#000}
-#player iframe{width:100%;height:100%}
-#live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:900;z-index:5}
-#logo{position:absolute;top:10px;right:10px;background:red;color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:12px;z-index:5;border:2px solid #fff}
-/* HAPA NDIPO NYEUSI ULIYOSEMA - 2 INCHES */
-#blackZone{position:absolute;top:58vh;left:0;right:0;height:22vh;background:#050505;z-index:4;display:flex;align-items:center;justify-content:center;flex-direction:column;border-top:2px solid #111;border-bottom:2px solid #111}
-#blackZone b{color:#222;font-size:9px;letter-spacing:3px}
-#blackZone small{color:#333;font-size:8px;margin-top:4px}
-/* ADS - HAPA CHINI KAMA ULIACHA */
-#adBox{position:absolute;bottom:0;left:0;right:0;height:20vh;z-index:10;display:flex;align-items:center;border-top:3px solid #fff}
-.d1{background:linear-gradient(90deg,red,orange,red);background-size:300% 100%;animation:m 1.5s linear infinite}
-.d2{background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);background-size:300% 100%;animation:m 1s linear infinite}
-.d3{background:linear-gradient(90deg,#8a00ff,#ff00ff,#8a00ff);background-size:300% 100%;animation:m.8s linear infinite}
+/* TOP LINE - DESCRIPTION KUTOKA ACADEMY */
+#topBar{position:absolute;top:0;left:0;right:0;height:32px;background:#0a0a0a;z-index:20;display:flex;align-items:center;border-bottom:2px solid #00ff88;overflow:hidden}
+#topLabel{background:#00ff88;color:#000;padding:0 10px;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900;white-space:nowrap}
+#academyDesc{flex:1;white-space:nowrap;overflow:hidden;padding-left:10px;color:#00ff88;font-size:11px;font-weight:700;letter-spacing:.5px}
+#academyDesc span{display:inline-block;animation:scrollDesc 40s linear infinite}
+@keyframes scrollDesc{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+/* SAA - RIGHT JUU */
+#clockBox{position:absolute;top:0;right:0;height:32px;background:#000;color:#fff;padding:0 12px;display:flex;align-items:center;gap:6px;z-index:21;border-left:2px solid #00ff88;border-bottom:2px solid #00ff88;border-bottom-left-radius:8px;font-weight:900;font-size:11px}
+#clockBox small{color:#00ff88;font-size:9px}
+
+#player{position:absolute;top:32px;left:0;right:0;height:52vh;background:#000}
+#player iframe{width:100%;height:100%;pointer-events:none}
+#live{position:absolute;top:38px;left:8px;background:red;color:#fff;padding:5px 12px;border-radius:20px;font-size:10px;font-weight:900;z-index:5;animation:b 1s infinite}
+@keyframes b{50%{opacity:.5}}
+#logo{position:absolute;top:38px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,red,orange);color:#fff;padding:6px 14px;border-radius:20px;font-weight:900;font-size:11px;z-index:5;border:2px solid #fff}
+
+#blackZone{position:absolute;top:calc(32px + 52vh);left:0;right:0;height:8vh;background:#050505;z-index:4;display:flex;align-items:center;justify-content:center}
+#blackZone b{color:#333;font-size:8px;letter-spacing:2px}
+#tickerWrap{position:absolute;top:calc(32px + 60vh);left:0;right:0;height:26px;background:#000;z-index:9;display:flex;align-items:center;overflow:hidden;border-top:2px solid red;border-bottom:2px solid red}
+#tickerLabel{background:red;color:#fff;padding:0 10px;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900}
+#ticker{flex:1;white-space:nowrap;overflow:hidden}
+#ticker span{display:inline-block;padding-left:100%;animation:scroll 60s linear infinite;color:#fff;font-size:11px;font-weight:700}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+#adBox{position:absolute;bottom:0;left:0;right:0;height:18vh;z-index:10;display:flex;align-items:center;overflow:hidden;border-top:4px solid #fff}
+#adLabel{background:#000;color:#fff;padding:0 10px;height:100%;display:flex;align-items:center;flex-direction:column;justify-content:center;font-size:8px;font-weight:900;min-width:56px}
+#adStage{flex:1;display:flex;align-items:center;justify-content:center;padding:6px}
+#adText{font-weight:900;font-size:14px;text-align:center;animation:z 5.5s infinite;max-width:96%}
+.d-news{background:linear-gradient(90deg,#ff0000,#b30000,#ff0000);background-size:300% 100%;animation:m 1.2s linear infinite;color:#fff}
+.d-ads{background:linear-gradient(90deg,#ffff00,#ffae00,#ffff00);background-size:300% 100%;animation:m 1s linear infinite;color:#000}
+.d-what{background:linear-gradient(90deg,#00ff88,#00d4ff,#00ff88);background-size:300% 100%;animation:m 1s linear infinite;color:#000}
+.d-break{background:linear-gradient(90deg,#8a00ff,#ff00ff,#ff0000,#8a00ff);background-size:400% 100%;animation:m.6s linear infinite;color:#fff}
+.d-till{background:#fff;color:#000}
 @keyframes m{0%{background-position:0%}100%{background-position:300%}}
-#adLabel{background:#000;color:#fff;padding:0 10px;height:100%;display:flex;align-items:center;font-size:9px;font-weight:900}
-#ad{flex:1;text-align:center;font-weight:900;font-size:14px;animation:z 6s infinite;color:#fff}
 @keyframes z{0%{transform:scale(.1);opacity:0}15%{transform:scale(1.3);opacity:1}25%{transform:scale(1)}85%{transform:scale(1)}100%{transform:scale(.1);opacity:0}}
 </style></head><body>
 <div id="wrap">
+<!-- LINE YA JUU - DESCRIPTION ACADEMY -->
+<div id="topBar"><div id="topLabel">🏫 ACADEMY</div><div id="academyDesc"><span id="descText">ALE FOOTBALL ACADEMY - Training Young Talents - Join Us Today - We Nurture Future Stars!</span></div></div>
+<div id="clockBox"><small>🕒</small><span id="clock">00:00:00</span><small id="clockDate">KE</small></div>
+
 <div id="player"></div>
-<div id="blackZone"><b>ALE TV - YOUR HOME OF SPORTS</b><small>TILL 3624692 • SPACE YA VITU ZINGINE HAPA</small></div>
-<div id="live">🔴 LIVE</div>
+<div id="blackZone"><b>ALE TV - WORLD SYNC</b></div>
+<div id="tickerWrap"><div id="tickerLabel">🔴 BREAKING</div><div id="ticker"><span id="tick">ALE TV - YOUR HOME OF SPORTS</span></div></div>
+<div id="live">🔴 LIVE WORLD</div>
 <div id="logo">ALE TV</div>
-<div id="adBox" class="d1"><div id="adLabel">ADS</div><div id="ad" style="flex:1;display:flex;justify-content:center"><span id="adTxt">TILL 3624692</span></div></div>
+<div id="adBox" class="d-news"><div id="adLabel"><span id="labIcon">📰</span><span id="labTxt">NEWS</span></div><div id="adStage"><div id="adText" id="adTxt">BREAKING NEWS LIVE!</div></div></div>
 </div>
 <script>
-let player, videos=[], cur=0;
-const SLOT = 240; // kila video 4 min
-function getId(v){ if(!v) return ''; v=v.trim(); if(v.length==11&&!v.includes('/')) return v; if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0]; try{let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=v.match(/([a-zA-Z0-9_-]{11})/); return m?m[1]:''; }
-function loadYT(cb){ if(window.YT&&window.YT.Player){cb();return;} let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); window.onYouTubeIframeAPIReady=cb; }
+let player,videos=[],cur=0;
+const WORLD_BIRTH=Date.UTC(2025,0,1,0,0,0)/1000;
+const SLOT=240;
+function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
+function loadYT(cb){if(window.YT&&window.YT.Player){cb();return;}let s=document.createElement('script');s.src="https://www.youtube.com/iframe_api";document.head.appendChild(s);window.onYouTubeIframeAPIReady=cb;}
+function getWorldNow(){let now=Date.now()/1000;let el=Math.floor(now-WORLD_BIRTH);let tot=videos.length*SLOT;let pos=el%tot;let idx=Math.floor(pos/SLOT);let seek=pos%SLOT;return{idx,seek};}
+function playWorld(idx,seek){cur=idx;loadYT(()=>{if(player){player.loadVideoById({videoId:videos[idx].id,startSeconds:seek});return;}player=new YT.Player('player',{videoId:videos[idx].id,playerVars:{autoplay:1,mute:1,controls:0,rel:0,modestbranding:1,playsinline:1,start:seek},events:{onReady:e=>{e.target.playVideo();e.target.mute();setTimeout(()=>{try{e.target.unMute();e.target.setVolume(100);}catch{}},1200);setInterval(()=>{try{let w=getWorldNow();let ct=e.target.getCurrentTime();if(Math.abs(w.seek-ct)>4||w.idx!=cur){cur=w.idx;e.target.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek});}}catch{}},5000);},onStateChange:e=>{if(e.data==0){let w=getWorldNow();cur=w.idx;e.target.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek});}}}});});}
 
-function getBirth(){
-  let b=localStorage.getItem('ale_birth');
-  if(!b){ b=Date.now().toString(); localStorage.setItem('ale_birth', b); }
-  return parseInt(b);
+// SAA - RIGHT JUU
+function updateClock(){
+  let now=new Date();
+  let opts={timeZone:'Africa/Nairobi', hour12:false};
+  let time=now.toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi', hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  let date=now.toLocaleDateString('en-KE',{timeZone:'Africa/Nairobi', weekday:'short', day:'2-digit', month:'short'});
+  document.getElementById('clock').innerText=time;
+  document.getElementById('clockDate').innerText=date;
 }
+setInterval(updateClock,1000); updateClock();
 
-function findNow(){
-  let birth=getBirth();
-  let elapsed=Math.floor((Date.now()-birth)/1000); // sec tangu TV ianze mara ya kwanza
-  let totalSlot=videos.length*SLOT;
-  let pos=elapsed%totalSlot;
-  let idx=Math.floor(pos/SLOT);
-  let seek=pos%SLOT;
-  return {idx:idx, seek:seek, elapsed:elapsed};
-}
-
-function playAt(idx, seek){
- cur=idx;
- let vid=videos[idx].id;
- loadYT(()=>{
-  if(player){
-    player.loadVideoById({videoId:vid, startSeconds:seek});
-    setTimeout(()=>{ try{player.setPlaybackRate(0.9); player.playVideo(); player.unMute();}catch{} },600);
-    return;
-  }
-  player=new YT.Player('player',{
-   videoId:vid,
-   playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,start:seek},
-   events:{
-    onReady:e=>{
-      e.target.playVideo();
-      try{e.target.setPlaybackRate(0.9);}catch{}
-      setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100); e.target.setPlaybackRate(0.9);}catch{} },1000);
-      // kila 10 sec angalia kama tuko nyuma
-      setInterval(()=>{
-        try{
-          let now=findNow();
-          let curTime=e.target.getCurrentTime();
-          // kama tuko nyuma zaidi ya 15 sec, ruka mbele
-          if(Math.abs(now.seek-curTime)>15 || now.idx!=cur){
-            cur=now.idx;
-            e.target.loadVideoById({videoId:videos[now.idx].id, startSeconds:now.seek});
-          }
-          e.target.setPlaybackRate(0.9);
-        }catch{}
-      },10000);
-    },
-    onStateChange:e=>{
-      try{e.target.setPlaybackRate(0.9);}catch{}
-      if(e.data==0){
-        let now=findNow();
-        cur=now.idx;
-        e.target.loadVideoById({videoId:videos[cur].id, startSeconds:now.seek});
-      }
+// DESCRIPTION KUTOKA ACADEMY - INASOMA KUTOKA LOCALSTORAGE
+function loadAcademyDesc(){
+  try{
+    let desc=localStorage.getItem('ale_academy_desc');
+    let vids=JSON.parse(localStorage.getItem('ale_videos')||'[]');
+    if(desc && desc.trim().length>5){
+      document.getElementById('descText').innerText=desc.toUpperCase();
+    } else if(vids.length && vids[0].desc){
+      document.getElementById('descText').innerText=vids[0].desc.toUpperCase();
+    } else {
+      document.getElementById('descText').innerText="🏫 ALE FOOTBALL ACADEMY - TRAINING YOUNG TALENTS - JOIN US TODAY - CONTACT 0703182307 - WE NURTURE FUTURE STARS! ⚽";
     }
-   }
-  });
- });
+  }catch{
+    document.getElementById('descText').innerText="ALE FOOTBALL ACADEMY - YOUR HOME OF SPORTS - ALE TV";
+  }
 }
+loadAcademyDesc();
+setInterval(loadAcademyDesc,5000);
 
 // ADS
-let ads=["🔥 ALE TV - YOUR HOME OF SPORTS!","💰 TILL 3624692 - SUPPORT ALE TV - 0703182307","📺 TANGAZA BIASHARA YAKO HAPA - 100K VIEWERS","⚡ ale-tv.vercel.app - LIVE 24/7"];
-let ai=0, des=["d1","d2","d3"];
-setInterval(()=>{
- document.getElementById('adBox').className=des[ai%des.length];
- let el=document.getElementById('adTxt');
- el.style.animation='none'; void el.offsetWidth;
- el.innerText=ads[ai%ads.length];
- el.style.animation='z 6s infinite';
- ai++;
-},5500);
+let adsList=[
+ {icon:"📰",label:"NEWS",design:"d-news",text:"BREAKING: Ruto LIVE - ALE TV!"},
+ {icon:"⚽",label:"WHAT\nWE DO",design:"d-what",text:"ALE TV - YOUR HOME OF SPORTS 24/7 - Football, Gospel, News!"},
+ {icon:"📢",label:"ADVERTISE",design:"d-ads",text:"TANGAZA HAPA - 100K VIEWERS - 0703182307"},
+ {icon:"🚨",label:"BREAKING",design:"d-break",text:"🚨 BREAKING NOW - WATCH LIVE ALE TV WORLDWIDE!"},
+ {icon:"💰",label:"SUPPORT",design:"d-till",text:"💰 TILL 3624692 - SUPPORT ALE TV - ASANTE!"},
+ {icon:"🌍",label:"WORLD\nTV",design:"d-news",text:"🌍 KISUMU | NAIROBI | MOMBASA | UGANDA - SAME TIME SAME SECOND!"},
+];
+let tickerNews=["BREAKING: ALE TV WORLD SYNC LIVE!", "TILL 3624692 - SUPPORT ALE TV", "WHAT WE DO: Sports, Gospel, News 24/7"];
+function showAd(){
+ let a=adsList[Math.floor(Math.random()*adsList.length)];
+ document.getElementById('adBox').className=a.design;
+ document.getElementById('labIcon').innerText=a.icon;
+ document.getElementById('labTxt').innerText=a.label;
+ let txt=document.getElementById('adTxt'); txt.style.animation='none'; void txt.offsetWidth; txt.innerText=a.text; txt.style.animation='z 5.5s infinite';
+ document.getElementById('tick').innerText=tickerNews.join(' • ') + ' • ' + a.text;
+}
+showAd(); setInterval(showAd,4500);
 
 function init(){
- let loc=[];
- try{ loc=JSON.parse(localStorage.getItem('ale_videos')||'[]'); }catch{}
- if(loc.length){ videos=loc.map(v=>({id:getId(v.id)})).filter(v=>v.id); }
- if(!videos.length){ videos=[{id:'jNQXAC9IVRw'},{id:'5qap5aO4i9A'},{id:'jfKfPfyJRdk'}]; }
- let now=findNow();
- playAt(now.idx, now.seek);
+ let loc=[]; try{loc=JSON.parse(localStorage.getItem('ale_videos')||'[]');}catch{}
+ if(loc.length){videos=loc.map(v=>({id:getId(v.id)})).filter(v=>v.id);}
+ if(!videos.length){videos=[{id:'jNQXAC9IVRw'},{id:'5qap5aO4i9A'},{id:'jfKfPfyJRdk'}];}
+ let w=getWorldNow(); playWorld(w.idx,w.seek);
 }
 init();
 </script></body></html>
