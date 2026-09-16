@@ -1,41 +1,51 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - ADS BOX</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:sans-serif}
-#wrap{position:relative;width:100%;background:#000}
+#wrap{position:relative;width:100%;background:#000;overflow:hidden}
 #player{width:100%;aspect-ratio:16/9;background:#000}
 #player iframe{width:100%;height:100%;pointer-events:none!important}
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
 #overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
-#aleLogo{position:absolute;top:10px;right:10px;z-index:15;background:linear-gradient(135deg,#ff0000,#ffae00);color:#fff;padding:7px 16px;border-radius:25px;font-weight:900;font-size:14px;letter-spacing:2px;border:2px solid #fff;box-shadow:0 0 15px #ff0000;display:flex;align-items:center;gap:7px}
-#aleLogo.dot{width:10px;height:10px;background:#fff;border-radius:50%;animation:blink 0.8s infinite}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+#aleLogo{position:absolute;top:10px;right:10px;z-index:15;background:linear-gradient(135deg,#ff0000,#ffae00);color:#fff;padding:7px 16px;border-radius:25px;font-weight:900;font-size:14px;letter-spacing:1px;border:2px solid #fff;box-shadow:0 0 15px #ff0000;display:flex;align-items:center;gap:6px}
+#aleLogo.dot{width:8px;height:8px;background:#fff;border-radius:50%;animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 
-/* TICKER YA NYIMBO - RED */
-#tickerWrap{position:absolute;bottom:48px;left:0;right:0;height:34px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
+#tickerWrap{position:absolute;bottom:42px;left:0;right:0;height:32px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
 #ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 15s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 
-/* HII NDIO BOX YAKO MPYA MKUU - CORNER TO CORNER - HALF INCH */
+/* === KIJISANDUKU CHAKO MKUU - HALF INCH CORNER TO CORNER === */
 #breakingBox{
- position:absolute;bottom:0;left:0;right:0;height:48px; /* half inch */
- background:#000; border-top:2.5px solid #ff0000; border-bottom:2.5px solid #ff0000;
+ position:absolute;bottom:0;left:0;right:0;
+ height:42px; /* HALF INCH */
+ background:#000; border-top:3px solid #ff0000; border-bottom:3px solid #ff0000;
  z-index:12; display:flex; align-items:center; overflow:hidden;
 }
-#breakingLabel{
- background:#ff0000; color:#fff; font-weight:900; font-size:11px;
- padding:0 14px; height:100%; display:flex; align-items:center;
- letter-spacing:1px; white-space:nowrap;
+#breakLabel{
+ background:#ff0000; color:#fff; font-weight:900; font-size:10px;
+ padding:0 12px; height:100%; display:flex; align-items:center; flex-shrink:0;
 }
-#breakingTicker{flex:1;overflow:hidden;white-space:nowrap}
-#breakingTicker span{display:inline-block;padding-left:100%;color:#fff;font-weight:700;font-size:12px;animation:scroll2 60s linear infinite}
-@keyframes scroll2{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-
-#clockBox{position:absolute;bottom:82px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-size:13px;font-weight:900}
-#nextBox{position:absolute;bottom:82px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#adStage{flex:1;overflow:hidden;position:relative;height:100%;display:flex;align-items:center;justify-content:center}
+#adText{
+ font-weight:900; font-size:13px; color:#fff; text-align:center;
+ white-space:nowrap; max-width:95%; overflow:hidden; text-overflow:ellipsis;
+ animation: zoomCurly 10s ease-in-out;
+ text-shadow:0 0 8px #ff0000;
+}
+/* DESIGN CURLY - ZOOM INAINGIA */
+@keyframes zoomCurly{
+ 0%{transform:scale(0.2) rotate(-12deg) translateY(30px); opacity:0; letter-spacing:10px;}
+ 15%{transform:scale(1.25) rotate(3deg) translateY(-8px); opacity:1; letter-spacing:1px;}
+ 25%{transform:scale(1) rotate(0) translateY(0); opacity:1;}
+ 85%{transform:scale(1) rotate(0) translateY(0); opacity:1;}
+ 100%{transform:scale(0.2) rotate(12deg) translateY(-30px); opacity:0; letter-spacing:10px;}
+}
+#clockBox{position:absolute;bottom:74px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:4px 10px;border-radius:0 10px 0 0;font-size:12px;font-weight:900}
+#nextBox{position:absolute;bottom:74px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:4px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
@@ -46,10 +56,10 @@ body{background:#000;color:#fff;font-family:sans-serif}
 <div id="nextBox"></div>
 <div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV WORLD LIVE</span></div></div>
 
-<!-- KIBOX CHAKO MKUU - CORNER TO CORNER HALF INCH -->
+<!-- HAPA NDIO KIJISANDUKU HALF INCH -->
 <div id="breakingBox">
-<div id="breakingLabel">⚡ BREAKING NEWS</div>
-<div id="breakingTicker"><span id="breakText">Loading Trending News from Google... | ALE TV - The Home of African Hits & World News | Advertise Here: ALE TV ni ya kazi gani? - Ni TV ya Muziki, Habari, na Burudani 24/7 LIVE! |</span></div>
+<div id="breakLabel">⚡ ADS</div>
+<div id="adStage"><div id="adText">ALE TV - Advertise Here!</div></div>
 </div>
 </div>
 
@@ -79,9 +89,7 @@ function createPlayer(vId, seek){
    playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
    events:{
     onReady: e=>{ e.target.setPlaybackRate(1); e.target.playVideo(); },
-    onStateChange: e=>{
-     if(e.data==0){ curIdx = (curIdx+1)%videos.length; e.target.loadVideoById(videos[curIdx].id); e.target.setPlaybackRate(1); isCatching=false; document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title; }
-    }
+    onStateChange: e=>{ if(e.data==0){ curIdx = (curIdx+1)%videos.length; e.target.loadVideoById(videos[curIdx].id); e.target.setPlaybackRate(1); isCatching=false; document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title; } }
    }
   });
  });
@@ -117,30 +125,45 @@ setInterval(()=>{
  }catch{}
 },1000);
 
-// ==== BREAKING NEWS FROM GOOGLE - TRENDING ====
-async function loadBreaking(){
+/* ===== ADS ZINAZOOM CURLY KILA 10 SEC ===== */
+let adList = [
+ "🔥 ADVERTISE YOUR BUSINESS ON ALE TV - 100K VIEWERS DAILY - CALL 0751 768 763!",
+ "⚡ ALE TV ni TV ya Muziki, Habari na Burudani 24/7 LIVE - Dunia Nzima!",
+ "💰 TANGAZA BIASHARA YAKO HAPA - Bei Nafuu - Watu Wengi Wanaona!",
+ "📢 BREAKING: Trending in Kenya Today - Stay Tuned on ALE TV!",
+ "🎵 ALE TV - Home of African Hits, Gospel, Gengetone & Bongo!",
+ "🌍 WORLD NEWS LIVE on ALE TV - Habari Moto Moto!",
+ "📲 Download ALE TV App - Watch Anytime, Anywhere!",
+ "🔴 LIVE NOW: "+(getV()[0]?.title||"African Hits")
+];
+
+let adIndex = 0;
+function showAd(){
+ let el = document.getElementById('adText');
+ el.style.animation='none';
+ void el.offsetWidth; // reset
+ el.innerText = adList[adIndex % adList.length];
+ el.style.animation='zoomCurly 10s ease-in-out';
+ adIndex++;
+}
+showAd();
+setInterval(showAd, 10000); // kila 10 sec inabadilika
+
+// Google News - inaongeza kwa list
+async function loadGoogleAds(){
  try{
-  // tunajaribu Google News RSS ya Kenya
   let url = 'https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');
   let res = await fetch(url);
   let text = await res.text();
-  let parser = new DOMParser();
-  let xml = parser.parseFromString(text, "text/xml");
+  let xml = new DOMParser().parseFromString(text, "text/xml");
   let items = xml.querySelectorAll("item");
-  let news = [];
-  for(let i=0;i<Math.min(8,items.length);i++){
-    news.push(items[i].querySelector("title").textContent.replace(' - ',' | '));
+  for(let i=0;i<Math.min(6,items.length);i++){
+   let t = items[i].querySelector("title").textContent;
+   adList.push("📰 "+t);
   }
-  let advert = "ALE TV - Ni TV ya Muziki, Habari, na Burudani 24/7 LIVE | TANGAZA BIASHARA YAKO HAPA - Watu 100k wanaona! |";
-  let finalText = news.join(' ⚡ ') + ' ⚡ ' + advert + ' ⚡ ' + news.join(' ⚡ ');
-  document.getElementById('breakText').innerText = finalText;
- }catch(e){
-  // kama internet haifanyi, weka advert tu
-  document.getElementById('breakText').innerText = "ALE TV - The Home of African Hits | Advertise Your Business Here - Call ALE TV | BREAKING: Trending in Kenya | ALE TV LIVE 24/7 |";
- }
+ }catch{}
 }
-loadBreaking();
-setInterval(loadBreaking, 1000*60*5); // kila 5 min ina-update
+loadGoogleAds();
 
 let v=getV(); videos=v;
 if(v.length){ let w=findNow(); createPlayer(v[w.idx].id, w.seek); document.getElementById('tick').innerText='NOW: '+v[w.idx].title+' | ALE TV LIVE'; }
