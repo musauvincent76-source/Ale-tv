@@ -1,19 +1,67 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE TV</title>
-<style>*{margin:0;padding:0;box-sizing:border-box}body{background:#000;height:100vh;display:flex;flex-direction:column;font-family:Arial}#top{height:45px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 12px;border-bottom:3px solid #ff6600}#top h1{color:#fff;font-size:18px}#top span{color:#ff6600}#clock{color:#0f0;background:#000;border:1px solid #333;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:900}#vid{flex:1;background:#000}#vid iframe{width:100%;height:100%;border:0}#ads{height:50px;background:#ff6600;color:#000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px}</style>
-</head><body>
-<div id="top"><h1>ALE <span>TV</span></h1><div id="clock"></div></div>
-<div id="vid"><iframe id="yt" src="" allow="autoplay; fullscreen"></iframe></div>
-<div id="ads">TILL 3624692 - ALE FOOTBALL ACADEMY 0703182307</div>
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV - LIVE</title>
+<style>
+body{margin:0;background:#000;color:#fff;font-family:sans-serif}
+.topbar{background:#0a0a0a;display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:2px solid #1a1a1a}
+.logo{font-weight:900;font-size:20px;background:linear-gradient(90deg,#f59e0b,#ff006e,#00f5ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.live-badge{background:#ff0000;color:#fff;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:12px;animation:zoom 1s infinite}
+@keyframes zoom{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.player{width:100%;height:70vh;min-height:400px;background:#000;position:relative;overflow:hidden}
+#main{width:100%;height:100%}
+.clock{position:absolute;top:8px;right:10px;background:rgba(0,0,0,0.7);padding:4px 8px;border-radius:6px;font-size:12px;color:#f59e0b;z-index:5;pointer-events:none}
+.tap-hint{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,0.75);border:1px solid #f59e0b;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:bold;z-index:10;pointer-events:none;display:none;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1)}50%{opacity:0.7;transform:translate(-50%,-50%) scale(1.05)}}
+.ticker{position:absolute;bottom:0;left:0;right:0;background:#b80000;height:30px;display:flex;align-items:center;overflow:hidden;z-index:5;pointer-events:none}
+.ticker-cat{background:#fff;color:#b80000;padding:3px 10px;font-weight:900;font-size:11px;margin-left:5px;border-radius:3px}
+.ticker-text{white-space:nowrap;animation:scroll 35s linear infinite;font-size:13px;margin-left:10px;font-weight:bold}
+@keyframes scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.info{padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:#111}
+.info small{color:#f59e0b;font-size:11px;border:1px solid #f59e0b;padding:2px 8px;border-radius:10px}
+</style></head><body>
+<div class="topbar"><div class="logo">ALE TV</div><div class="live-badge">● LIVE</div></div>
+<div class="player" id="playerBox">
+<div id="clock" class="clock">00:00:00</div>
+<div id="main"></div>
+<div class="tap-hint" id="tapHint">👆 TAP SCREEN TO PLAY</div>
+<div class="ticker"><span class="ticker-cat" id="catLabel">BURUDANI</span><span class="ticker-text" id="ticker">🔥 KARIBU ALE TV 🔥</span></div>
+</div>
+<div class="info">
+<div><h3 id="vTitle" style="margin:0;font-size:16px">Loading...</h3><small id="vCat">BURUDANI</small></div>
+<div style="text-align:right"><div id="timeNow" style="font-size:12px;color:#f59e0b"></div><div style="font-size:10px;color:#666">SYNCED WORLDWIDE</div></div>
+</div>
+<p id="vDesc" style="padding:0 12px;color:#aaa;font-size:13px"></p>
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-function load(){
- let id=localStorage.getItem('ale_tv_id')||'jNQXAC9IVRw';
- document.getElementById('yt').src='https://www.youtube.com/embed/'+id+'?autoplay=1&mute=0';
+function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
+let videos=getV(); if(videos.length==0){videos=[{id:'dQw4w9WgXcQ',title:'Karibu ALE TV',cat:'BURUDANI'}]}
+setInterval(()=>{let s=new Date().toLocaleTimeString('en-KE',{hour12:false});document.getElementById('clock').innerText=s;document.getElementById('timeNow').innerText=s;},1000);
+function getSyncedIndex(){let total=videos.length*240;let now=Math.floor(Date.now()/1000);let el=now%total;return{idx:Math.floor(el/240),seek:el%240}}
+let current=getSyncedIndex(); let player;
+function onYouTubeIframeAPIReady(){
+ let lastPos=parseInt(localStorage.getItem('ale_last_idx')||current.idx);
+ let lastTime=parseInt(localStorage.getItem('ale_last_time')||0);
+ let nowSec=Math.floor(Date.now()/1000);
+ if(nowSec-lastTime<3600 && lastPos>=0 && lastPos<videos.length){current.idx=lastPos}
+ let v=videos[current.idx]; updateInfo(v);
+ player=new YT.Player('main',{videoId:v.id,playerVars:{autoplay:1,controls:0,disablekb:1,fs:0,modestbranding:1,rel:0,playsinline:1,start:current.seek},events:{onStateChange:onStateChange,onReady:(e)=>{e.target.mute();e.target.playVideo();setTimeout(()=>{e.target.unMute()},800);}}});
 }
-load();
-setInterval(()=>{
- document.getElementById('clock').innerText=new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
- let nid=localStorage.getItem('ale_tv_id');
- let cur=document.getElementById('yt').src;
- if(nid && cur.indexOf(nid)==-1){load();}
-},1000);
-</script></body></html>
+function updateInfo(v){
+ document.getElementById('vTitle').innerText=v.title;
+ document.getElementById('vDesc').innerText=v.desc||'';
+ document.getElementById('vCat').innerText=v.cat||'BURUDANI';
+ document.getElementById('catLabel').innerText=(v.cat||'BURUDANI').toUpperCase();
+ document.getElementById('ticker').innerText=' '+(v.cat||'Burudani').toUpperCase()+' | '+v.title+' | '+(v.desc||'')+' | 📺 ALE TV WORLDWIDE *** ';
+}
+function onStateChange(e){
+ let hint=document.getElementById('tapHint');
+ if(e.data==1){hint.style.display='none';localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));}
+ if(e.data==2){hint.style.display='block';}
+ if(e.data==0){current.idx=(current.idx+1)%videos.length;localStorage.setItem('ale_last_idx',current.idx);localStorage.setItem('ale_last_time',Math.floor(Date.now()/1000));let v=videos[current.idx]; updateInfo(v); player.loadVideoById(v.id);}
+}
+document.getElementById('playerBox').addEventListener('click',()=>{
+ if(!player) return;
+ if(player.getPlayerState()==1){player.pauseVideo();}else{player.playVideo();}
+});
+</script>
+</body></html>
