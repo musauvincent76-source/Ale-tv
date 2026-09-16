@@ -3,77 +3,162 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - PUBLIC WORLD SYNC</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-html,body{width:100%;overflow-x:hidden;background:#000}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, sans-serif}
+html,body{width:100%;height:100%;background:#000;overflow:hidden}
 body{display:flex;flex-direction:column;height:100vh;height:100dvh}
 
-/* JUU */
-#topBar{display:flex;width:100%;height:36px;flex-shrink:0}
-#top{flex:1;background:#111;display:flex;align-items:center;overflow:hidden;border-bottom:3px solid #00ff88}
-#top b{background:#00ff88;color:#000;padding:0 8px;height:100%;display:flex;align-items:center;font-size:9px;flex-shrink:0}
-#top span{color:#00ff88;font-size:11px;font-weight:900;white-space:nowrap;animation:mv 25s linear infinite;padding-left:10px}
-@keyframes mv{0%{transform:translateX(100%)}100%{transform:translateX(-120%)}}
-#clock{width:85px;background:#000;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:12px;border-left:2px solid #00ff88;border-bottom:3px solid #00ff88;flex-shrink:0}
+/* TOP - ACADEMY + CLOCK */
+#header{height:38px;display:flex;flex-shrink:0;background:#111;border-bottom:3px solid #00ff88}
+#academy{flex:1;display:flex;align-items:center;overflow:hidden}
+#academy b{background:#00ff88;color:#000;font-size:9px;padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0}
+#academy span{color:#00ff88;font-size:11px;font-weight:900;white-space:nowrap;padding-left:10px;animation:moveLeft 30s linear infinite}
+#clockBox{width:90px;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:2px solid #00ff88;flex-shrink:0}
+#clockBox div:first-child{font-size:7px;color:#00ff88;letter-spacing:1px}
+#clock{font-size:13px;font-weight:900}
 
-/* VIDEO - INATOSHA KATIKATI */
-#playerWrap{flex:1;position:relative;background:#000;width:100%;overflow:hidden}
-#player{position:absolute;top:0;left:0;width:100%;height:100%}
-#live{position:absolute;top:8px;left:8px;background:red;color:#fff;padding:3px 10px;border-radius:20px;font-size:9px;font-weight:900;z-index:5}
-#logo{position:absolute;top:8px;right:8px;background:red;color:#fff;padding:3px 10px;border-radius:12px;font-size:10px;font-weight:900;z-index:5;border:1px solid #fff}
+/* VIDEO - PUBLIC MATCHING */
+#videoArea{flex:1;background:#000;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+#player{width:100%;height:100%;max-width:100%;max-height:100%}
+#player iframe{width:100%;height:100%;border:0}
+.badge{position:absolute;top:10px;padding:4px 12px;border-radius:20px;font-size:9px;font-weight:900;z-index:5;color:#fff}
+#live{left:10px;background:red;animation:blink 1s infinite}
+#logo{right:10px;background:red;border:1px solid #fff}
+#public{bottom:10px;left:50%;transform:translateX(-50%);background:#00ff88;color:#000;padding:4px 12px;border-radius:20px;font-size:8px;font-weight:900;z-index:5;white-space:nowrap}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes moveLeft{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
 
-/* CHINI */
-#mid{height:22px;background:#080808;display:flex;align-items:center;justify-content:center;color:#555;font-size:7px;letter-spacing:2px;flex-shrink:0}
-#ticker{display:flex;height:28px;background:#000;border-top:2px solid red;border-bottom:2px solid red;align-items:center;overflow:hidden;flex-shrink:0;width:100%}
-#ticker b{background:red;color:#fff;padding:0 8px;height:100%;display:flex;align-items:center;font-size:8px;flex-shrink:0}
-#ticker span{white-space:nowrap;color:#fff;font-size:10px;font-weight:700;animation:sc 50s linear infinite;padding-left:100%}
-@keyframes sc{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#ad{display:flex;height:70px;align-items:center;flex-shrink:0;width:100%;overflow:hidden}
-#adLabel{background:#000;color:#fff;width:50px;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:7px;font-weight:900;flex-shrink:0}
-#adText{flex:1;text-align:center;font-weight:900;font-size:13px;padding:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.c1{background:linear-gradient(90deg,red,orange);color:#fff}
-.c2{background:yellow;color:#000}
-.c3{background:#00ff88;color:#000}
-.c4{background:linear-gradient(90deg,#8a00ff,#ff0066);color:#fff}
+/* MID INFO */
+#worldInfo{height:24px;background:#0a0a0a;color:#555;display:flex;align-items:center;justify-content:center;font-size:8px;letter-spacing:2px;flex-shrink:0;border-top:1px solid #222;border-bottom:1px solid #222}
+
+/* BREAKING TICKER */
+#ticker{height:30px;background:#000;border-top:2px solid red;border-bottom:2px solid red;display:flex;align-items:center;overflow:hidden;flex-shrink:0}
+#ticker b{background:red;color:#fff;font-size:8px;padding:0 10px;height:100%;display:flex;align-items:center;flex-shrink:0}
+#ticker span{color:#fff;font-size:11px;font-weight:700;white-space:nowrap;padding-left:100%;animation:scroll 40s linear infinite}
+
+/* ADS - IMEPANGWA VIZURI */
+#ads{height:78px;display:flex;align-items:center;flex-shrink:0;overflow:hidden;position:relative}
+#adsIcon{width:52px;height:100%;background:#000;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:7px;font-weight:900;flex-shrink:0}
+#adsIcon div:first-child{font-size:18px}
+#adsText{flex:1;text-align:center;font-weight:900;font-size:14px;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.c-red{background:linear-gradient(90deg,#ff0000,#ff6600);color:#fff}
+.c-yellow{background:#ffeb00;color:#000}
+.c-green{background:#00ff88;color:#000}
+.c-purple{background:linear-gradient(90deg,#7a00ff,#ff0066);color:#fff}
+@keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
 </style>
 </head>
 <body>
 
-<div id="topBar">
- <div id="top"><b>🏫 ACADEMY</b><span id="desc">ALE FOOTBALL ACADEMY - JOIN US 0703182307</span></div>
- <div id="clock">00:00:00</div>
+<div id="header">
+  <div id="academy"><b>🏫 ACADEMY</b><span id="academyText">ALE FOOTBALL ACADEMY - JOIN US TODAY 0751768763 - TILL 3624692</span></div>
+  <div id="clockBox"><div>NAIROBI</div><div id="clock">00:00:00</div></div>
 </div>
 
-<div id="playerWrap">
- <div id="player"></div>
- <div id="live">🔴 LIVE</div>
- <div id="logo">ALE TV</div>
+<div id="videoArea">
+  <div id="player"></div>
+  <div id="live" class="badge">🔴 LIVE PUBLIC</div>
+  <div id="logo" class="badge">ALE TV</div>
+  <div id="public">🌍 WORLD SYNC - SAME VIDEO EVERYWHERE</div>
 </div>
 
-<div id="mid">ALE TV WORLD SYNC - SAME TIME EVERYWHERE</div>
+<div id="worldInfo">PUBLIC TV MATCHING - KISUMU • NAIROBI • MOMBASA • UGANDA • SAME TIME</div>
 
-<div id="ticker"><b>BREAKING</b><span id="tick">ALE TV - TILL 3624692 - YOUR HOME OF SPORTS</span></div>
+<div id="ticker"><b>BREAKING</b><span id="tickerText">ALE TV PUBLIC - TILL 3624692 - YOUR HOME OF SPORTS - WORLD SYNC ACTIVE</span></div>
 
-<div id="ad" class="c1">
- <div id="adLabel"><div id="aicon">📰</div><div id="albl">NEWS</div></div>
- <div id="adText" id="adTextEl">LOADING...</div>
+<div id="ads" class="c-red">
+  <div id="adsIcon"><div id="aIcon">📢</div><div id="aLabel">ADS</div></div>
+  <div id="adsText">LOADING ADVERTISEMENT...</div>
 </div>
 
 <script>
-let player,videos=[],curIdx=0;
-const BIRTH=Date.UTC(2025,0,1)/1000, SLOT=240;
-function getId(v){ if(!v) return ''; v=v.trim(); if(v.length==11&&!v.includes('/')) return v; if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0]; try{let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=v.match(/([a-zA-Z0-9_-]{11})/); return m?m[1]:''; }
-function loadYT(cb){ if(window.YT&&window.YT.Player){cb();return;} let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; document.head.appendChild(s); window.onYouTubeIframeAPIReady=cb; }
-function getWorld(){ let now=Date.now()/1000, el=Math.floor(now-BIRTH), tot=videos.length*SLOT, pos=el%tot; return {idx:Math.floor(pos/SLOT),seek:pos%SLOT}; }
-function playWorld(i,s){ curIdx=i; loadYT(()=>{ if(player){ player.loadVideoById({videoId:videos[i].id,startSeconds:s}); return; } player=new YT.Player('player',{videoId:videos[i].id,playerVars:{autoplay:1,mute:1,controls:1,rel:0,playsinline:1,start:s},events:{onReady:e=>{e.target.playVideo(); e.target.mute(); setTimeout(()=>{try{e.target.unMute(); e.target.setVolume(100);}catch{}},1200);},onStateChange:e=>{if(e.data==0){let w=getWorld(); curIdx=w.idx; e.target.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek});}} }}); }); }
+let player, videos=[], curIdx=0;
+const BIRTH = Date.UTC(2025,0,1)/1000;
+const SLOT = 240;
 
-setInterval(()=>{ let d=new Date(); document.getElementById('clock').innerText=d.toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false}); },1000);
-function loadDesc(){ let d=localStorage.getItem('ale_academy_desc')||'🏫 ALE FOOTBALL ACADEMY - TRAINING YOUNG TALENTS - JOIN US TODAY - 0703182307'; document.getElementById('desc').innerText=d.toUpperCase(); document.getElementById('tick').innerText=d.toUpperCase()+' • TILL 3624692 • ALE TV '; } setInterval(loadDesc,4000); loadDesc();
-let ads=[{i:"📰",l:"NEWS",c:"c1",t:"🔴 BREAKING LIVE ON ALE TV!"},{i:"⚽",l:"WHAT",c:"c3",t:"WHAT WE DO: Football ⚽ Gospel 🙏"},{i:"👤",l:"ALEX",c:"c4",t:"I AM ALEX MUSAU - TILL 3624692"},{i:"💰",l:"TILL",c:"c1",t:"💰 TILL 3624692 - SUPPORT ALE TV"}];
-function showAd(){ let a=ads[Math.floor(Math.random()*ads.length)]; document.getElementById('ad').className=a.c; document.getElementById('aicon').innerText=a.i; document.getElementById('albl').innerText=a.l; document.getElementById('adTextEl').innerText=a.t; } showAd(); setInterval(showAd,4000);
-setInterval(()=>{ if(!player||!videos.length) return; let w=getWorld(); if(w.idx!=curIdx){ curIdx=w.idx; try{player.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek});}catch{}} },15000);
-function init(){ let list=[]; try{ let az=JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null'); if(az&&az.playlist&&az.playlist.length) list=az.playlist.map(p=>({id:getId(p.url||p.ytid||'')}) ); }catch{} if(!list.length){ try{let o=JSON.parse(localStorage.getItem('ale_videos')||'[]'); if(o.length) list=o.map(v=>({id:getId(v.id||'')})).filter(x=>x.id);}catch{} } if(!list.length) list=[{id:'jNQXAC9IVRw'},{id:'jfKfPfyJRdk'}]; videos=list.filter(v=>v.id); let w=getWorld(); playWorld(w.idx,w.seek); } init();
-</script>
-</body>
-</html>
+function getId(v){
+ if(!v) return '';
+ v=v.trim();
+ if(v.length==11 &&!v.includes('/')) return v;
+ if(v.includes('youtu.be/')) return v.split('youtu.be/')[1].split(/[?&#]/)[0];
+ try{ let u=new URL(v); if(u.searchParams.get('v')) return u.searchParams.get('v'); }catch{}
+ let m=v.match(/([a-zA-Z0-9_-]{11})/); return m?m[1]:'';
+}
+function loadYT(cb){
+ if(window.YT && window.YT.Player){ cb(); return; }
+ let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api";
+ document.head.appendChild(s); window.onYouTubeIframeAPIReady=cb;
+}
+function getWorld(){
+ let now=Date.now()/1000, elapsed=Math.floor(now-BIRTH), total=videos.length*SLOT, pos=elapsed%total;
+ return {idx:Math.floor(pos/SLOT), seek:pos%SLOT};
+}
+function play(idx,seek){
+ curIdx=idx;
+ loadYT(()=>{
+  if(player){ player.loadVideoById({videoId:videos[idx].id,startSeconds:seek}); return; }
+  player=new YT.Player('player',{
+   videoId:videos[idx].id,
+   playerVars:{autoplay:1,mute:1,controls:1,rel:0,modestbranding:1,playsinline:1,start:seek},
+   events:{
+    onReady:e=>{
+     e.target.mute(); e.target.playVideo();
+     setTimeout(()=>{ try{e.target.unMute(); e.target.setVolume(100); e.target.playVideo();}catch{} },1500);
+    },
+    onStateChange:e=>{
+     if(e.data==0){ let w=getWorld(); curIdx=w.idx; e.target.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek}); }
+    }
+   }
+  });
+ });
+}
+
+// CLOCK
+setInterval(()=>{
+ let d=new Date();
+ document.getElementById('clock').innerText=d.toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
+},1000);
+
+// ACADEMY DESC FROM ADMIN
+function updateDesc(){
+ let desc=localStorage.getItem('ale_academy_desc') || '🏫 ALE FOOTBALL ACADEMY - TRAINING YOUNG TALENTS 4-18 YEARS - JOIN US TODAY 0703182307 - TILL 3624692';
+ document.getElementById('academyText').innerText=desc.toUpperCase();
+ document.getElementById('tickerText').innerText=desc.toUpperCase()+' • TILL 3624692 • PUBLIC WORLD SYNC • SAME TIME EVERYWHERE • ';
+}
+setInterval(updateDesc,5000); updateDesc();
+
+// ADS ROTATION - PUBLIC TV ADS
+let adList=[
+ {i:"📢",l:"ADS",c:"c-red",t:"ADVERTISE WITH US - TILL 3624692 - PRIME TIME"},
+ {i:"🏫",l:"JOIN",c:"c-yellow",t:"ALE FOOTBALL ACADEMY - REGISTRATION OPEN - 0703182307"},
+ {i:"⚽",l:"WHAT",c:"c-green",t:"WHAT WE DO: Football ⚽ Gospel 🙏 News 📰 24/7"},
+ {i:"💰",l:"TILL",c:"c-red",t:"💰 TILL 3624692 - SUPPORT ALE TV - ASANTE SANA!"},
+ {i:"🌍",l:"PUBLIC",c:"c-purple",t:"🌍 PUBLIC TV - KISUMU | NAIROBI | MOMBASA | UGANDA - SAME TIME"},
+ {i:"👤",l:"ALEX",c:"c-green",t:"I AM ALEX MUSAU - FOUNDER ALE TV - 0703182307"}
+];
+function showAd(){
+ let a=adList[Math.floor(Math.random()*adList.length)];
+ let box=document.getElementById('ads');
+ box.className=a.c;
+ document.getElementById('aIcon').innerText=a.i;
+ document.getElementById('aLabel').innerText=a.l;
+ box.querySelector('#adsText').innerText=a.t;
+}
+showAd(); setInterval(showAd,4500);
+
+// PUBLIC SYNC - CHECK EVERY 15 SEC ONLY
+setInterval(()=>{
+ if(!player ||!videos.length) return;
+ let w=getWorld();
+ if(w.idx!==curIdx){
+  curIdx=w.idx;
+  try{ player.loadVideoById({videoId:videos[w.idx].id,startSeconds:w.seek}); }catch{}
+ }
+},15000);
+
+// LOAD VIDEOS
+function init(){
+ let list=[];
+ try{ let az=JSON.parse(localStorage.getItem('azamtv_ale_final_2026')||'null'); if(az && az.playlist) list=az.playlist.map(p=>({id:getId(p.url||p.ytid||'')})); }catch{}
+ if(!list.length){ try{ let o=JSON.parse(localStorage.getItem('ale_videos')||'[]'); if(o.length) list=o.map(v=>({id:getId(v.id||'')})).filter(x=>x.id);
