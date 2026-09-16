@@ -1,31 +1,60 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE ADMIN</title>
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#0f0f0f;color:#fff;padding:12px}.card{background:#1a1a1a;border:1px solid #333;border-radius:12px;padding:14px;margin-bottom:12px}button{width:100%;padding:14px;border:0;border-radius:10px;font-weight:900;font-size:15px;margin-top:8px}.green{background:#00ff66;color:#000}.orange{background:#ff6600;color:#fff}.dark{background:#2a2a2a;color:#fff}input,textarea{width:100%;padding:12px;background:#000;border:1px solid #333;color:#fff;border-radius:8px;margin-top:8px}#dbg{font-size:10px;color:#0f0;white-space:pre-wrap;word-break:break-all;margin-top:8px}</style></head><body>
-
-<div class="card" style="border-color:#00ff66">
-<h2 style="color:#00ff66;text-align:center">ALE TV ADMIN ZERO</h2>
-<button class="green" onclick="add()">+ ONGEZA VIDEO</button>
-<p id="list" style="margin-top:10px;color:#888;font-size:12px">Hakuna video - ongeza moja</p>
-<button class="dark" onclick="clearAll()">🗑️ Futa Zote (takataka)</button>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE ADMIN NEW</title>
+<style>
+body{background:#000;color:#fff;font-family:Arial;padding:20px}
+.box{background:#111;border:2px solid #ff6600;border-radius:15px;padding:20px;max-width:400px;margin:auto}
+h2{color:#ff6600;text-align:center;margin-bottom:15px}
+input{width:100%;padding:15px;background:#000;border:1px solid #333;color:#fff;border-radius:10px;font-size:16px}
+button{width:100%;padding:16px;border:0;border-radius:10px;font-weight:900;font-size:16px;margin-top:12px}
+#b1{background:#00ff66;color:#000}
+#b2{background:#ff6600;color:#fff}
+#b3{background:#222;color:#fff;border:1px solid #444}
+#ok{background:#00ff66;color:#000;padding:12px;border-radius:10px;text-align:center;margin-top:12px;display:none;font-weight:900}
+</style>
+</head>
+<body>
+<div class="box">
+<h2>ALE ADMIN MPYA</h2>
+<p style="color:#888;font-size:12px;text-align:center;margin-bottom:10px">Weka YouTube link hapa chini</p>
+<input id="link" placeholder="https://youtu.be/xxxxxxxxxxx">
+<button id="b1" onclick="saving()">💾 SAVE - WEKA TV</button>
+<div id="ok">✅ IMESAVIWA! TV IMEUPDATE!</div>
+<button id="b2" onclick="goTV()">📺 ANGALIA TV SASA</button>
+<button id="b3" onclick="futa()">🗑️ FUTA ZOTE</button>
+<p id="info" style="font-size:11px;color:#555;margin-top:15px;text-align:center"></p>
 </div>
-
-<div class="card">
-<b>2. Description</b><textarea id="desc">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</textarea>
-<b style="display:block;margin-top:10px">3. Ad Chini</b><textarea id="ad">TILL 3624692 - ADVERTISE WITH US</textarea>
-<button class="orange" onclick="saveAll()">💾 SAVE YOTE - TV ITA-UPDATE</button>
-</div>
-
-<div class="card" style="border-color:#ff6600">
-<h3 style="color:#ff6600">📺 ONA TV SASA</h3>
-<p style="font-size:11px;color:#aaa;margin:6px 0">Bonyeza hapa kuona TV inavyoonekana kwa watu:</p>
-<button class="orange" onclick="watchTV()">🔍 ANGALIA TV SASA</button>
-<button class="dark" onclick="openTVNew()">📺 Fungua TV kwa Tab Mpya</button>
-</div>
-
-<div class="card">
-<b>Debug Keys:</b><pre id="dbg"></pre><button class="dark" onclick="showKeys()">🔍 Angalia Keys</button>
-</div>
-
 <script>
-let vids=[];
-function add(){let url=prompt('Weka YouTube link:');if(!url)return;let id=getId(url);if(!id){alert('Link mbaya');return;}vids=[{id:id}];document.getElementById('list').innerHTML='✅ Video: '+id; }
-function getId(v){v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match
+function getId(v){
+ v=v.trim();
+ if(v.length==11 && v.indexOf('/')==-1) return v;
+ if(v.indexOf('youtu.be/')>-1){return v.split('youtu.be/')[1].split('?')[0].split('&')[0];}
+ try{let u=new URL(v);if(u.searchParams.get('v')) return u.searchParams.get('v');}catch(e){}
+ let m=v.match(/[a-zA-Z0-9_-]{11}/); return m?m[0]:'';
+}
+function saving(){
+ let v=document.getElementById('link').value;
+ let id=getId(v);
+ if(!id){alert('Weka link ya YouTube sahihi! Mfano: https://youtu.be/jNQXAC9IVRw');return;}
+ localStorage.setItem('ale_tv_id', id);
+ document.getElementById('ok').style.display='block';
+ document.getElementById('info').innerText='Video ID: '+id+' - Imehifadhiwa!';
+ setTimeout(()=>{document.getElementById('ok').style.display='none';},3000);
+}
+function goTV(){
+ window.location.href='index.html';
+}
+function futa(){
+ localStorage.clear();
+ document.getElementById('link').value='';
+ document.getElementById('info').innerText='Zote zimefutwa - Safi!';
+ alert('Safi! LocalStorage imefutwa');
+}
+let old=localStorage.getItem('ale_tv_id');
+if(old){document.getElementById('info').innerText='Iliyopo sasa: '+old; document.getElementById('link').value='https://youtu.be/'+old;}
+</script>
+</body>
+</html>
