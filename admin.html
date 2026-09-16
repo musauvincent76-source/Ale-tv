@@ -1,110 +1,49 @@
 <!DOCTYPE html>
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV Admin - YOUR HOME OF SPORTS</title>
+<title>ALE TV Admin - ONE INCH</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:#050a14;color:#fff;font-family:'Segoe UI',sans-serif;display:flex;min-height:100vh}
-.sidebar{width:230px;background:linear-gradient(180deg,#001a4d,#000c24);padding:18px;border-right:3px solid #ff6600;position:fixed;height:100vh}
-.sidebar h2{color:#ff6600;font-size:22px;font-weight:900}
-.sidebar h2 span{color:#fff;display:block;font-size:10px;letter-spacing:3px;opacity:.7}
-.menu{margin-top:30px}
-.menu-item{padding:12px 14px;border-radius:10px;margin-bottom:6px;font-size:13px;display:flex;gap:10px;opacity:.7}
-.menu-item.active{background:#ff6600;color:#fff;opacity:1;font-weight:800}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#000;color:#fff;display:flex;min-height:100vh}
+.sidebar{width:230px;background:#001a4d;padding:18px;border-right:3px solid #ff0000;position:fixed;height:100vh}
 .main{margin-left:230px;flex:1;padding:20px;background:#070d1c}
-.topbar{display:flex;justify-content:space-between;align-items:center;background:#0a1430;padding:14px 18px;border-radius:14px;border-left:4px solid #ff6600;margin-bottom:20px}
-.card{background:#0e1d40;border:1px solid #1a2d60;border-radius:16px;padding:18px;margin-bottom:16px}
-.stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.stat{background:#101f45;border-radius:14px;padding:14px;text-align:center;border-top:2px solid #ff6600}
-.stat b{font-size:22px;color:#ff6600;display:block}
-input,select{background:#0a1430;border:1px solid #234080;border-radius:30px;padding:14px;color:#fff;width:100%;margin-bottom:10px}
-.btn-ale{background:linear-gradient(90deg,#ff6600,#ff8800);border:0;padding:14px;border-radius:30px;font-weight:900;width:100%;color:#fff}
-.btn-live{background:#00ff88;color:#000;border:0;padding:7px 14px;border-radius:20px;font-weight:800;font-size:11px}
-.btn-del{background:#ff2244;color:#fff;border:0;padding:7px 12px;border-radius:20px;font-size:11px}
-.playlist-item{display:flex;justify-content:space-between;align-items:center;background:#0d1a38;padding:12px;border-radius:12px;margin-bottom:8px;border-left:3px solid transparent}
-.playlist-item.now{border-left-color:#00ff88;background:#0e2a1a}
-.live-badge{background:red;color:#fff;padding:3px 8px;border-radius:6px;font-size:8px;font-weight:900}
-@media(max-width:700px){.sidebar{position:relative;width:100%;height:auto}.main{margin-left:0}}
+.card{background:#0e1d40;border:1px solid #1a2d60;border-radius:14px;padding:18px;margin-bottom:14px}
+input,select{width:100%;padding:14px;border-radius:30px;border:1px solid #333;background:#0a1430;color:#fff;margin:6px 0}
+.btn{background:linear-gradient(90deg,#ff0000,#ffae00);border:0;padding:14px;border-radius:30px;font-weight:900;width:100%;color:#fff}
 </style></head><body>
 <div class="sidebar">
-<h2>ALE TV<span>YOUR HOME OF SPORTS</span></h2>
-<div class="menu">
-<div class="menu-item active">📺 Dashboard</div>
-<div class="menu-item">🎬 Playlist Manager</div>
-<div class="menu-item">🔴 Studio Live</div>
-<div class="menu-item">💰 TILL 3624692 - Alex</div>
+<h2 style="color:#ff0000">ALE TV<span style="display:block;color:#fff;font-size:10px;letter-spacing:3px">YOUR HOME OF SPORTS</span></h2>
+<div style="margin-top:30px;opacity:.6;font-size:13px">📺 FINAL ONE INCH<br><br>● ONLINE<br>ale-tv.vercel.app</div>
 </div>
-<div style="margin-top:40px;padding:12px;background:#000a1e;border-radius:12px">
-<div style="font-size:10px;opacity:.5">SYSTEM STATUS</div>
-<div style="color:#00ff88;font-size:12px;margin-top:4px">● ONLINE - ALE TV KE</div>
-<div style="font-size:9px;opacity:.4;margin-top:6px">ale-tv.vercel.app</div>
-</div>
-</div>
-
 <div class="main">
-<div class="topbar">
-<div><b style="font-size:18px">ALE TV Dashboard</b><div style="font-size:11px;opacity:.6">YOUR HOME OF SPORTS • 0703182307</div></div>
-<a href="index.html" target="_blank" style="background:#ff6600;color:#fff;padding:10px 18px;border-radius:25px;text-decoration:none;font-weight:900;font-size:12px">📺 ONA TV</a>
-</div>
-
-<div class="stat-grid">
-<div class="stat"><b id="totalV">0</b><span>JUMLA VIDEO</span></div>
-<div class="stat"><b style="color:#00ff88" id="nowV">0</b><span>LIVE NOW</span></div>
-<div class="stat"><b style="color:#fff">ALE</b><span>BRAND</span></div>
-</div>
-
+<h2>ALE TV - ONE INCH Admin</h2>
+<p style="opacity:.6;font-size:12px">Hii inaunganika na player yako ya ONE INCH</p>
 <div class="card">
-<div style="color:#ff6600;font-weight:900;font-size:12px;margin-bottom:12px">➕ WEKA VIDEO MPYA - YouTube</div>
-<input id="vTitle" placeholder="Jina la video - mf: Simba vs Yanga LIVE">
-<input id="vUrl" placeholder="YouTube link https://youtube.com/watch?v=...">
-<select id="vCat"><option>MPIRA FOOTBALL</option><option>LIVE 24/7</option><option>HABARI</option><option>BURUDANI</option></select>
-<button class="btn-ale" id="addBtn">+ WEKA KWENYE ALE TV</button>
-<div id="stat" style="font-size:12px;margin-top:8px;text-align:center"></div>
+<input id="t" placeholder="Title - mf: Simba vs Yanga LIVE">
+<input id="u" placeholder="YouTube link https://youtube.com/watch?v=...">
+<select id="c"><option>MPIRA</option><option>HABARI</option><option>BURUDANI</option><option>LIVE 24/7</option></select>
+<button class="btn" onclick="add()">+ WEKA KWENYE TV</button>
+<div id="s" style="margin-top:8px;font-size:12px"></div>
 </div>
-
-<div class="card"><div style="display:flex;justify-content:space-between"><div style="font-weight:900">🎬 Playlist Yangu</div><button onclick="clearAll()" style="background:transparent;color:#ff4444;border:1px solid #ff4444;padding:5px 10px;border-radius:15px;font-size:10px">Futa Zote</button></div><div id="plist" style="margin-top:10px"></div></div>
+<div class="card"><div id="list"></div><button onclick="clearA()" style="margin-top:10px;background:transparent;color:red;border:1px solid red;padding:6px 12px;border-radius:20px">Futa Zote</button></div>
+<a href="index.html" style="color:#ff0000">→ Rudi TV</a>
 </div>
-
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getFirestore, collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig = {
-  apiKey: "AIzaSyDxxxxxxxxxxxxxxxx",
-  authDomain: "ale-tv-xxxx.firebaseapp.com",
-  projectId: "ale-tv-xxxx",
-  storageBucket: "ale-tv-xxxx.appspot.com",
-  messagingSenderId: "123",
-  appId: "1:123:web:xxxx"
-};
-const app=initializeApp(firebaseConfig);
-const db=getFirestore(app);
-
-function getYtId(url){ if(!url) return ''; if(url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0].split('&')[0]; try{let u=new URL(url); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch(e){} let m=url.match(/v=([^&]+)/); return m?m[1]:''; }
-
-async function addVideo(){
- let t=document.getElementById('vTitle').value.trim();
- let u=document.getElementById('vUrl').value.trim();
- let cat=document.getElementById('vCat').value;
- if(!u) return alert('Weka YouTube link!');
- let id=getYtId(u); if(!id) return alert('Link si ya YouTube!');
- if(!t) t=cat+' - '+id;
- document.getElementById('stat').innerText='⏳ Inapakia...';
- try{
-  await addDoc(collection(db,'videos'),{title:t,videoUrl:`https://www.youtube.com/embed/${id}`,type:'youtube',category:cat,ytid:id,createdAt:serverTimestamp()});
-  document.getElementById('stat').innerText='✅ Iko LIVE kwenye ALE TV!';
-  document.getElementById('vTitle').value=''; document.getElementById('vUrl').value='';
-  load();
- }catch(e){ document.getElementById('stat').innerText='❌ Error: '+e.message; }
+<script>
+const KEY='ale_videos';
+function getYtId(url){ if(!url) return ''; if(url.includes('youtu.be/')) return url.split('youtu.be/')[1].split('?')[0]; try{let u=new URL(url); if(u.searchParams.get('v')) return u.searchParams.get('v');}catch{} let m=url.match(/v=([^&]+)/); return m?m[1]:''; }
+function getV(){ try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch{return []} }
+function saveV(v){ localStorage.setItem(KEY,JSON.stringify(v)); localStorage.setItem('aletv_state_v2',JSON.stringify({playlist:v.map(x=>({title:x.title,ytid:x.id}))})); }
+function add(){
+ let title=document.getElementById('t').value.trim();
+ let url=document.getElementById('u').value.trim();
+ if(!url) return alert('Weka link!');
+ let id=getYtId(url); if(!id) return alert('Si YouTube!');
+ if(!title) title='ALE TV - '+id;
+ let v=getV();
+ v.push({id:id,title:title,url:url,cat:document.getElementById('c').value});
+ saveV(v); render(); document.getElementById('t').value=''; document.getElementById('u').value=''; document.getElementById('s').innerText='✅ Imeingia TV! Nenda index.html uone';
 }
-document.getElementById('addBtn').onclick=addVideo;
-
-async function load(){
- const snap=await getDocs(collection(db,'videos'));
- const list=[]; snap.forEach(d=>list.push({id:d.id,...d.data()}));
- document.getElementById('totalV').innerText=list.length;
- document.getElementById('nowV').innerText=list.length;
- document.getElementById('plist').innerHTML=list.map(v=>`<div class="playlist-item now"><div><div style="font-weight:700;font-size:13px"><span class="live-badge">● LIVE</span> ${v.title}</div><div style="font-size:10px;opacity:.5">${v.category} • ${v.ytid}</div></div><button class="btn-del" onclick="del('${v.id}')">X</button></div>`).join('') || '<div style="text-align:center;opacity:.4;padding:20px">Hakuna video bado</div>';
-}
-window.del=async(id)=>{ if(confirm('Futa?')){ await deleteDoc(doc(db,'videos',id)); load(); } }
-window.clearAll=()=>alert('Futa moja moja kwa X');
-load();
+function render(){ let v=getV(); document.getElementById('list').innerHTML=v.map((x,i)=>`<div style="display:flex;justify-content:space-between;background:#0d1a38;padding:10px;border-radius:10px;margin-bottom:6px"><div><b>${x.title}</b><br><small style="opacity:.5">${x.id}</small></div><button onclick="del(${i})" style="background:red;border:0;color:#fff;padding:5px 10px;border-radius:10px">X</button></div>`).join('')||'Hakuna video'; }
+window.del=(i)=>{ let v=getV(); v.splice(i,1); saveV(v); render(); }
+window.clearA=()=>{ if(confirm('Futa zote?')){localStorage.removeItem(KEY);render();} }
+render();
 </script></body></html>
