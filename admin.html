@@ -1,22 +1,70 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALE ADMIN</title>
-<style>*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}body{background:#111;padding:20px;color:#fff}.box{background:#000;border:2px solid #ff6600;border-radius:12px;padding:20px;max-width:400px;margin:auto}input{width:100%;padding:14px;border-radius:8px;border:1px solid #333;background:#222;color:#fff;margin:8px 0;font-size:14px}button{width:100%;padding:14px;background:#ff6600;color:#fff;border:0;border-radius:8px;font-weight:900;font-size:16px;margin-top:10px}#msg{background:#0a0;color:#fff;padding:10px;border-radius:8px;margin-top:10px;display:none;text-align:center}</style></head><body>
-<div class="box">
-<h2 style="color:#ff6600;text-align:center">ALE TV ADMIN</h2>
-<p style="font-size:12px;color:#888;text-align:center;margin:10px 0">Weka YouTube Link hapa</p>
-<input id="yt" placeholder="https://youtu.be/... au https://youtube.com/watch?v=...">
-<input id="desc" placeholder="Maelezo - mfano: ALE vs GOR">
-<button onclick="save()">SAVE & PLAY KWENYE TV</button>
-<div id="msg">✅ IMESAVIWA! Fungua TV sasa!</div>
-<p style="font-size:11px;color:#666;margin-top:15px;text-align:center">TV Link: /index.html<br>Ita-update yenyewe baada ya sec 2</p>
-</div>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ALE TV LIVE</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000;height:100vh;display:flex;flex-direction:column;font-family:Arial}
+#top{height:45px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 15px;border-bottom:3px solid #ff6600}
+#top h1{color:#fff;font-size:18px;font-weight:900}#top h1 span{color:#ff6600}
+#clock{color:#00ff66;background:#000;border:1px solid #333;padding:5px 12px;border-radius:20px;font-size:13px;font-weight:900}
+#vid{flex:1;background:#000;position:relative}
+#player{width:100%;height:100%}
+#ads{height:55px;background:#ff6600;color:#000;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;text-align:center;padding:5px;animation:scroll 15s linear infinite}
+@keyframes scroll{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+</style>
+</head>
+<body>
+<div id="top"><h1>ALE <span>TV</span> LIVE</h1><div id="clock">00:00:00</div></div>
+<div id="vid"><div id="player"></div></div>
+<div id="ads">ALE FOOTBALL ACADEMY - JOIN TODAY 0703182307 - TILL 3624692</div>
+
+<script src="https://www.youtube.com/iframe_api"></script>
 <script>
-function getId(v){if(!v)return'';v=v.trim();if(v.length==11&&!v.includes('/'))return v;if(v.includes('youtu.be/'))return v.split('youtu.be/')[1].split(/[?&#]/)[0];try{let u=new URL(v);if(u.searchParams.get('v'))return u.searchParams.get('v');}catch{}let m=v.match(/([a-zA-Z0-9_-]{11})/);return m?m[1]:'';}
-function save(){
-let y=document.getElementById('yt').value;let d=document.getElementById('desc').value;
-let id=getId(y);if(!id){alert('Link mbaya! Weka YouTube link sahihi');return;}
-localStorage.setItem('aletv_live_now',JSON.stringify({ytid:id,desc:d||'ALE TV LIVE',title:d}));
-localStorage.setItem('ale_zero_v1',JSON.stringify({videos:[{id:id,desc:d}]}));
-document.getElementById('msg').style.display='block';
-setTimeout(()=>{document.getElementById('msg').style.display='none';},3000);
+let player;
+let lastId = '';
+
+// Chukua ID kutoka ADMIN
+function getLiveId(){
+  try{
+    let a = JSON.parse(localStorage.getItem('aletv_live_now')||'null');
+    if(a && a.ytid) return a.ytid;
+    let b = JSON.parse(localStorage.getItem('ale_zero_v1')||'null');
+    if(b && b.videos && b.videos[0]) return b.videos[0].id;
+  }catch(e){}
+  return 'jNQXAC9IVRw'; // video ya default
 }
-</script></body></html>
+
+function onYouTubeIframeAPIReady(){
+  let vid = getLiveId();
+  lastId = vid;
+  player = new YT.Player('player',{
+    videoId: vid,
+    playerVars:{
+      autoplay:1,
+      mute:0,
+      controls:1,
+      rel:0,
+      playsinline:1,
+      modestbranding:1
+    },
+    events:{
+      onReady: (e)=>{ e.target.playVideo(); }
+    }
+  });
+}
+
+// Angalia kama ADMIN imebadilisha video - badilisha live
+setInterval(()=>{
+  document.getElementById('clock').innerText = new Date().toLocaleTimeString('en-GB',{timeZone:'Africa/Nairobi',hour12:false});
+  let nid = getLiveId();
+  if(nid && nid!== lastId && player && player.loadVideoById){
+    lastId = nid;
+    player.loadVideoById(nid);
+  }
+},2000);
+</script>
+</body>
+</html>
