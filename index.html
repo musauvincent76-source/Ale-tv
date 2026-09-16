@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ALE TV</title>
+<title>ALE TV - FINAL ONE INCH</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#000;color:#fff;font-family:sans-serif}
@@ -8,47 +8,183 @@ body{background:#000;color:#fff;font-family:sans-serif}
 #player{width:100%;aspect-ratio:16/9;background:#000}
 #player iframe{width:100%;height:100%;pointer-events:none!important}
 #overlay{position:absolute;inset:0;z-index:20;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;cursor:pointer}
-#overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900}
+#overlay b{background:#ff0000;color:#fff;padding:12px 22px;border-radius:30px;font-size:16px;font-weight:900;animation:pulse 1s infinite}
+@keyframes pulse{0%{transform:scale(1)}50%{transform:scale(1.07)}100%{transform:scale(1)}}
 #live{position:absolute;top:10px;left:10px;background:red;color:#fff;padding:4px 8px;border-radius:4px;font-size:11px;font-weight:900;z-index:10}
-#aleLogo{position:absolute;top:10px;right:10px;z-index:15;background:linear-gradient(135deg,#ff0000,#ffae00);color:#fff;padding:7px 16px;border-radius:25px;font-weight:900;font-size:14px;border:2px solid #fff;box-shadow:0 0 15px #ff0000;display:flex;gap:6px;align-items:center}
+
+/* ALE TV NA KALONGO RIGHT JUU */
+#aleLogo{
+ position:absolute;top:10px;right:10px;z-index:15;
+ background:linear-gradient(135deg,#ff0000,#ffae00,#ff0000);
+ color:#fff;padding:7px 16px;border-radius:25px;
+ font-weight:900;font-size:14px;letter-spacing:2px;
+ border:2px solid #fff;box-shadow:0 0 15px #ff0000,0 0 25px #ffae00;
+ text-shadow:0 0 8px #fff;display:flex;align-items:center;gap:7px;
+}
+#aleLogo.dot{width:10px;height:10px;background:#fff;border-radius:50%;box-shadow:0 0 10px #fff;animation:blink 0.8s infinite}
+@keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.3;transform:scale(0.7)}}
+
+/* TICKER YA NYIMBO - SPEED 90 FAST */
 #tickerWrap{position:absolute;bottom:78px;left:0;right:0;height:32px;background:#ff0000;z-index:8;display:flex;align-items:center;overflow:hidden}
 #ticker span{display:inline-block;padding-left:100%;white-space:nowrap;color:#fff;font-weight:900;font-size:13px;animation:scroll 15s linear infinite}
 @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
-#breakingBox{position:absolute;bottom:0;left:0;right:0;height:78px;background:#0a0a0a;border-top:3px solid #ff0000;border-bottom:3px solid #ff0000;z-index:12;display:flex;align-items:center;overflow:hidden}
-#breakLabel{background:#ff0000;color:#fff;font-weight:900;font-size:11px;padding:0 14px;height:100%;display:flex;align-items:center}
-#adStage{flex:1;height:100%;display:flex;align-items:center;justify-content:center;padding:6px}
-#adText{font-weight:900;font-size:16px;text-align:center;line-height:1.25;max-width:96%;animation:zoomCurly 10s ease-in-out, colorDim 6s infinite}
-@keyframes zoomCurly{0%{transform:scale(0.2) rotate(-12deg) translateY(30px);opacity:0}15%{transform:scale(1.25) rotate(3deg) translateY(-6px);opacity:1}25%{transform:scale(1) rotate(0);opacity:1}85%{transform:scale(1);opacity:1}100%{transform:scale(0.2) rotate(12deg) translateY(-20px);opacity:0}}
-@keyframes colorDim{0%{color:#ff0000;text-shadow:0 0 12px #ff0000}20%{color:#ffae00;text-shadow:0 0 12px #ffae00}40%{color:#00ff88;text-shadow:0 0 12px #00ff88}60%{color:#00d4ff;text-shadow:0 0 12px #00d4ff}80%{color:#ff00ff;text-shadow:0 0 12px #ff00ff}100%{color:#ff0000;text-shadow:0 0 12px #ff0000}}
+
+/* KIBOX ONE INCH - CORNER TO CORNER */
+#breakingBox{
+ position:absolute;bottom:0;left:0;right:0;
+ height:78px; /* ONE INCH */
+ background:#0a0a0a;border-top:3px solid #ff0000;border-bottom:3px solid #ff0000;
+ z-index:12;display:flex;align-items:center;overflow:hidden;
+}
+#breakLabel{
+ background:#ff0000;color:#fff;font-weight:900;font-size:11px;
+ padding:0 14px;height:100%;display:flex;align-items:center;flex-shrink:0;
+}
+#adStage{flex:1;overflow:hidden;position:relative;height:100%;display:flex;align-items:center;justify-content:center;padding:6px}
+#adText{
+ font-weight:900;font-size:16px;text-align:center;
+ white-space:normal;line-height:1.25;max-width:96%;
+ animation:zoomCurly 10s ease-in-out, colorDim 6s infinite;
+ text-shadow:0 0 10px currentColor;
+}
+@keyframes zoomCurly{
+ 0%{transform:scale(0.2) rotate(-12deg) translateY(30px);opacity:0;letter-spacing:8px}
+ 15%{transform:scale(1.25) rotate(3deg) translateY(-6px);opacity:1;letter-spacing:1px}
+ 25%{transform:scale(1) rotate(0) translateY(0);opacity:1}
+ 85%{transform:scale(1) rotate(0);opacity:1}
+ 100%{transform:scale(0.2) rotate(12deg) translateY(-20px);opacity:0;letter-spacing:8px}
+}
+@keyframes colorDim{
+ 0%{color:#ff0000;text-shadow:0 0 12px #ff0000}
+ 20%{color:#ffae00;text-shadow:0 0 12px #ffae00}
+ 40%{color:#00ff88;text-shadow:0 0 12px #00ff88}
+ 60%{color:#00d4ff;text-shadow:0 0 12px #00d4ff}
+ 80%{color:#ff00ff;text-shadow:0 0 12px #ff00ff}
+ 100%{color:#ff0000;text-shadow:0 0 12px #ff0000}
+}
 #clockBox{position:absolute;bottom:110px;left:0;z-index:11;background:#000;color:#ff0000;border:2px solid #ff0000;border-bottom:0;border-left:0;padding:5px 10px;border-radius:0 10px 0 0;font-size:13px;font-weight:900}
-#nextBox{position:absolute;bottom:110px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nextBox{position:absolute;bottom:110px;left:105px;z-index:11;background:#ff0000;color:#fff;padding:5px 10px;border-radius:10px 10px 0 0;font-size:11px;font-weight:900;display:none;max-width:60%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 </style></head><body>
 <div id="wrap">
 <div id="player"></div>
-<div id="overlay" onclick="startTV()"><b>▶ TAP TO PLAY</b></div>
+<div id="overlay" onclick="startTV()"><b>▶ TAP SCREEN TO PLAY</b></div>
 <div id="live">🔴 LIVE</div>
-<div id="aleLogo">● ALE TV</div>
+<div id="aleLogo"><span class="dot"></span> ALE TV</div>
 <div id="clockBox">00:00:00</div>
 <div id="nextBox"></div>
-<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV LIVE</span></div></div>
-<div id="breakingBox"><div id="breakLabel">⚡ ADS</div><div id="adStage"><div id="adText">ALE TV</div></div></div>
+<div id="tickerWrap"><div id="ticker"><span id="tick">ALE TV WORLD LIVE</span></div></div>
+<div id="breakingBox">
+<div id="breakLabel">⚡ ADS</div>
+<div id="adStage"><div id="adText">ALE TV - Advertise Here!</div></div>
 </div>
+</div>
+
 <script>
 function getV(){return JSON.parse(localStorage.getItem('ale_videos')||'[]')}
-const BIRTH=new Date('2025-01-01T00:00:00Z').getTime();const SLOT=240;
-let player,videos=[],curIdx=0,isCatching=false;
-function findNow(){let v=getV();if(!v.length)return null;let e=Math.floor((Date.now()-BIRTH)/1000);return{idx:Math.floor(e/SLOT)%v.length,seek:e%SLOT>230?0:e%SLOT}}
-function loadYT(cb){if(window.YT&&window.YT.Player){cb();return}let s=document.createElement('script');s.src="https://www.youtube.com/iframe_api";s.async=true;window.onYouTubeIframeAPIReady=cb;document.head.appendChild(s)}
-function createPlayer(vId,seek){loadYT(()=>{player=new YT.Player('player',{videoId:vId,playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek},events:{onReady:e=>{e.target.setPlaybackRate(1);e.target.playVideo()},onStateChange:e=>{if(e.data==0){curIdx=(curIdx+1)%videos.length;e.target.loadVideoById(videos[curIdx].id);e.target.setPlaybackRate(1);isCatching=false;document.getElementById('tick').innerText='NOW: '+videos[curIdx].title}}}})})}
-function startTV(){let w=findNow();if(!w)return;videos=getV();curIdx=w.idx;if(!player)createPlayer(videos[curIdx].id,w.seek);else{try{player.setPlaybackRate(1);player.seekTo(w.seek,true);player.unMute();player.setVolume(100);player.playVideo()}catch{}}document.getElementById('overlay').style.display='none';setTimeout(()=>{try{player.unMute();player.setPlaybackRate(1)}catch{}},500)}
-function resumeLiveGentle(){if(!player)return;let w=findNow();if(!w)return;try{let c=player.getCurrentTime(),d=w.seek-c;if(Math.abs(d)>12){isCatching=true;player.setPlaybackRate(1.10);setTimeout(()=>{try{let w2=findNow();if(Math.abs(w2.seek-player.getCurrentTime())>8)player.seekTo(w2.seek,true);player.setPlaybackRate(1);isCatching=false}catch{}},15000)}else{player.setPlaybackRate(1);if(Math.abs(d)>4)player.seekTo(w.seek,true)}player.playVideo()}catch{}}
-document.addEventListener('visibilitychange',()=>{if(!document.hidden)resumeLiveGentle()});window.addEventListener('online',resumeLiveGentle);window.addEventListener('focus',resumeLiveGentle);
-setInterval(()=>{document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});if(!player||!player.getDuration)return;try{let d=player.getDuration(),c=player.getCurrentTime(),rem=d-c;if(rem<=60&&rem>0){let n=videos[(curIdx+1)%videos.length];if(n){let nb=document.getElementById('nextBox');nb.style.display='block';nb.innerText='NEXT: '+n.title}}else document.getElementById('nextBox').style.display='none';if(!isCatching&&player.getPlaybackRate()!==1)player.setPlaybackRate(1)}catch{}},1000);
-let adList=["🔥 ADVERTISE ON ALE TV - 100K VIEWERS DAILY!","⚡ ALE TV ni TV ya Muziki, Habari na Burudani 24/7 LIVE!","💰 TANGAZA BIASHARA YAKO HAPA - Bei Nafuu!","📢 BREAKING: Trending in Kenya - Stay Tuned!","🎵 ALE TV - Home of African Hits & Gospel!","🌍 WORLD NEWS LIVE on ALE TV!"];let adIndex=0;
-function showAd(){let el=document.getElementById('adText');el.style.animation='none';void el.offsetWidth;el.innerText=adList[adIndex%adList.length];el.style.animation='zoomCurly 10s ease-in-out, colorDim 6s infinite';adIndex++}
-showAd();setInterval(showAd,10000);
-async function loadGoogleAds(){try{let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');let r=await fetch(url);let t=await r.text();let xml=new DOMParser().parseFromString(t,"text/xml");let items=xml.querySelectorAll("item");for(let i=0;i<Math.min(6,items.length);i++)adList.push("📰 "+items[i].querySelector("title").textContent)}catch{}}
+const BIRTH = new Date('2025-01-01T00:00:00Z').getTime();
+const SLOT = 240;
+let player, videos=[], curIdx=0, isCatching=false;
+
+function findNow(){
+ let v=getV(); if(!v.length) return null;
+ let elapsed = Math.floor((Date.now()-BIRTH)/1000);
+ let idx = Math.floor(elapsed / SLOT) % v.length;
+ let seek = elapsed % SLOT;
+ return {idx, seek: seek>230?0:seek};
+}
+function loadYT(cb){
+ if(window.YT && window.YT.Player){ cb(); return; }
+ let s=document.createElement('script'); s.src="https://www.youtube.com/iframe_api"; s.async=true;
+ window.onYouTubeIframeAPIReady=cb;
+ document.head.appendChild(s);
+}
+function createPlayer(vId, seek){
+ loadYT(()=>{
+  player = new YT.Player('player',{
+   videoId: vId,
+   playerVars:{autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,modestbranding:1,playsinline:1,start:seek,iv_load_policy:3},
+   events:{
+    onReady: e=>{ e.target.setPlaybackRate(1); e.target.playVideo(); },
+    onStateChange: e=>{
+     if(e.data==0){
+       curIdx = (curIdx+1)%videos.length;
+       e.target.loadVideoById(videos[curIdx].id);
+       e.target.setPlaybackRate(1);
+       isCatching=false;
+       document.getElementById('tick').innerText = 'NOW: '+videos[curIdx].title;
+     }
+    }
+   }
+  });
+ });
+}
+function startTV(){
+ let w=findNow(); if(!w) return; videos=getV(); curIdx=w.idx;
+ if(!player) createPlayer(videos[curIdx].id, w.seek);
+ else { try{ player.setPlaybackRate(1); player.seekTo(w.seek,true); player.unMute(); player.setVolume(100); player.playVideo(); }catch{} }
+ document.getElementById('overlay').style.display='none';
+ setTimeout(()=>{ try{ player.unMute(); player.setPlaybackRate(1);}catch{} },600);
+}
+// SPEED 90 - 1.10x tu
+function resumeLiveGentle(){
+ if(!player) return; let w=findNow(); if(!w) return;
+ try{
+   let curr = player.getCurrentTime(); let diff = w.seek - curr;
+   if(Math.abs(diff) > 12){
+     isCatching=true; player.setPlaybackRate(1.10);
+     setTimeout(()=>{ try{ let w2=findNow(); if(Math.abs(w2.seek - player.getCurrentTime()) > 8){ player.seekTo(w2.seek,true); } player.setPlaybackRate(1); isCatching=false; }catch{} },15000);
+   }else{ player.setPlaybackRate(1); if(Math.abs(diff) > 4) player.seekTo(w.seek,true); }
+   player.playVideo();
+ }catch{}
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) resumeLiveGentle(); });
+window.addEventListener('online', resumeLiveGentle);
+window.addEventListener('focus', resumeLiveGentle);
+
+setInterval(()=>{
+ document.getElementById('clockBox').innerText=new Date().toLocaleTimeString('en-KE',{hour12:false,timeZone:'Africa/Nairobi'});
+ if(!player||!player.getDuration) return;
+ try{
+  let d=player.getDuration(), c=player.getCurrentTime(), rem=d-c;
+  if(rem<=60 && rem>0){ let next = videos[(curIdx+1)%videos.length]; if(next){ let nb=document.getElementById('nextBox'); nb.style.display='block'; nb.innerText='NEXT: '+next.title; } }
+  else{ document.getElementById('nextBox').style.display='none'; }
+  if(!isCatching && player.getPlaybackRate()!==1) player.setPlaybackRate(1);
+ }catch{}
+},1000);
+
+// ADS CURLY ZOOM KILA 10 SEC NA COLOR DIM
+let adList = [
+ "🔥 ADVERTISE YOUR BUSINESS ON ALE TV - 100K VIEWERS DAILY!",
+ "⚡ ALE TV ni TV ya Muziki, Habari na Burudani 24/7 LIVE!",
+ "💰 TANGAZA BIASHARA YAKO HAPA - Bei Nafuu - Watu Wengi Wanaona!",
+ "📢 BREAKING: Trending in Kenya Today - Stay Tuned on ALE TV!",
+ "🎵 ALE TV - Home of African Hits, Gospel, Gengetone & Bongo!",
+ "🌍 WORLD NEWS LIVE on ALE TV - Habari Moto Moto!",
+ "📲 ALE TV - Watch Anytime, Anywhere - LIVE!"
+];
+let adIndex=0;
+function showAd(){
+ let el=document.getElementById('adText');
+ el.style.animation='none'; void el.offsetWidth;
+ el.innerText = adList[adIndex % adList.length];
+ el.style.animation='zoomCurly 10s ease-in-out, colorDim 6s infinite';
+ adIndex++;
+}
+showAd();
+setInterval(showAd, 10000);
+
+async function loadGoogleAds(){
+ try{
+  let url='https://api.allorigins.win/raw?url='+encodeURIComponent('https://news.google.com/rss?hl=en-KE&gl=KE&ceid=KE:en');
+  let res=await fetch(url); let text=await res.text();
+  let xml=new DOMParser().parseFromString(text,"text/xml");
+  let items=xml.querySelectorAll("item");
+  for(let i=0;i<Math.min(6,items.length);i++){ adList.push("📰 "+items[i].querySelector("title").textContent); }
+ }catch{}
+}
 loadGoogleAds();
-let v=getV();videos=v;if(v.length){let w=findNow();createPlayer(v[w.idx].id,w.seek);document.getElementById('tick').innerText='NOW: '+v[w.idx].title+' | ALE TV LIVE'}
+
+let v=getV(); videos=v;
+if(v.length){ let w=findNow(); createPlayer(v[w.idx].id, w.seek); document.getElementById('tick').innerText='NOW: '+v[w.idx].title+' | ALE TV LIVE'; }
 </script>
 </body></html>
