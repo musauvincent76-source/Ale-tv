@@ -2,65 +2,76 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MTAANI ADMIN</title>
+<title>MTAANI AI</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;padding:15px}
-.box{background:#111;padding:15px;border-radius:15px;border:1px solid #222}
-#chat{height:320px;overflow:auto;padding:10px;background:#000;border-radius:10px;text-align:left}
-input{width:68%;padding:12px;border-radius:20px;border:none}
-button{width:27%;padding:12px;border-radius:20px;background:#25D366;color:#fff;border:none;font-weight:bold}
-/* FAKE TYPING DOTS KAMA WHATSAPP */
-.typing span{display:inline-block;width:7px;height:7px;background:#25D366;border-radius:50%;margin:0 2px;animation:bounce 1.3s infinite;}
-.typing span:nth-child(2){animation-delay:0.2s}
-.typing span:nth-child(3){animation-delay:0.4s}
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding:12px}
+.box{background:#111;padding:12px;border-radius:15px;border:1px solid #222}
+#chat{height:380px;overflow:auto;padding:10px;background:#000;border-radius:10px}
+input{width:68%;padding:12px;border-radius:20px;border:none;outline:none}
+button.send{width:27%;padding:12px;border-radius:20px;background:#25D366;color:#fff;border:none;font-weight:bold}
+.typing span{display:inline-block;width:6px;height:6px;background:#25D366;border-radius:50%;margin:0 2px;animation:bounce 1.3s infinite;}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+.wa{color:#25D366;font-size:12px}
 </style>
 </head>
 <body>
-<h2 style="text-align:center;color:#ffcc00">🔥 MTAANI ADMIN 🔥</h2>
-<div class="box">
-<div id="chat"></div>
-<div style="margin-top:10px;display:flex;gap:5px">
-<input id="input" placeholder="Andika hapa...">
-<button onclick="jibu()">TUMA</button>
-</div>
-</div>
-<p style="text-align:center"><a href="https://wa.me/254751768763" style="color:#25D366">WhatsApp: 0751 768763</a></p>
+<h3 style="text-align:center;color:#ffcc00">🔥 MTAANI AI - ANAONGEA KAMA MIMI 🔥</h3>
+<div class="box"><div id="chat"></div>
+<div style="display:flex;gap:6px;margin-top:10px">
+<input id="input" placeholder="Uliza chochote...">
+<button class="send" onclick="jibu()">TUMA</button>
+</div></div>
 
 <script>
-const chat = document.getElementById('chat');
-function ongeza(who, text, isTyping=false){
-let div = document.createElement('p');
-div.style.margin="8px 0";
-if(isTyping){
-div.className="typing";
-div.innerHTML = `<b style="color:#25D366">MTAANI BOT:</b> <span></span><span></span><span></span> <i style="color:#aaa;font-size:11px">anaandika...</i>`;
-div.id="fakeTyping";
-}else{
-div.innerHTML = `<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b> ${text}`;
+const chat=document.getElementById('chat');
+let lastReply="";
+let history=[];
+
+const akili = {
+ greetings: ["Niaje mkuu! Leo uko aje? 😎", "Poa sana! Karibu mtaa, niko fiti sana leo!", "Mambo vp? Niko rada, tuongee!", "Eh mkuu! Umetokea wapi? Niko hapa!"],
+ love: ["Mapenzi mkuu? 😂 Hapa Rongai mapenzi ni noma, dem akikuacha ni carpet mpya unanunua! Lakini serious, niambie nini imetokea?", "Eeh mambo ya roho? Niko nawe mkuu, moyo ukiumia ni mbaya. Niambie story yote, sitamwambia mtu.", "Mapenzi ni kama biz ya carpet - lazima uchague vizuri usije ukadedi! Unapenda mtu?"],
+ life: ["Maisha ya mtaa si rahisi mkuu, lakini tunapambana! Leo umeamka aje?", "Hehe maisha ni safari, Rongai tunajua! Unapitia nini nikupee advice ya mtaa?", "Maisha iko na ups na downs, kama bei ya carpet! Niko hapa kama rafiki tuongee."],
+ biz: ["Biz mkuu? Hapa MTAANI tunajenga network! Unauza nini nikupee advert kwa TV?", "Poa, biz ni muhimu. Mimi naeza kukupea idea ya kukuza customers wa Rongai, uko na nini?"],
+ jokes: ["Haha umenichekesha! 😂 Mtaa yetu jokes ni mingi, ngoja nikuwekee moja...", "We ni m-comedian mkuu! Lakini yangu inakuja - unajua carpet na dem tofauti ni gani?"],
+ random: ["Haha swali poa sana! Kuhusu hiyo - mimi kama mtu wa mtaa naona ni mambo ya kawaida, lakini we unaiona aje?", "Eeh hiyo nayo ni deep! Sijawahi fikiria hivyo, umenifungua akili. Unamaanisha nini hasa?", "Nimekuelewa, na ukweli usemwe hiyo story iko na point. Mtaa yetu watu hupitia hivyo sana.", "We umenipa kazi ya kufikiria! 😅 Lakini kwa akili yangu ya mtaa, naeza sema kila kitu inawezekana ukiamua.", "Poa mkuu, hiyo swali iko sawa. Mimi ningesema jaribu tu, usiogope. Mtaa inasupport watu wajaribu!"]
+};
+
+function ongeza(who,text,isTyping=false){
+let p=document.createElement('p'); p.style.margin="8px 0";
+if(isTyping){p.id="fake";p.innerHTML=`<b style="color:#25D366">MTAANI AI:</b> <span class="typing"><span></span><span></span><span></span></span> <i style="font-size:11px;color:#888">anaandika...</i>`;}
+else{p.innerHTML=`<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b> ${text}`;}
+chat.appendChild(p); chat.scrollTop=chat.scrollHeight;
 }
-chat.appendChild(div);
-chat.scrollTop = chat.scrollHeight;
-}
+
 function jibu(){
-let msgRaw = document.getElementById('input').value;
-if(!msgRaw) return;
-ongeza('Wewe', msgRaw);
-document.getElementById('input').value='';
-ongeza(null,null,true);
+let raw=document.getElementById('input').value.trim(); if(!raw) return;
+ongeza('Wewe',raw); document.getElementById('input').value=''; ongeza(null,null,true);
+history.push(raw);
+
 setTimeout(()=>{
-let el = document.getElementById('fakeTyping');
-if(el) el.remove();
-let msg = msgRaw.toLowerCase();
-let reply='';
-if(msg.includes('tv')) reply='TV iko LIVE mkuu! ⚽';
-else if(msg.includes('carpet')) reply='Carpet ziko Rongai mkuu 🛋️ Nicheki WhatsApp 0751 768763!';
-else reply=`Nimekuelewa "${msgRaw}" mkuu! 😎 Hapa ni MTAANI NETWORK - sio TV pekee, ni kila kitu ya mtaa!`;
-ongeza('MTAANI BOT', reply);
-}, 3000);
+document.getElementById('fake')?.remove();
+let m=raw.toLowerCase(); let reply="";
+
+if(m.includes('tv')||m.includes('live')) reply="TV iko LIVE mkuu! ⚽ Lakini mimi sio wa TV pekee, naeza ongea kila kitu kama rafiki! Uliza chochote!";
+else if(m.includes('carpet')||m.includes('zulia')) reply="Carpet ziko mkuu 🛋️ 3D, fluffy, zote! Nicheki WhatsApp 0751 768763. Lakini kama unataka tu kuongea story ya maisha niko hapa pia!";
+else if(m.includes('mapenzi')||m.includes('dem')||m.includes('penzi')||m.includes('achwa')) reply= akili.love[Math.floor(Math.random()*akili.love.length)];
+else if(m.includes('niaje')||m.includes('mambo')||m.includes('poa')||m.includes('sasa')) reply= akili.greetings[Math.floor(Math.random()*akili.greetings.length)];
+else if(m.includes('maisha')||m.includes('stress')||m.includes('shida')) reply= akili.life[Math.floor(Math.random()*akili.life.length)];
+else if(m.includes('biz')||m.includes('kazi')||m.includes('pesa')) reply= akili.biz[Math.floor(Math.random()*akili.biz.length)];
+else{
+ // AKILI KUBWA - HAIRUDII JIBU MOJA!
+ let pool = akili.random.filter(r=>r!==lastReply);
+ reply = pool[Math.floor(Math.random()*pool.length)];
+ // Ongeza jina la mtu kwa jibu ili isionekane robot
+ reply = reply.replace('hiyo', `"${raw}"`);
 }
-ongeza('MTAANI BOT','Niaje Admin! Fake typing iko sawa? Andika kitu uone ● ● ●');
-document.getElementById('input').addEventListener('keypress', e=>{ if(e.key==='Enter') jibu(); });
+lastReply=reply;
+ongeza('MTAANI AI', reply + `<br><span class="wa">WhatsApp 0751 768763 💬</span>`);
+
+}, 1800 + Math.random()*1200); // typing 1.8-3 sec kama binadamu
+}
+ongeza('MTAANI AI','Niaje mkuu! Sasa mimi naongea kama wewe - kila swali jibu tofauti, si kurudia! Jaribu kuniuliza kitu chochote!');
+document.getElementById('input').addEventListener('keypress',e=>{if(e.key==='Enter')jibu()});
 </script>
 </body>
 </html>
