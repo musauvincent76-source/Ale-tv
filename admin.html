@@ -3,105 +3,86 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MTAANI ADMIN</title>
+<title>MTAANI WHATSAPP</title>
 <style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;padding:12px}
-.box{background:#111;padding:12px;border-radius:15px;border:1px solid #222}
-#chat{height:400px;overflow-y:auto;padding:10px;background:#000;border-radius:10px}
-input{width:65%;padding:12px;border-radius:25px;border:none;outline:none;background:#222;color:#fff}
-button.send{width:30%;padding:12px;border-radius:25px;background:#25D366;color:#fff;border:none;font-weight:bold}
-.dots span{display:inline-block;width:7px;height:7px;background:#25D366;border-radius:50%;margin:0 2px;animation:dunda 1.2s infinite}
-.dots span:nth-child(2){animation-delay:0.2s} .dots span:nth-child(3){animation-delay:0.4s}
-@keyframes dunda{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-7px)}}
-.wa-btn{background:#25D366;border:none;padding:7px 14px;border-radius:20px;color:#fff;margin-top:8px;font-weight:bold}
+body{margin:0;background:#111b21;font-family:Arial}
+.header{background:#202c33;color:#fff;padding:10px;display:flex;align-items:center;gap:10px;position:fixed;top:0;width:100%;z-index:10}
+.header img{width:38px;height:38px;border-radius:50%}
+#chat{margin-top:60px;margin-bottom:70px;height:calc(100vh - 130px);overflow:auto;padding:12px;background:#0b141a url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png')}
+.msg{max-width:78%;padding:8px 10px;border-radius:8px;margin:6px 0;font-size:14.2px;clear:both;position:relative;word-wrap:break-word}
+.me{background:#005c4b;color:#e9edef;float:right;border-top-right-radius:0}
+.bot{background:#202c33;color:#e9edef;float:left;border-top-left-radius:0}
+.time{font-size:10px;color:#8696a0;float:right;margin:6px 0 0 8px}
+.row{width:100%;overflow:hidden}
+.footer{background:#202c33;padding:8px;display:flex;gap:8px;position:fixed;bottom:0;width:100%;box-sizing:border-box}
+.footer input{flex:1;padding:12px 16px;border-radius:22px;border:none;background:#2a3942;color:#fff;outline:none}
+.footer button{background:#00a884;border:none;width:48px;height:48px;border-radius:50%;color:#fff;font-size:22px}
+.dots span{width:5px;height:5px;background:#8696a0;border-radius:50%;display:inline-block;margin:0 2px;animation:dunda 1.2s infinite}
+@keyframes dunda{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
 </style>
 </head>
 <body>
 
-<h2 style="text-align:center;color:#ffcc00">🔥 MTAANI ADMIN 🔥</h2>
+<div class="header">
+<img src="https://i.pravatar.cc/100?img=12">
+<div><b>MTAANI NETWORK</b><br><small style="color:#00a884" id="status">online</small></div>
+</div>
 
-<div class="box">
 <div id="chat"></div>
-<div style="display:flex;gap:8px;margin-top:12px">
-<input id="input" placeholder="Andika hapa...">
-<button class="send" onclick="jibu()">TUMA</button>
-</div>
-</div>
 
-<button onclick="goWA('Niaje mkuu nimetoka MTAANI TV')" style="width:100%;margin-top:15px;background:#25D366;color:#fff;border:none;padding:14px;border-radius:25px;font-weight:bold;font-size:16px">💬 WhatsApp: 0751 768763</button>
+<div class="footer">
+<input id="input" placeholder="Message">
+<button onclick="jibu()">➤</button>
+</div>
 
 <script>
-const chat = document.getElementById('chat');
-let lastIndex = -1;
-
-const majibu = [
-  "Poa sana mkuu! Umesema '{m}' 😎 Niko fiti, tuongee!",
-  "Haha '{m}'? We ni mtaa sana! Niko hapa kama rafiki, niambie zaidi?",
-  "Eeh '{m}' - hiyo story niko rada! Unamaanisha nini hasa mkuu?",
-  "Nimekupata mkuu! '{m}' - maisha ya Rongai tunajua hizo mambo!",
-  "Yoh '{m}'! 😂 Umenichekesha, lakini ukweli usemwe mtaa inajua!",
-  "Sawa mkuu, '{m}' - mimi niko hapa kukusikiza tu, si robot ya kurudia!",
-  "Poa swali! '{m}' - kwa akili ya mtaa naeza sema jaribu tu, usiogope!",
-  "We! '{m}' - hiyo nayo ni deep sana, sijawahi fikiria hivyo!",
-  "Niko nawe mkuu! '{m}' - tuongee tu free, niko hapa!",
-  "Mambo ya '{m}'? Mtaa yetu tunapambana tu mkuu, pole sana kama ni shida!"
+const chat=document.getElementById('chat');
+const statusEl=document.getElementById('status');
+let last=-1;
+const majibu=[
+"Poa mkuu! Umesema '{m}' 😎 Mimi niko hapa, tuongee tu!",
+"Haha '{m}'? We ni mtaa! Niko rada, niambie zaidi?",
+"Eeh '{m}' - hiyo nimei-note! Uko aje leo mkuu?",
+"Nimekupata! '{m}' - Hapa MTAANI tunapambana tu, maisha ya Rongai!",
+"Sawa mkuu '{m}' - niko hapa kama rafiki, si robot ya kurudia!",
+"Yoh '{m}'! Hiyo ni deep, umenifungua akili!",
+"Mambo ya '{m}'? Poa sana, jaribu tu usiogope, mtaa inakusupport!",
+"We! '{m}' - umenichekesha 😂 Lakini ukweli, mtaa inajua hizo!",
+"Niko nawe 100% '{m}' - tuongee free, niko hapa kukusikiza!",
+"Eh '{m}'? Nimeelewa, pole kama ni shida, tutaongea tu!"
 ];
 
-function goWA(text){
-  let url = "https://api.whatsapp.com/send?phone=254751768763&text=" + encodeURIComponent(text);
-  window.location.href = url;
-}
-
-function ongeza(who, text, isTyping=false){
-  let p = document.createElement('p');
-  p.style.margin="10px 0";
-  p.style.lineHeight="1.4";
-  if(isTyping){
-    p.id="typing";
-    p.innerHTML=`<b style="color:#25D366">MTAANI BOT:</b> <span class="dots"><span></span><span></span><span></span></span> <i style="color:#888;font-size:11px">anaandika...</i>`;
-  } else {
-    p.innerHTML=`<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b> ${text}`;
-  }
-  chat.appendChild(p);
-  chat.scrollTop = chat.scrollHeight;
+function now(){return new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});}
+function add(who,text,typing=false){
+let row=document.createElement('div'); row.className='row';
+let div=document.createElement('div'); div.className='msg '+(who=='Wewe'?'me':'bot');
+if(typing){div.id='typing'; div.innerHTML=`<span class="dots"><span></span><span></span><span></span></span>`}
+else{div.innerHTML=`${text}<span class="time">${now()} ✓✓</span>`}
+row.appendChild(div); chat.appendChild(row); chat.scrollTop=chat.scrollHeight;
 }
 
 function jibu(){
-  let raw = document.getElementById('input').value.trim();
-  if(!raw) return;
-  
-  ongeza('Wewe', raw);
-  document.getElementById('input').value='';
-  ongeza(null, null, true);
+let raw=document.getElementById('input').value.trim(); if(!raw) return;
+add('Wewe',raw); document.getElementById('input').value='';
+statusEl.innerText='typing...'; add('Bot','',true);
 
-  setTimeout(()=>{
-    let typingEl = document.getElementById('typing');
-    if(typingEl) typingEl.remove();
-
-    let lower = raw.toLowerCase();
-    let reply = "";
-
-    if(lower.includes('tv') || lower.includes('live')){
-      reply = "TV iko LIVE mkuu! ⚽ Niko hapa https://musauvincent76-source.github.io/Ale-tv/ - lakini pia naeza ongea story ingine!";
-    } else if(lower.includes('carpet') || lower.includes('zulia') || lower.includes('bei')){
-      reply = "Carpet ziko mkuu 🛋️ Bei kuanzia 2500, 5x8 ni 6500. Delivery hadi mlango Rongai!";
-    } else {
-      // Hii ndio inazuia kurudia kitu kimoja
-      let idx;
-      do{ idx = Math.floor(Math.random()*majibu.length); } while(idx === lastIndex);
-      lastIndex = idx;
-      reply = majibu[idx].replace('{m}', raw);
-    }
-
-    let btn = `<br><button class="wa-btn" onclick="goWA('${raw.replace(/'/g,"")}')">💬 Chat WhatsApp</button>`;
-    ongeza('MTAANI BOT', reply + btn);
-
-  }, 2000); // dots inadundia 2 sec tu ndio inaisha
+setTimeout(()=>{
+document.getElementById('typing')?.parentElement.remove();
+statusEl.innerText='online';
+let low=raw.toLowerCase();
+let rep="";
+if(low.includes('tv')) rep="TV iko LIVE hapa https://musauvincent76-source.github.io/Ale-tv/ ⚽!";
+else if(low.includes('carpet')||low.includes('bei')) rep="Carpet ziko Rongai mkuu 🛋️ 3D na fluffy, 2500 hadi 6500 na delivery!";
+else{
+let i; do{i=Math.floor(Math.random()*majibu.length)}while(i===last); last=i;
+rep=majibu[i].replace('{m}',raw);
+}
+add('Bot',rep);
+}, 1500+Math.random()*800);
 }
 
-ongeza('MTAANI BOT','Niaje mkuu! Karibu! Sasa sirudii kitu kimoja tena - kila swali jibu tofauti! Andika uone dots inadundia kidogo tu!');
-document.getElementById('input').addEventListener('keypress', e=>{ if(e.key==='Enter') jibu(); });
+add('Bot','Niaje mkuu! 😎 Karibu MTAANI WhatsApp! Andika chochote, nitajibu hapa hapa - hakuna kwenda WhatsApp app!');
+document.getElementById('input').addEventListener('keypress',e=>{if(e.key==='Enter')jibu()});
 </script>
-
 </body>
 </html>
