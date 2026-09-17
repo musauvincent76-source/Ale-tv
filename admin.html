@@ -1,36 +1,60 @@
-<div id="chat" style="background:#111;height:300px;overflow:auto;padding:15px;border-radius:15px;text-align:left;margin:15px"></div>
-<input id="input" placeholder="Andika hapa..." style="width:70%;padding:15px;border-radius:25px;border:none">
-<button onclick="jibu()" style="width:25%;padding:15px;border-radius:25px;background:#25D366;color:#fff;border:none;font-weight:bold">TUMA</button>
+<style>
+/* FAKE TYPING DOTS KAMA WHATSAPP */
+.typing span{
+display:inline-block;width:7px;height:7px;background:#25D366;border-radius:50%;margin:0 2px;
+animation: bounce 1.3s infinite;
+}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+</style>
 
 <script>
 const chat = document.getElementById('chat');
-function ongeza(who, text){
-chat.innerHTML += `<p><b>${who}:</b> ${text}</p>`;
+function ongeza(who, text, isTyping=false){
+let div = document.createElement('p');
+div.style.margin="8px 0";
+if(isTyping){
+div.className="typing";
+div.innerHTML = `<b style="color:#25D366">MTAANI BOT:</b> <span></span><span></span><span></span> <i style="color:#aaa;font-size:11px">anaandika...</i>`;
+div.id="fakeTyping";
+}else{
+div.innerHTML = `<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b> ${text}`;
+}
+chat.appendChild(div);
 chat.scrollTop = chat.scrollHeight;
 }
+
 function jibu(){
-let msg = document.getElementById('input').value.toLowerCase();
-if(!msg) return;
-ongeza('Wewe', msg);
+let msgRaw = document.getElementById('input').value;
+if(!msgRaw) return;
+ongeza('Wewe', msgRaw);
 document.getElementById('input').value='';
 
+// 1. Onyesha FAKE TYPING mara moja
+ongeza(null,null,true);
+
+// 2. Speed yake sasa ni 3 SECONDS kama ulivyosema!
 setTimeout(()=>{
+document.getElementById('fakeTyping').remove();
+
+let msg = msgRaw.toLowerCase();
 let reply='';
-if(msg.includes('niaje') || msg.includes('poa') || msg.includes('mambo')){
-reply='Poa sana mkuu! 😎 Karibu MTAANI NETWORK. Unataka ku-watch TV ama carpet?';
-}else if(msg.includes('tv') || msg.includes('live') || msg.includes('soka')){
-reply='Sawa! Bonyeza hapa ▶️ ./Mtaani-tv/ uingie LIVE sasa. EPL iko moto leo! ⚽';
-}else if(msg.includes('carpet') || msg.includes('zulia') || msg.includes('bei')){
-reply='Carpet ziko mkuu! 🛋️ Nicheki WhatsApp nikupee picha na bei ya Rongai. Unataka gani?';
-}else if(msg.includes('admin') || msg.includes('ongea') || msg.includes('help')){
-reply='Niko hapa mkuu! Niambie shida yako niko radhi kukusaidia. Au unataka niku-connect na admin mwenyewe?';
-}else if(msg.includes('how') || msg.includes('price') || msg.includes('english')){
-reply='Hello boss! Welcome to MTAANI TV LIVE 24/7. How can I help you? TV or carpets?';
-}else{
-reply='Sawa mkuu nimekuelewa 👍 Niambie zaidi, unataka TV LIVE, Carpet, au kuongea na admin?';
+if(msg.includes('tv')) reply='TV iko LIVE mkuu! ⚽ Bonyeza button ya njano!';
+else if(msg.includes('carpet')) reply='Carpet ziko Rongai mkuu 🛋️ Nicheki WhatsApp 0751 768763!';
+else{
+const majibu=[
+`Haha "${msgRaw}" 😂 Nimekuelewa mkuu!`,
+`Poa, kuhusu "${msgRaw}" - tuongee! Hapa MTAANI tuko free!`,
+`Eeh "${msgRaw}" - hiyo ni story poa! Niambie zaidi mkuu?`
+];
+reply=majibu[Math.floor(Math.random()*majibu.length)];
 }
-ongeza('MTAANI BOT', reply);
-}, 800);
+
+ongeza('MTAANI BOT', reply + `<br><a href="https://wa.me/254751768763?text=${encodeURIComponent(msgRaw)}" style="color:#25D366;font-size:11px">WhatsApp 0751 768763 💬</a>`);
+
+}, 3000); // HAPA 3000 = 3 SECONDS FAKE TYPING KAMA UMESEMA
 }
-ongeza('MTAANI BOT','Niaje mkuu! Karibu MTAANI NETWORK 🔥 Mimi ni bot wa hapa Rongai, niambie unataka nini?');
+
+ongeza('MTAANI BOT','Niaje mkuu! Mimi na-type kama binadamu sasa 😎 Jaribu kuniandikia!');
 </script>
