@@ -1,13 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MTAANI ADMIN</title>
 <style>
+body{margin:0;background:#000;color:#fff;font-family:Arial;padding:15px}
+.box{background:#111;padding:15px;border-radius:15px;border:1px solid #222}
+#chat{height:320px;overflow:auto;padding:10px;background:#000;border-radius:10px;text-align:left}
+input{width:68%;padding:12px;border-radius:20px;border:none}
+button{width:27%;padding:12px;border-radius:20px;background:#25D366;color:#fff;border:none;font-weight:bold}
 /* FAKE TYPING DOTS KAMA WHATSAPP */
-.typing span{
-display:inline-block;width:7px;height:7px;background:#25D366;border-radius:50%;margin:0 2px;
-animation: bounce 1.3s infinite;
-}
+.typing span{display:inline-block;width:7px;height:7px;background:#25D366;border-radius:50%;margin:0 2px;animation:bounce 1.3s infinite;}
 .typing span:nth-child(2){animation-delay:0.2s}
 .typing span:nth-child(3){animation-delay:0.4s}
 @keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
 </style>
+</head>
+<body>
+<h2 style="text-align:center;color:#ffcc00">🔥 MTAANI ADMIN 🔥</h2>
+<div class="box">
+<div id="chat"></div>
+<div style="margin-top:10px;display:flex;gap:5px">
+<input id="input" placeholder="Andika hapa...">
+<button onclick="jibu()">TUMA</button>
+</div>
+</div>
+<p style="text-align:center"><a href="https://wa.me/254751768763" style="color:#25D366">WhatsApp: 0751 768763</a></p>
 
 <script>
 const chat = document.getElementById('chat');
@@ -24,37 +42,25 @@ div.innerHTML = `<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b>
 chat.appendChild(div);
 chat.scrollTop = chat.scrollHeight;
 }
-
 function jibu(){
 let msgRaw = document.getElementById('input').value;
 if(!msgRaw) return;
 ongeza('Wewe', msgRaw);
 document.getElementById('input').value='';
-
-// 1. Onyesha FAKE TYPING mara moja
 ongeza(null,null,true);
-
-// 2. Speed yake sasa ni 3 SECONDS kama ulivyosema!
 setTimeout(()=>{
-document.getElementById('fakeTyping').remove();
-
+let el = document.getElementById('fakeTyping');
+if(el) el.remove();
 let msg = msgRaw.toLowerCase();
 let reply='';
-if(msg.includes('tv')) reply='TV iko LIVE mkuu! ⚽ Bonyeza button ya njano!';
+if(msg.includes('tv')) reply='TV iko LIVE mkuu! ⚽';
 else if(msg.includes('carpet')) reply='Carpet ziko Rongai mkuu 🛋️ Nicheki WhatsApp 0751 768763!';
-else{
-const majibu=[
-`Haha "${msgRaw}" 😂 Nimekuelewa mkuu!`,
-`Poa, kuhusu "${msgRaw}" - tuongee! Hapa MTAANI tuko free!`,
-`Eeh "${msgRaw}" - hiyo ni story poa! Niambie zaidi mkuu?`
-];
-reply=majibu[Math.floor(Math.random()*majibu.length)];
+else reply=`Nimekuelewa "${msgRaw}" mkuu! 😎 Hapa ni MTAANI NETWORK - sio TV pekee, ni kila kitu ya mtaa!`;
+ongeza('MTAANI BOT', reply);
+}, 3000);
 }
-
-ongeza('MTAANI BOT', reply + `<br><a href="https://wa.me/254751768763?text=${encodeURIComponent(msgRaw)}" style="color:#25D366;font-size:11px">WhatsApp 0751 768763 💬</a>`);
-
-}, 3000); // HAPA 3000 = 3 SECONDS FAKE TYPING KAMA UMESEMA
-}
-
-ongeza('MTAANI BOT','Niaje mkuu! Mimi na-type kama binadamu sasa 😎 Jaribu kuniandikia!');
+ongeza('MTAANI BOT','Niaje Admin! Fake typing iko sawa? Andika kitu uone ● ● ●');
+document.getElementById('input').addEventListener('keypress', e=>{ if(e.key==='Enter') jibu(); });
 </script>
+</body>
+</html>
