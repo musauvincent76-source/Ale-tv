@@ -24,4 +24,84 @@ button.send{width:30%;padding:12px;border-radius:25px;background:#25D366;color:#
 <div id="chat"></div>
 <div style="display:flex;gap:8px;margin-top:12px">
 <input id="input" placeholder="Andika hapa...">
-<button class="send" onclick="jibu()">TUMA</
+<button class="send" onclick="jibu()">TUMA</button>
+</div>
+</div>
+
+<button onclick="goWA('Niaje mkuu nimetoka MTAANI TV')" style="width:100%;margin-top:15px;background:#25D366;color:#fff;border:none;padding:14px;border-radius:25px;font-weight:bold;font-size:16px">💬 WhatsApp: 0751 768763</button>
+
+<script>
+const chat = document.getElementById('chat');
+let lastIndex = -1;
+
+const majibu = [
+  "Poa sana mkuu! Umesema '{m}' 😎 Niko fiti, tuongee!",
+  "Haha '{m}'? We ni mtaa sana! Niko hapa kama rafiki, niambie zaidi?",
+  "Eeh '{m}' - hiyo story niko rada! Unamaanisha nini hasa mkuu?",
+  "Nimekupata mkuu! '{m}' - maisha ya Rongai tunajua hizo mambo!",
+  "Yoh '{m}'! 😂 Umenichekesha, lakini ukweli usemwe mtaa inajua!",
+  "Sawa mkuu, '{m}' - mimi niko hapa kukusikiza tu, si robot ya kurudia!",
+  "Poa swali! '{m}' - kwa akili ya mtaa naeza sema jaribu tu, usiogope!",
+  "We! '{m}' - hiyo nayo ni deep sana, sijawahi fikiria hivyo!",
+  "Niko nawe mkuu! '{m}' - tuongee tu free, niko hapa!",
+  "Mambo ya '{m}'? Mtaa yetu tunapambana tu mkuu, pole sana kama ni shida!"
+];
+
+function goWA(text){
+  let url = "https://api.whatsapp.com/send?phone=254751768763&text=" + encodeURIComponent(text);
+  window.location.href = url;
+}
+
+function ongeza(who, text, isTyping=false){
+  let p = document.createElement('p');
+  p.style.margin="10px 0";
+  p.style.lineHeight="1.4";
+  if(isTyping){
+    p.id="typing";
+    p.innerHTML=`<b style="color:#25D366">MTAANI BOT:</b> <span class="dots"><span></span><span></span><span></span></span> <i style="color:#888;font-size:11px">anaandika...</i>`;
+  } else {
+    p.innerHTML=`<b style="color:${who=='Wewe'?'#ffcc00':'#25D366'}">${who}:</b> ${text}`;
+  }
+  chat.appendChild(p);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function jibu(){
+  let raw = document.getElementById('input').value.trim();
+  if(!raw) return;
+  
+  ongeza('Wewe', raw);
+  document.getElementById('input').value='';
+  ongeza(null, null, true);
+
+  setTimeout(()=>{
+    let typingEl = document.getElementById('typing');
+    if(typingEl) typingEl.remove();
+
+    let lower = raw.toLowerCase();
+    let reply = "";
+
+    if(lower.includes('tv') || lower.includes('live')){
+      reply = "TV iko LIVE mkuu! ⚽ Niko hapa https://musauvincent76-source.github.io/Ale-tv/ - lakini pia naeza ongea story ingine!";
+    } else if(lower.includes('carpet') || lower.includes('zulia') || lower.includes('bei')){
+      reply = "Carpet ziko mkuu 🛋️ Bei kuanzia 2500, 5x8 ni 6500. Delivery hadi mlango Rongai!";
+    } else {
+      // Hii ndio inazuia kurudia kitu kimoja
+      let idx;
+      do{ idx = Math.floor(Math.random()*majibu.length); } while(idx === lastIndex);
+      lastIndex = idx;
+      reply = majibu[idx].replace('{m}', raw);
+    }
+
+    let btn = `<br><button class="wa-btn" onclick="goWA('${raw.replace(/'/g,"")}')">💬 Chat WhatsApp</button>`;
+    ongeza('MTAANI BOT', reply + btn);
+
+  }, 2000); // dots inadundia 2 sec tu ndio inaisha
+}
+
+ongeza('MTAANI BOT','Niaje mkuu! Karibu! Sasa sirudii kitu kimoja tena - kila swali jibu tofauti! Andika uone dots inadundia kidogo tu!');
+document.getElementById('input').addEventListener('keypress', e=>{ if(e.key==='Enter') jibu(); });
+</script>
+
+</body>
+</html>
