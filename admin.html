@@ -1,23 +1,36 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>MTAANI NETWORK</title>
-<style>
-body{margin:0;background:#000;color:#fff;font-family:Arial;text-align:center}
-.hero{padding:50px 20px;background:linear-gradient(#111,#000)}
-.btn{display:block;margin:15px;padding:20px;border-radius:15px;text-decoration:none;font-weight:bold;font-size:18px}
-.tv{background:#ffcc00;color:#000}
-.admin{background:#25D366;color:#fff}
-</style>
-</head>
-<body>
-<div class="hero">
-<h1>🔥 MTAANI NETWORK 🔥</h1>
-<p>TRUE LIVE 24/7</p>
-<a class="btn tv" href="./Mtaani-tv/">▶️ INGIa MTAANI TV LIVE</a>
-<a class="btn admin" href="./Mtaani-tv/admin.html">💬 ONGEA NA ADMIN</a>
-<p style="color:#aaa;margin-top:20px">Karibu mtaani - Burudani, Soka, Muziki LIVE!</p>
-</div>
-</body>
-</html>
+<div id="chat" style="background:#111;height:300px;overflow:auto;padding:15px;border-radius:15px;text-align:left;margin:15px"></div>
+<input id="input" placeholder="Andika hapa..." style="width:70%;padding:15px;border-radius:25px;border:none">
+<button onclick="jibu()" style="width:25%;padding:15px;border-radius:25px;background:#25D366;color:#fff;border:none;font-weight:bold">TUMA</button>
+
+<script>
+const chat = document.getElementById('chat');
+function ongeza(who, text){
+chat.innerHTML += `<p><b>${who}:</b> ${text}</p>`;
+chat.scrollTop = chat.scrollHeight;
+}
+function jibu(){
+let msg = document.getElementById('input').value.toLowerCase();
+if(!msg) return;
+ongeza('Wewe', msg);
+document.getElementById('input').value='';
+
+setTimeout(()=>{
+let reply='';
+if(msg.includes('niaje') || msg.includes('poa') || msg.includes('mambo')){
+reply='Poa sana mkuu! 😎 Karibu MTAANI NETWORK. Unataka ku-watch TV ama carpet?';
+}else if(msg.includes('tv') || msg.includes('live') || msg.includes('soka')){
+reply='Sawa! Bonyeza hapa ▶️ ./Mtaani-tv/ uingie LIVE sasa. EPL iko moto leo! ⚽';
+}else if(msg.includes('carpet') || msg.includes('zulia') || msg.includes('bei')){
+reply='Carpet ziko mkuu! 🛋️ Nicheki WhatsApp nikupee picha na bei ya Rongai. Unataka gani?';
+}else if(msg.includes('admin') || msg.includes('ongea') || msg.includes('help')){
+reply='Niko hapa mkuu! Niambie shida yako niko radhi kukusaidia. Au unataka niku-connect na admin mwenyewe?';
+}else if(msg.includes('how') || msg.includes('price') || msg.includes('english')){
+reply='Hello boss! Welcome to MTAANI TV LIVE 24/7. How can I help you? TV or carpets?';
+}else{
+reply='Sawa mkuu nimekuelewa 👍 Niambie zaidi, unataka TV LIVE, Carpet, au kuongea na admin?';
+}
+ongeza('MTAANI BOT', reply);
+}, 800);
+}
+ongeza('MTAANI BOT','Niaje mkuu! Karibu MTAANI NETWORK 🔥 Mimi ni bot wa hapa Rongai, niambie unataka nini?');
+</script>
